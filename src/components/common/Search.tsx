@@ -1,0 +1,72 @@
+import React from 'react';
+import Input, { type InputProps } from "../ui/Input";
+import { cn } from "../../utils/cn";
+
+// Search Icon Component
+const SearchIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+    />
+  </svg>
+);
+
+
+const Search: React.FC<InputProps> = ({
+  placeholder = "Search mutual funds...",
+  size = 'md',
+  keyboardShortcut = ['⌘', 'K'],
+  className,
+  containerClassName,
+  style,
+  variant = 'default',
+  fullWidth = true,
+  rounded = 'full',
+  ...props
+}) => {
+  return (
+    <div className={cn('w-full', className)}>
+      <Input
+        variant={variant}
+        size={size}
+        fullWidth={fullWidth}
+        rounded={rounded}
+        leftIcon={<SearchIcon className="w-5 h-5 text-gray-500" />}
+        keyboardShortcut={keyboardShortcut}
+        placeholder={placeholder}
+        className={cn(
+          'font-outfit',
+          'placeholder:text-gray-500',
+          'focus:outline-none',
+          'transition-all duration-200',
+          className
+        )}
+        containerClassName={cn(
+          'relative',
+          'transition-all duration-200',
+          'focus-within:ring-2 focus-within:ring-gray-100',
+          'focus-within:border-gray-400',
+          containerClassName
+        )}
+        style={{
+          backgroundColor: '#F6F8FE',
+          borderColor: '#E5E7EB',
+          color: '#374151',
+          ...style,
+        }}
+        {...props}
+      />
+    </div>
+  );
+};
+
+export default Search;
