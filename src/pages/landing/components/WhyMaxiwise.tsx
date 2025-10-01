@@ -4,114 +4,110 @@ import Section_3_1 from "./Section_3_1";
 import Section_3_2 from "./Section_3_2";
 import Section_3_3 from "./Section_3_3";
 
-
 const WhyMaxiwise = () => {
-    const [currentSection, setCurrentSection] = useState(0);
-    const [isTransitioning, setIsTransitioning] = useState(false);
-    const containerRef = useRef(null);
-    const touchStartY = useRef(0);
-    const lastScrollTime = useRef(0);
+    const [scrollProgress, setScrollProgress] = useState(0);
+    const [isInCurtainMode, setIsInCurtainMode] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
     
     // Array of your 4 components
     const sections = [Section_3, Section_3_1, Section_3_2, Section_3_3];
     const totalSections = sections.length;
-  
-    const handleScroll = (direction: string) => {
-      const now = Date.now();
-      
-      // Throttle scroll events to prevent rapid firing
-      if (now - lastScrollTime.current < 800 || isTransitioning) return;
-      
-      lastScrollTime.current = now;
-      setIsTransitioning(true);
-  
-      let newSection = currentSection;
-      
-      if (direction === 'down' && currentSection < totalSections - 1) {
-        newSection = currentSection + 1;
-      } else if (direction === 'up' && currentSection > 0) {
-        newSection = currentSection - 1;
-      }
-  
-      if (newSection !== currentSection) {
-        setCurrentSection(newSection);
-      }
-  
-      // Reset transition flag after animation completes
-      setTimeout(() => {
-        setIsTransitioning(false);
-      }, 800);
-    };
-  
-    // Wheel event handler
-    useEffect(() => {
-      const handleWheel = (e: WheelEvent) => {
-        e.preventDefault();
-        const direction = e.deltaY > 0 ? 'down' : 'up';
-        handleScroll(direction);
-      };
-  
-      const container = containerRef.current as HTMLElement | null;
-      if (container) {
-        container.addEventListener('wheel', handleWheel, { passive: false });
-        return () => container.removeEventListener('wheel', handleWheel);
-      }
-    }, [currentSection, isTransitioning]);
-  
-    // Touch event handlers for mobile
-    const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
-      touchStartY.current = e.touches[0].clientY;
-    };
 
-    const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
-      const touchEndY = e.changedTouches[0].clientY;
-      const deltaY = touchStartY.current - touchEndY;
-      
-      if (Math.abs(deltaY) > 50) { // Minimum swipe distance
-        const direction = deltaY > 0 ? 'down' : 'up';
-        handleScroll(direction);
-      }
-    };
-  
-    // Keyboard navigation
+    // Handle scroll to detect when we enter/exit curtain mode
     useEffect(() => {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-          e.preventDefault();
-          handleScroll('down');
-        } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-          e.preventDefault();
-          handleScroll('up');
+        const handleScroll = () => {
+            if (!containerRef.current) return;
+            
+            const rect = containerRef.current.getBoundingClientRect();
+            const containerTop = rect.top;
+            const windowHeight = window.innerHeight;
+            
+            // Enter curtain mode when component reaches top of viewport
+            if (containerTop <= 0 && containerTop > -windowHeight && !isInCurtainMode) {
+                setIsInCurtainMode(true);
+                setScrollProgress(0);
+            }
+            // Exit curtain mode when scrolling up past component
+            else if (containerTop > 0 && isInCurtainMode) {
+                setIsInCurtainMode(false);
+                setScrollProgress(0);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // Initial calculation
+        
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [isInCurtainMode]);
+
+    // Handle wheel events for curtain navigation (hijack scroll when in curtain mode)
+    useEffect(() => {
+        const handleWheel = (e: WheelEvent) => {
+            if (!isInCurtainMode) return;
+            
+            e.preventDefault(); // Prevent normal page scroll
+            
+            const delta = e.deltaY * 0.005; // Much more sensitive - normal scrolling feel
+            const newProgress = Math.max(0, Math.min(totalSections - 1, scrollProgress + delta));
+            
+            // If trying to scroll up from first section, exit curtain mode and go to previous section
+            if (scrollProgress <= 0 && delta < 0) {
+                setIsInCurtainMode(false);
+                setScrollProgress(0);
+                // Scroll to the previous section (Section_2)
+                const section2 = document.getElementById('section-2');
+                if (section2) {
+                    section2.scrollIntoView({ behavior: 'smooth' });
+                }
+                return;
+            }
+            
+            // If trying to scroll down from last section, exit curtain mode and continue to next section
+            if (scrollProgress >= totalSections - 1 && delta > 0) {
+                setIsInCurtainMode(false);
+                setScrollProgress(0);
+                // Scroll to the next section (About component)
+                const aboutSection = document.getElementById('about');
+                if (aboutSection) {
+                    aboutSection.scrollIntoView({ behavior: 'smooth' });
+                }
+                return;
+            }
+            
+            setScrollProgress(newProgress);
+        };
+
+        if (isInCurtainMode) {
+            window.addEventListener('wheel', handleWheel, { passive: false });
+            return () => window.removeEventListener('wheel', handleWheel);
         }
-      };
-  
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [currentSection, isTransitioning]);
-  
+    }, [isInCurtainMode, scrollProgress, totalSections]);
+
     return (
-      <div 
-        ref={containerRef}
-        className="relative h-screen overflow-hidden"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
-        {/* Sections Container */}
         <div 
-          className="flex flex-col transition-transform duration-700 ease-in-out"
-          style={{
-            transform: `translateY(-${currentSection * 100}vh)`,
-            height: `${totalSections * 100}vh`
-          }}
+            ref={containerRef}
+            className="relative overflow-hidden h-screen"
         >
-          {sections.map((SectionComponent, index) => (
-            <div key={index} className="h-screen flex-shrink-0">
-              <SectionComponent />
-            </div>
-          ))}
+            {sections.map((SectionComponent, index) => {
+                // Calculate curtain effect for each section
+                const sectionProgress = Math.max(0, Math.min(1, scrollProgress - index));
+                
+                return (
+                    <div 
+                        key={index} 
+                        className="absolute top-0 left-0 w-full h-screen"
+                        style={{
+                            zIndex: totalSections - index,
+                            transform: `translateY(${sectionProgress * -100}%)`,
+                            borderRadius: sectionProgress > 0 ? '0 0 50px 50px' : '0'
+                        }}
+                    >
+                        <SectionComponent />
+                    </div>
+                );
+            })}
         </div>
-      </div>
     );
-  };
-  
-  export default WhyMaxiwise;
+};
+
+export default WhyMaxiwise;
