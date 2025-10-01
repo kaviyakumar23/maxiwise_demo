@@ -1,6 +1,8 @@
 import Co_founder_1 from "../../../assets/images/Co_founder_1.png"
 import Co_founder_2 from "../../../assets/images/Co_founder_2.png"
 import Co_founder_3 from "../../../assets/images/Co_founder_3.png"
+import founderFullBg from "../../../assets/images/founder-full-bg.png"
+import founderBottomBg from "../../../assets/images/founder-bototm-bg.png"
 
 const Founders = () => {
     return (
@@ -17,13 +19,26 @@ const Founders = () => {
             <div className="grid grid-cols-3 gap-2 p-6 ">
                 <div className="flex justify-end">
                     <div className="relative w-[270px] h-[360px] rounded-2xl overflow-hidden"
-                         style={{ transform: 'rotate(-8deg)' }}>
-                        <img src={Co_founder_1} alt="Co-Founder 1" className="w-full h-full object-cover" />
+                         style={{ 
+                             transform: 'rotate(-8deg)',
+                             backgroundImage: `url(${founderFullBg})`,
+                             backgroundSize: 'cover',
+                             backgroundPosition: 'center'
+                         }}>
+                        <img src={Co_founder_1} alt="Co-Founder 1" className="w-full h-full object-cover" style={{ filter: 'grayscale(100%)' }} />
                         <div className="absolute inset-0 rounded-2xl"
                              style={{
                                  background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 58%, #000000 100%)'
                              }}></div>
-                        <div className="absolute bottom-4 left-4 text-white">
+                        <div className="absolute bottom-0 left-0 right-0 h-32 rounded-b-2xl"
+                             style={{
+                                 backgroundImage: `url(${founderBottomBg})`,
+                                 backgroundSize: 'cover',
+                                 backgroundPosition: 'bottom',
+                                 maskImage: 'linear-gradient(to top, black 0%, black 70%, transparent 100%)',
+                                 WebkitMaskImage: 'linear-gradient(to top, black 0%, black 70%, transparent 100%)'
+                             }}></div>
+                        <div className="absolute bottom-4 left-4 text-white z-10">
                             <p className="font-normal font-outfit text-xl text-lime mb-px">Vikas Khaitan</p>
                             <p className="text-sm font-outfit font-light text-white opacity-90">Co-Founder</p>
                         </div>
@@ -31,13 +46,26 @@ const Founders = () => {
                 </div>
                 <div className="flex justify-center">
                     <div className="relative w-[270px] h-[360px] rounded-2xl overflow-hidden"
-                         style={{ transform: 'rotate(0deg)' }}>
-                        <img src={Co_founder_2} alt="Co-Founder 2" className="w-full h-full object-cover" />
+                         style={{ 
+                             transform: 'rotate(0deg)',
+                             backgroundImage: `url(${founderFullBg})`,
+                             backgroundSize: 'cover',
+                             backgroundPosition: 'center'
+                         }}>
+                        <img src={Co_founder_2} alt="Co-Founder 2" className="w-full h-full object-cover" style={{ filter: 'grayscale(100%)' }} />
                         <div className="absolute inset-0 rounded-2xl"
                              style={{
                                  background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 58%, #000000 100%)'
                              }}></div>
-                        <div className="absolute bottom-4 left-4 text-white">
+                        <div className="absolute bottom-0 left-0 right-0 h-32 rounded-b-2xl"
+                             style={{
+                                 backgroundImage: `url(${founderBottomBg})`,
+                                 backgroundSize: 'cover',
+                                 backgroundPosition: 'bottom',
+                                 maskImage: 'linear-gradient(to top, black 0%, black 70%, transparent 100%)',
+                                 WebkitMaskImage: 'linear-gradient(to top, black 0%, black 70%, transparent 100%)'
+                             }}></div>
+                        <div className="absolute bottom-4 left-4 text-white z-10">
                             <p className="font-normal font-outfit text-xl text-lime mb-px">Prashant Joshi</p>
                             <p className="text-sm font-outfit font-light text-white opacity-90">Co-Founder</p>
                         </div>
@@ -45,13 +73,26 @@ const Founders = () => {
                 </div>
                 <div className="flex justify-start">
                 <div className="relative w-[270px] h-[360px] rounded-2xl overflow-hidden"
-                         style={{ transform: 'rotate(8deg)' }}>
-                    <img src={Co_founder_3} alt="Co-Founder 3" className="w-full h-full object-cover"/>
+                         style={{ 
+                             transform: 'rotate(8deg)',
+                             backgroundImage: `url(${founderFullBg})`,
+                             backgroundSize: 'cover',
+                             backgroundPosition: 'center'
+                         }}>
+                    <img src={Co_founder_3} alt="Co-Founder 3" className="w-full h-full object-cover" style={{ filter: 'grayscale(100%)' }}/>
                     <div className="absolute inset-0 rounded-2xl"
                              style={{
                                  background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 58%, #000000 100%)'
                              }}></div>
-                    <div className="absolute bottom-4 left-4 text-white">
+                    <div className="absolute bottom-0 left-0 right-0 h-32 rounded-b-2xl"
+                             style={{
+                                 backgroundImage: `url(${founderBottomBg})`,
+                                 backgroundSize: 'cover',
+                                 backgroundPosition: 'bottom',
+                                 maskImage: 'linear-gradient(to top, black 0%, black 70%, transparent 100%)',
+                                 WebkitMaskImage: 'linear-gradient(to top, black 0%, black 70%, transparent 100%)'
+                             }}></div>
+                    <div className="absolute bottom-4 left-4 text-white z-10">
                         <p className="font-normal font-outfit text-xl text-lime mb-px">Anurag Jhanwar</p>
                         <p className="text-sm font-outfit font-light text-white opacity-90">Co-Founder</p>
                     </div>

@@ -4,7 +4,7 @@ import GetStarted from "../../../components/common/GetStarted"
 
 const Join_Now = () => {
     return (
-        <div className="h-screen bg-cover bg-center relative flex justify-center items-center" style={{ backgroundImage: `url(${Join_now_bg})` }}>
+        <div className="h-[600px] bg-cover bg-center relative flex justify-center items-center" style={{ backgroundImage: `url(${Join_now_bg})` }}>
             <div className="flex flex-col items-center gap-8">
                 {/* JOIN NOW section */}
                 <div className="flex items-center gap-2">
