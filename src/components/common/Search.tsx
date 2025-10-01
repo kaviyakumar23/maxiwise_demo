@@ -48,6 +48,8 @@ const Search: React.FC<InputProps> = ({
           'placeholder:text-gray-500',
           'focus:outline-none',
           'transition-all duration-200',
+          'text-xs',
+          'min-w-60',
           className
         )}
         containerClassName={cn(

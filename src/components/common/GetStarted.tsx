@@ -15,6 +15,7 @@ const GetStarted: React.FC<ButtonProps> = ({
           'font-outfit',
           'transition-all duration-200',
           'focus:outline-none',
+          'text-base',
           className
         )} {...props}>Get Started</Button>
 

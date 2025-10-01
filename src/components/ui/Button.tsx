@@ -42,7 +42,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       'transition-all duration-200',
       'focus:outline-none focus:ring-2 focus:ring-offset-2',
       'disabled:cursor-not-allowed',
-      'select-none'
+      'select-none',
+      'cursor-pointer'
     ];
 
     const variants = {

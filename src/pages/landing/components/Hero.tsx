@@ -1,9 +1,10 @@
 import GetStarted from "../../../components/common/GetStarted"
 import backgroundHero from "../../../assets/images/Background_Hero_page.png"
+import backgroundGradient from "../../../assets/images/hero-bg.png"
 export const Hero = () => {
     return(
     <>
-        <div className="min-h-screen bg-white h-100vh bg-cover bg-center relative" style={{ backgroundImage: `url(${backgroundHero})` }}>
+        <div className="min-h-screen bg-white h-100vh bg-cover bg-center relative font-outfit" style={{ backgroundImage: `url(${backgroundGradient}), url(${backgroundHero})` }}>
             {/* Gradient overlay matching design specs */}
             <div 
                 className="absolute inset-0 opacity-10 blur-[10px]" 
@@ -41,7 +42,7 @@ export const Hero = () => {
                     <div className="flex flex-col items-end">
                         <GetStarted />
                     </div>
-                    <div className="text-white text-xl font-normal">
+                    <div className="text-white text-md font-normal">
                             Want to talk or need help? <span className="font-bold hover"> <a href="#"> Get in touch →</a></span>
                     </div>
                 </div>
