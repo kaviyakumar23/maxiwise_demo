@@ -1,6 +1,6 @@
 import GetStarted from "../../../components/common/GetStarted"
 import A_Element from "../../../assets/images/3D_A.png"
-import Blocks from "../../../assets/images/blocks.png"
+import Blocks from "../../../assets/images/Blocks.png"
 
 const Section_3 = () => {
     return (
