@@ -9,15 +9,32 @@ import Join_Now from "./components/Join_Now"
 import Footer from "./components/Footer"  
 export const LandingPage = () => {
   return (
-    <><Header />
-    <Hero />
-    <Section_2 />
-    <WhyMaxiwise />
-    <About />
-    <Founders />
-    <Articles />
-    <Join_Now />
-    <Footer />
+    <>
+      <Header />
+      <div id="hero" data-header-section>
+        <Hero />
+      </div>
+      <div id="section-2" data-header-section>
+        <Section_2 />
+      </div>
+      <div id="why-maxiwise" data-header-section>
+        <WhyMaxiwise />
+      </div>
+      <div id="about" data-header-section>
+        <About />
+      </div>
+      <div id="founders" data-header-section>
+        <Founders />
+      </div>
+      <div id="articles" data-header-section>
+        <Articles />
+      </div>
+      <div id="join-now" data-header-section>
+        <Join_Now />
+      </div>
+      <div id="footer" data-header-section>
+        <Footer />
+      </div>
     </>
   )
 }
