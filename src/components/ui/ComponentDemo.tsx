@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Button from './Button';
 import Input from './Input';
 import { SearchIcon, EyeIcon, EyeOffIcon, MailIcon, UserIcon, LockIcon, HeartIcon, StarIcon } from './icons';

@@ -2,6 +2,13 @@ import React from 'react';
 import Input, { type InputProps } from "../ui/Input";
 import { cn } from "../../utils/cn";
 
+// Extended props for Search component
+interface SearchProps extends InputProps {
+  showShortcut?: boolean;
+  backgroundColor?: string;
+  textColor?: string;
+}
+
 // Search Icon Component
 const SearchIcon = ({ className }: { className?: string }) => (
   <svg
@@ -21,7 +28,7 @@ const SearchIcon = ({ className }: { className?: string }) => (
 );
 
 
-const Search: React.FC<InputProps> = ({
+const Search: React.FC<SearchProps> = ({
   placeholder = "Search mutual funds...",
   size = 'md',
   keyboardShortcut = ['⌘', 'K'],
@@ -31,6 +38,9 @@ const Search: React.FC<InputProps> = ({
   variant = 'default',
   fullWidth = true,
   rounded = 'full',
+  showShortcut = true,
+  backgroundColor = '#F6F8FE',
+  textColor = '#374151',
   ...props
 }) => {
   return (
@@ -41,7 +51,7 @@ const Search: React.FC<InputProps> = ({
         fullWidth={fullWidth}
         rounded={rounded}
         leftIcon={<SearchIcon className="w-5 h-5 text-gray-500" />}
-        keyboardShortcut={keyboardShortcut}
+        keyboardShortcut={showShortcut ? keyboardShortcut : undefined}
         placeholder={placeholder}
         className={cn(
           'font-outfit',
@@ -60,9 +70,9 @@ const Search: React.FC<InputProps> = ({
           containerClassName
         )}
         style={{
-          backgroundColor: '#F6F8FE',
+          backgroundColor: backgroundColor,
           borderColor: '#E5E7EB',
-          color: '#374151',
+          color: textColor,
           ...style,
         }}
         {...props}
