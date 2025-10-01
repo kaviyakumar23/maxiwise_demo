@@ -102,13 +102,13 @@ const Section_2 = () => {
             ease: "power2.out"
         }, 0.4);
 
-        // Animate text fade in (starts after images begin moving)
+        // Animate text fade in (starts after images finish moving)
         tl.to(textElement, {
             opacity: 1,
             y: 0,
             duration: 0.8,
             ease: "power2.out"
-        }, 0.3);
+        }, 1.5);
 
         // Cleanup
         return () => {
