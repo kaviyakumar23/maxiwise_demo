@@ -6,8 +6,10 @@ import About from "./components/About"
 import Founders from "./components/Founders"
 import Articles from "./components/Articles"
 import Join_Now from "./components/Join_Now"
-import Footer from "./components/Footer"  
-export const LandingPage = () => {
+import Footer from "./components/Footer"
+import { LoginModalProvider } from "../getStarted/LoginModal"
+
+const LandingPageContent = () => {
   return (
     <>
       <Header />
@@ -36,5 +38,13 @@ export const LandingPage = () => {
         <Footer />
       </div>
     </>
+  )
+}
+
+export const LandingPage = () => {
+  return (
+    <LoginModalProvider>
+      <LandingPageContent />
+    </LoginModalProvider>
   )
 }

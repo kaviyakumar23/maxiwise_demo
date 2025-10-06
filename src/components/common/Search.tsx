@@ -59,7 +59,7 @@ const Search: React.FC<SearchProps> = ({
           'focus:outline-none',
           'transition-all duration-200',
           'text-xs',
-          'min-w-60',
+          'min-w-32 md:min-w-60',
           className
         )}
         containerClassName={cn(

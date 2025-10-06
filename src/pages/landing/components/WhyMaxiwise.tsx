@@ -15,47 +15,54 @@ const WhyMaxiwise = () => {
 
     // Handle scroll to detect when we enter/exit curtain mode
     useEffect(() => {
+        let isScrolling = false;
+        
         const handleScroll = () => {
-            if (!containerRef.current) return;
+            if (!containerRef.current || isScrolling) return;
             
             const rect = containerRef.current.getBoundingClientRect();
             const containerTop = rect.top;
             const containerBottom = rect.bottom;
             const windowHeight = window.innerHeight;
             
-            console.log(`Scroll detection - Top: ${containerTop.toFixed(1)}, Bottom: ${containerBottom.toFixed(1)}, WindowHeight: ${windowHeight}, InCurtainMode: ${isInCurtainMode}`);
+            console.log(`Scroll detection - Top: ${containerTop.toFixed(1)}, Bottom: ${containerBottom.toFixed(1)}, WindowHeight: ${windowHeight}, InCurtainMode: ${isInCurtainMode}, Progress: ${scrollProgress.toFixed(2)}`);
             
-            // Enter curtain mode only when component is properly centered in viewport
-            if (containerTop <= 0 && containerTop >= -100 && containerBottom > windowHeight * 0.8 && !isInCurtainMode) {
+            // CRITICAL: Block all scrolling past WhyMaxiwise if sections not completed
+            if (containerTop < -100 && scrollProgress < totalSections - 1 && !isInCurtainMode) {
+                console.log('BLOCKING: Cannot scroll past WhyMaxiwise - complete all sections first');
+                setIsInCurtainMode(true);
+                document.body.style.overflow = 'hidden';
+                return;
+            }
+            
+            // Enter curtain mode when component reaches viewport
+            if (containerTop <= 200 && containerBottom > windowHeight * 0.3 && !isInCurtainMode) {
                 console.log('Entering curtain mode');
                 setIsInCurtainMode(true);
-                // Don't reset scroll progress - keep current position
-                // Prevent body scroll
                 document.body.style.overflow = 'hidden';
             }
             // Exit curtain mode when scrolling up past component (go to previous section)
-            else if (containerTop > 100 && isInCurtainMode) {
+            else if (containerTop > 200 && isInCurtainMode) {
                 console.log('Exiting curtain mode - going up');
                 setIsInCurtainMode(false);
                 document.body.style.overflow = 'auto';
-                // Don't reset scroll progress - keep it for when we re-enter
             }
-            // Exit curtain mode when scrolling down past component (component is mostly out of view)
-            else if (containerBottom < windowHeight * 0.2 && isInCurtainMode) {
-                console.log('Exiting curtain mode - going down');
+            // Exit curtain mode when scrolling down past component - only if all sections completed
+            else if (containerBottom < windowHeight * 0.2 && isInCurtainMode && scrollProgress >= totalSections - 1) {
+                console.log('Exiting curtain mode - going down (all sections completed)');
                 setIsInCurtainMode(false);
                 document.body.style.overflow = 'auto';
             }
         };
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         handleScroll(); // Initial calculation
         
         return () => {
             window.removeEventListener('scroll', handleScroll);
             document.body.style.overflow = 'auto'; // Cleanup
         };
-    }, [isInCurtainMode, scrollProgress]);
+    }, [isInCurtainMode, scrollProgress, totalSections]);
 
     // Handle wheel events for smooth curtain navigation
     useEffect(() => {
@@ -78,7 +85,7 @@ const WhyMaxiwise = () => {
             
             // If trying to scroll down from last section, exit curtain mode and continue to next section
             if (scrollProgress >= totalSections - 1 && delta > 0) {
-                console.log('Exiting to About section');
+                console.log('Exiting to About section - all sections completed');
                 setIsInCurtainMode(false);
                 document.body.style.overflow = 'auto';
                 // Don't prevent this scroll - let it continue naturally to About section
@@ -94,6 +101,32 @@ const WhyMaxiwise = () => {
             window.addEventListener('wheel', handleWheel, { passive: false });
             return () => window.removeEventListener('wheel', handleWheel);
         }
+    }, [isInCurtainMode, scrollProgress, totalSections]);
+
+    // Global wheel listener to block fast scrolling past WhyMaxiwise
+    useEffect(() => {
+        const handleGlobalWheel = (e: WheelEvent) => {
+            if (!containerRef.current || isInCurtainMode) return;
+            
+            const rect = containerRef.current.getBoundingClientRect();
+            const containerTop = rect.top;
+            
+            // If trying to scroll down past WhyMaxiwise without completing sections
+            if (containerTop <= 0 && containerTop >= -100 && scrollProgress < totalSections - 1 && e.deltaY > 0) {
+                console.log('GLOBAL BLOCK: Preventing fast scroll past WhyMaxiwise');
+                e.preventDefault();
+                
+                // Force into curtain mode
+                setIsInCurtainMode(true);
+                document.body.style.overflow = 'hidden';
+            }
+        };
+
+        window.addEventListener('wheel', handleGlobalWheel, { passive: false });
+        
+        return () => {
+            window.removeEventListener('wheel', handleGlobalWheel);
+        };
     }, [isInCurtainMode, scrollProgress, totalSections]);
 
     // Handle keyboard navigation (optional enhancement)
@@ -147,30 +180,6 @@ const WhyMaxiwise = () => {
                     </div>
                 );
             })}
-            
-            {/* Optional: Section indicators */}
-            {isInCurtainMode && (
-                <div className="fixed right-8 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-2">
-                    {sections.map((_, index) => {
-                        const isActive = scrollProgress >= index && scrollProgress < index + 1;
-                        const progress = Math.max(0, Math.min(1, scrollProgress - index));
-                        
-                        return (
-                            <div
-                                key={index}
-                                className="w-2 h-8 rounded-full transition-all duration-300 bg-white/30"
-                                style={{
-                                    backgroundColor: isActive 
-                                        ? `rgba(255, 255, 255, ${0.3 + progress * 0.7})` 
-                                        : scrollProgress > index 
-                                            ? 'rgba(255, 255, 255, 1)' 
-                                            : 'rgba(255, 255, 255, 0.3)'
-                                }}
-                            />
-                        );
-                    })}
-                </div>
-            )}
         </div>
     );
 };
