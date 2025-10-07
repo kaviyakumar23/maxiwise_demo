@@ -1,7 +1,7 @@
 import RightArrow from "../../../assets/images/RightArrow.png"
 const Articles = () => {
     return (
-        <div className="px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8" id="blog">
             {/* Responsive heading */}
             <div className="font-outfit font-medium text-navy text-center pt-12 sm:pt-20 lg:pt-30">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[56px] leading-tight sm:leading-[1.2] lg:leading-[61.6px] tracking-[-0.5px] lg:tracking-[-1px]">

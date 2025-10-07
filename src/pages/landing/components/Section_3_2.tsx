@@ -3,8 +3,8 @@ import Upscale from "../../../assets/images/Upscale.png"
 
 const Section_3_2 = () => {
     return (
-        <div className="bg-purple flex items-center min-h-screen px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-            <div className="container mx-auto">
+        <div className="bg-purple flex items-center min-h-screen px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 relative overflow-hidden">
+            <div className="container mx-auto relative z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
                     
                     {/* Left content - responsive styling */}
@@ -19,26 +19,20 @@ const Section_3_2 = () => {
                             <p>tested with India's top family offices.</p>
                         </div>
                         
-                        {/* Rating badge - responsive styling */}
-                        <div className="flex items-center gap-2 bg-blue-500 text-white px-2 sm:px-3 py-1 rounded-full w-fit text-xs sm:text-sm font-medium">
-                            <span>4.84.81</span>
-                            <span className="bg-blue-400 px-1.5 sm:px-2 py-0.5 rounded-full text-xs">90</span>
-                        </div>
-                        
                         <div>
                             <GetStarted 
                                 color="indigo"
-                                className="font-medium rounded-full"
+                                className="font-medium rounded-full text-purple"
                             />
                         </div>
                     </div>
                     
-                    {/* Right content - responsive image */}
-                    <div className="flex justify-center lg:justify-end">
-                        <img src={Upscale} alt="Upscale" className="max-w-full h-auto w-[250px] sm:w-[350px] lg:w-full" />
-                    </div>
-                    
                 </div>
+            </div>
+            
+            {/* Image positioned at bottom right */}
+            <div className="absolute bottom-0 -right-10 w-[60%] sm:w-[50%] lg:w-[55%] xl:w-[50%]">
+                <img src={Upscale} alt="Upscale" className="w-full h-auto" />
             </div>
         </div>
     )

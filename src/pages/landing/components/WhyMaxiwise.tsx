@@ -154,6 +154,7 @@ const WhyMaxiwise = () => {
     return (
         <div 
             ref={containerRef}
+            id="about"
             className="relative overflow-hidden h-screen"
         >
             {sections.map((SectionComponent, index) => {

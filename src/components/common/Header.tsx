@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import Search from "./Search"
+import SearchModal from "./SearchModal"
 import GetStarted from "./GetStarted"
 import Logo from "../../assets/images/Logo.png"
 import LogoBlack from "../../assets/images/Logo_black.png"
@@ -9,6 +10,42 @@ type HeaderStyle = 'hero' | 'light' | 'dark'
 
 const Header = () => {
   const [headerStyle, setHeaderStyle] = useState<HeaderStyle>('hero')
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
+    // Close mobile menu after navigation
+    setIsMobileMenuOpen(false)
+  }
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (isMobileMenuOpen && !target.closest('.mobile-menu-container')) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('click', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+    }
+  }, [isMobileMenuOpen])
 
   useEffect(() => {
     const observerOptions = {
@@ -87,10 +124,10 @@ const Header = () => {
       {/* Desktop Layout */}
       <div className="hidden xl:grid grid-cols-3 items-center px-8 py-4">
         <div className={`p-2 flex flex-row gap-12 cursor-pointer transition-colors duration-300 ${styles.textColor}`}>
-          <div>About</div>
-          <div>Features</div>
-          <div>Blog</div>
-          <div>Contact</div>
+          <div onClick={() => scrollToSection('about')} className="hover:opacity-80 transition-opacity">About</div>
+          <div onClick={() => scrollToSection('features')}>Features</div>
+          <div onClick={() => scrollToSection('blog')} >Blog</div>
+          <div onClick={() => scrollToSection('contact')}>Contact</div>
         </div>
         <div className="flex justify-center">
           <div>
@@ -104,12 +141,15 @@ const Header = () => {
       </div>
 
       {/* Mobile/Tablet/Small Laptop Layout */}
-      <div className="flex xl:hidden items-center justify-start px-4 py-3 relative">
+      <div className="flex xl:hidden items-center justify-start px-4 py-3 relative mobile-menu-container">
         {/* Hamburger Menu - Left */}
         <div className="flex items-center">
-          <button className={`p-2 transition-colors duration-300 ${styles.textColor}`}>
+          <button 
+            onClick={toggleMobileMenu}
+            className={`p-2 transition-colors duration-300 ${styles.textColor}`}
+          >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
             </svg>
           </button>
         </div>
@@ -122,7 +162,10 @@ const Header = () => {
         {/* Right Side - Search Icon and Profile Icon */}
         <div className="flex items-center ml-auto justify-end">
           {/* Search Icon Only */}
-          <button className={`transition-colors duration-300 ${styles.textColor}`}>
+          <button 
+            onClick={() => setIsSearchModalOpen(true)}
+            className={`transition-colors duration-300 ${styles.textColor}`}
+          >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -136,6 +179,44 @@ const Header = () => {
           </button>
         </div>
       </div>
+
+      {/* Search Modal for Mobile */}
+      <SearchModal 
+        isOpen={isSearchModalOpen} 
+        onClose={() => setIsSearchModalOpen(false)} 
+      />
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <div className="xl:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 z-40 mobile-menu-container">
+          <div className="flex flex-col py-4">
+            <button 
+              onClick={() => scrollToSection('about')} 
+              className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
+            >
+              About
+            </button>
+            <button 
+              onClick={() => scrollToSection('features')} 
+              className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
+            >
+              Features
+            </button>
+            <button 
+              onClick={() => scrollToSection('blog')} 
+              className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
+            >
+              Blog
+            </button>
+            <button 
+              onClick={() => scrollToSection('contact')} 
+              className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
+            >
+              Contact
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

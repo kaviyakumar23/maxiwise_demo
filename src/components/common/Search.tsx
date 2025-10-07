@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Input, { type InputProps } from "../ui/Input";
 import { cn } from "../../utils/cn";
+import SearchModal from "./SearchModal";
 
 // Extended props for Search component
 interface SearchProps extends InputProps {
@@ -43,41 +44,58 @@ const Search: React.FC<SearchProps> = ({
   textColor = '#374151',
   ...props
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleInputClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsModalOpen(true);
+  };
+
   return (
-    <div className={cn('w-full', className)}>
-      <Input
-        variant={variant}
-        size={size}
-        fullWidth={fullWidth}
-        rounded={rounded}
-        leftIcon={<SearchIcon className="w-5 h-5 text-gray-500" />}
-        keyboardShortcut={showShortcut ? keyboardShortcut : undefined}
-        placeholder={placeholder}
-        className={cn(
-          'font-outfit',
-          'placeholder:text-gray-500',
-          'focus:outline-none',
-          'transition-all duration-200',
-          'text-xs',
-          'min-w-32 md:min-w-60',
-          className
-        )}
-        containerClassName={cn(
-          'relative',
-          'transition-all duration-200',
-          'focus-within:ring-2 focus-within:ring-gray-100',
-          'focus-within:border-gray-400',
-          containerClassName
-        )}
-        style={{
-          backgroundColor: backgroundColor,
-          borderColor: '#E5E7EB',
-          color: textColor,
-          ...style,
-        }}
-        {...props}
+    <>
+      <div className={cn('w-full', className)} onClick={handleInputClick}>
+        <Input
+          variant={variant}
+          size={size}
+          fullWidth={fullWidth}
+          rounded={rounded}
+          leftIcon={<SearchIcon className="w-5 h-5 text-gray-500" />}
+          keyboardShortcut={showShortcut ? keyboardShortcut : undefined}
+          placeholder={placeholder}
+          className={cn(
+            'font-outfit',
+            'placeholder:text-gray-500',
+            'focus:outline-none',
+            'transition-all duration-200',
+            'text-xs',
+            'min-w-32 md:min-w-60',
+            'cursor-pointer',
+            className
+          )}
+          containerClassName={cn(
+            'relative',
+            'transition-all duration-200',
+            'focus-within:ring-2 focus-within:ring-gray-100',
+            'focus-within:border-gray-400',
+            'cursor-pointer',
+            containerClassName
+          )}
+          style={{
+            backgroundColor: backgroundColor,
+            borderColor: '#E5E7EB',
+            color: textColor,
+            ...style,
+          }}
+          readOnly
+          {...props}
+        />
+      </div>
+
+      <SearchModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
       />
-    </div>
+    </>
   );
 };
 
