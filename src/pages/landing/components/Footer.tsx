@@ -1,5 +1,4 @@
 import Logo_black from "../../../assets/images/Logo_black.png"
-import Input from "../../../components/ui/Input"
 import Button from "../../../components/ui/Button"
 import Facebook from "../../../assets/images/Facebook.png"
 import Instagram from "../../../assets/images/Instagram.png"
