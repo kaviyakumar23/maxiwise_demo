@@ -63,7 +63,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
           onClick={(e) => e.stopPropagation()}
         >
           {/* Search Input Section */}
-          <div className="p-6 pb-6">
+          <div className="md:p-6 p-3">
             <div className="relative">
               <div className="absolute left-4 top-1/2 transform -translate-y-1/2 flex items-center">
                 <SearchIcon className="w-6 h-6 text-gray-400" />

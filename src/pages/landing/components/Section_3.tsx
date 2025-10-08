@@ -8,7 +8,7 @@ const Section_3 = () => {
             {/* Main content container */}
             <div className="h-screen flex flex-col lg:flex-row">
                 {/* Left content section - responsive layout */}
-                <div className="w-full lg:w-1/2 px-4 sm:px-8 lg:pl-16 z-20 flex flex-col justify-center pt-16 lg:pt-32">
+                <div className="w-full lg:w-1/2 h-1/2 lg:h-full px-4 sm:px-8 lg:pl-16 z-20 flex flex-col justify-center">
                     <div className="font-outfit font-medium text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-purple leading-tight mb-6 lg:mb-8">
                         <h1 className="mb-2">Built for</h1>
                         <h1>Everyone</h1>
@@ -20,13 +20,13 @@ const Section_3 = () => {
                     <GetStarted />
                 </div>
                 
-                {/* Right side - empty for absolute positioning */}
-                <div className="w-full lg:w-1/2 relative">
+                {/* Right side - empty for absolute positioning on desktop, graphics container on mobile */}
+                <div className="w-full lg:w-1/2 h-1/2 lg:h-full relative">
                 </div>
             </div>
             
             {/* Background Blocks - responsive positioning */}
-            <div className="absolute bottom-0 right-0 z-5 w-[300px] h-[250px] sm:w-[400px] sm:h-[350px] lg:w-[600px] lg:h-[500px]">
+            <div className="absolute bottom-0 right-0 z-5 w-[450px] sm:w-[550px] md:w-[650px] lg:w-3/4">
                 <img 
                     src={Blocks} 
                     alt="3D Blocks" 
@@ -35,11 +35,11 @@ const Section_3 = () => {
             </div>
             
             {/* 3D "A" Element - responsive positioning */}
-            <div className="absolute top-1/2 left-[50%] lg:left-[55%] transform -translate-x-1/2 -translate-y-1/2 z-15">
+            <div className="absolute bottom-[25%] left-[5%] sm:left-[10%] lg:top-[10%] lg:left-[35%] z-15">
                 <img 
                     src={A_Element} 
                     alt="3D A Element" 
-                    className="w-auto h-[200px] sm:h-[300px] lg:h-[450px] object-contain"
+                    className="w-auto h-[150px] sm:h-[200px] lg:h-[450px] object-contain"
                 />
             </div>
         </div>

@@ -23,11 +23,11 @@ const Section_3_1 = () => {
                 </div>
                 
                 {/* Right Content - Puzzle Image */}
-                <div className="lg:w-1/2 flex justify-center lg:justify-end">
+                <div className="lg:w-1/2 flex justify-center lg:justify-end w-full">
                     <img 
                         src={Puzzle} 
                         alt="Puzzle pieces fitting together representing clarity over chaos" 
-                        className="max-w-full h-auto w-[250px] sm:w-[350px] lg:w-full"
+                        className="max-w-full h-auto w-[450px] sm:w-[500px] md:w-[600px] lg:w-full"
                     />
                 </div>
             </div>
