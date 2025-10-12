@@ -1,0 +1,43 @@
+import { useState } from "react"
+import Header from "../../components/common/Header.tsx"
+import BreadcrumbNav from "./BreadcrumbNav.tsx"
+import BasicInfo from "./BasicInfo.tsx"
+import FundPicks from "./FundPicks.tsx"
+import ChooseCard from "./ChooseCard.tsx"
+import InvestmentReturns from "./InvestmentReturns.tsx"
+import Ratios from "./Ratios.tsx"
+import FundTabs from "./FundTabs.tsx"
+
+const FundMain = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  return (
+    <div>
+      <Header fixedStyle="light" />
+      <div className="pt-20">
+        <BreadcrumbNav />
+      </div>
+      
+      {/* Basic Info - Always visible */}
+      <BasicInfo />
+
+      {/* Desktop View - All components stacked (lg and above) */}
+      <div className="hidden lg:block px-4 py-2 md:px-6 md:py-4 lg:px-20 lg:py-10">
+        <FundPicks onCategorySelect={setSelectedCategory} />
+        <ChooseCard selectedCategory={selectedCategory} />
+        <InvestmentReturns />
+        <Ratios />
+      </div>
+
+      {/* Mobile/Tablet View - Tabbed interface (below lg) */}
+      <div className="lg:hidden">
+        <FundTabs 
+          selectedCategory={selectedCategory}
+          onCategorySelect={setSelectedCategory}
+        />
+      </div>
+    </div>
+  )
+}
+
+export default FundMain

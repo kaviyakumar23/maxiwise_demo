@@ -18,7 +18,7 @@ const About = () => {
     }, []);
 
     return (
-        <div id="features">
+        <div id="features" className="py-12">
             <div className="flex flex-col items-center justify-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
                 <div className="font-outfit font-normal text-lg sm:text-xl lg:text-2xl text-purple text-center mb-4 sm:mb-6">
                     <p>From Data to Decisions</p>
@@ -59,8 +59,8 @@ const About = () => {
                     >
                     {/* Title Section */}
                     <div className="font-outfit text-white px-10 pt-12">
-                        <h1 className="font-semibold text-3xl md:text-2xl sm:text-lg">Discover Fund</h1>
-                        <h1 className="mb-4 font-semibold text-3xl">Cards</h1>
+                        <h1 className="font-semibold lg:text-3xl md:text-2xl sm:text-lg">Discover Fund</h1>
+                        <h1 className="mb-4 font-semibold lg:text-3xl md:text-2xl sm:text-lg">Cards</h1>
 
                         <p className="text-base opacity-90 mt-3 text-white font-outfit font-normal">
                             Every fund explained simply: performance, risk, and fit for your goals.
@@ -81,7 +81,7 @@ const About = () => {
                                     backgroundSize: 'cover, 100% 100%',
                                     backgroundPosition: 'center, center',
                                     backgroundRepeat: 'no-repeat, no-repeat',
-                                    backgroundBlendMode: 'overlay'
+                                    backgroundBlendMode: 'hard-light'
                                 }}
                             >
                                 <div className="text-xs font-medium text-white text-center leading-tight">Returns,<br/> Equal Risk</div>
@@ -100,7 +100,7 @@ const About = () => {
                                     backgroundSize: 'cover, 100% 100%',
                                     backgroundPosition: 'center, center',
                                     backgroundRepeat: 'no-repeat, no-repeat',
-                                    backgroundBlendMode: 'overlay'
+                                    backgroundBlendMode: 'hard-light'
                                 }}
                             >
                                 <div className="text-xs font-medium text-white leading-tight">All Parameters</div>
@@ -121,7 +121,7 @@ const About = () => {
                                     backgroundSize: 'cover, 100% 100%',
                                     backgroundPosition: 'center, center',
                                     backgroundRepeat: 'no-repeat, no-repeat',
-                                    backgroundBlendMode: 'overlay'
+                                    backgroundBlendMode: 'hard-light'
                                 }}
                             >
                                 <div className="text-xs font-medium text-navy leading-tight">Low Risk, Similar Returns</div>
@@ -143,8 +143,8 @@ const About = () => {
                     }}
                 >
                     <div className="px-10">
-                        <h3 className="text-3xl font-semibold">CARRVA-Led</h3>
-                        <h3 className="text-3xl font-semibold mb-4">Analysis</h3>
+                        <h3 className="lg:text-3xl md:text-2xl sm:text-lg font-semibold">CARRVA-Led</h3>
+                        <h3 className="lg:text-3xl md:text-2xl sm:text-lg font-semibold mb-4">Analysis</h3>
                         <p className="text-base opacity-90 mb-6 font-outfit font-normal">
                             Consistency-driven, alpha-focused.
                         </p>
@@ -163,8 +163,8 @@ const About = () => {
                         height: 'auto'
                     }}>
                     <div className="px-6">
-                        <h3 className="text-3xl font-semibold font-outfit text-white">Track &</h3>
-                        <h3 className="text-3xl font-semibold mb-4 font-outfit text-white">Optimize</h3>
+                        <h3 className="lg:text-3xl md:text-2xl sm:text-lg font-semibold font-outfit text-white">Track &</h3>
+                        <h3 className="lg:text-3xl md:text-2xl sm:text-lg font-semibold mb-4 font-outfit text-white">Optimize</h3>
                         <p className="text-base opacity-90 mb-6 font-outfit font-normal">
                             Monitor your portfolio with continuous updates and rebalancing suggestions.
                         </p>
