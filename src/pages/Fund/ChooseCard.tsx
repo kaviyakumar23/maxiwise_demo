@@ -1,6 +1,7 @@
 import React from "react";
 import ChooseCardImg from "../../assets/images/ChooseCard.png"
 import Button from "../../components/ui/Button"
+import Card from "../../components/ui/Card"
 import { fundData } from "./DummyData.tsx";
 import NipponLogo from "../../assets/images/Nippon India Mutual Fund.png";
 
@@ -396,9 +397,9 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ selectedCategory }) => {
   // If no category is selected, show the default "Choose a Card" state
   if (!selectedCategory) {
     return (
-      <div className="px-4 py-6 md:px-6 md:py-8 lg:px-20 lg:py-10 bg-white">
+      <div className="py-6 md:py-8 lg:py-10">
         {/* Card container - 3/4 width on desktop, full on mobile */}
-        <div className="w-full lg:w-2/3 rounded-2xl p-6 bg-white">
+        <Card variant="flat" size="md" className="w-full lg:w-2/3">
           <div className="flex flex-col items-center justify-center space-y-4">
             <div className="w-full max-w-sm">
               <img src={ChooseCardImg} alt="Choose Card" className="h-50px" />
@@ -410,7 +411,7 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ selectedCategory }) => {
               Choose a Card
             </Button>
           </div>
-        </div>
+        </Card>
       </div>
     );
   }
@@ -421,9 +422,9 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ selectedCategory }) => {
   const displayedFunds = funds.slice(0, 3);
 
   return (
-    <div className="px-4 py-6 md:px-6 md:py-8 lg:px-20 lg:py-10 bg-white">
+    <div className="py-6 md:py-8 lg:py-10">
       {/* Fund List Container - Full width on mobile, 3/4 width on desktop */}
-      <div className="w-full lg:w-2/3 rounded-2xl border border-gray-200 p-4 md:p-6 lg:p-8 bg-white">
+      <Card variant="default" size="lg" className="w-full lg:w-2/3">
         {/* Header */}
         <div className="mb-4 md:mb-6">
           <h2 className="text-lg md:text-2xl font-semibold text-navy font-outfit">
@@ -437,14 +438,18 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ selectedCategory }) => {
         {/* Fund List */}
         <div className="space-y-3 md:space-y-4">
           {displayedFunds.map((fund) => (
-            <div
+            <Card
               key={fund.id}
-              className="bg-gray-50 rounded-xl md:rounded-2xl p-4 md:p-6 hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200"
+              variant="filled"
+              rounded="sm"
+              size="md"
+              hover
+              clickable
             >
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
                   {/* Fund Logo */}
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm">
                     <img
                       src={fund.logo}
                       alt={fund.name}
@@ -474,7 +479,7 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ selectedCategory }) => {
                   </span>
                 </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
 
@@ -482,7 +487,7 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ selectedCategory }) => {
         <button className="w-full mt-4 md:mt-6 bg-lime text-navy font-semibold text-base md:text-lg py-3 md:py-4 rounded-xl md:rounded-2xl hover:bg-lime-dark transition-colors font-outfit">
           View All ({funds.length})
         </button>
-      </div>
+      </Card>
     </div>
   );
 };

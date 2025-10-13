@@ -13,7 +13,7 @@ export const Chip: React.FC<ChipProps> = ({
   onClick,
   variant = 'primary',
 }) => {
-  const baseClasses = 'px-5 py-1 md:px-7 md:py-2 lg:px-8 lg:py-3 rounded-full lg:text-base lg:font-medium text-sm font-normal transition-all duration-300 cursor-pointer';
+  const baseClasses = 'px-5 py-2.5 md:px-6 md:py-2 lg:px-7 lg:py-2 rounded-full lg:text-base lg:font-medium text-sm font-normal transition-all duration-300 cursor-pointer whitespace-nowrap';
   
   const variantClasses = {
     primary: isActive

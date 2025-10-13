@@ -17,24 +17,28 @@ const FundMain = () => {
       <div className="pt-20">
         <BreadcrumbNav />
       </div>
-      
-      {/* Basic Info - Always visible */}
-      <BasicInfo />
 
-      {/* Desktop View - All components stacked (lg and above) */}
-      <div className="hidden lg:block px-4 py-2 md:px-6 md:py-4 lg:px-20 lg:py-10">
-        <FundPicks onCategorySelect={setSelectedCategory} />
-        <ChooseCard selectedCategory={selectedCategory} />
-        <InvestmentReturns />
-        <Ratios />
-      </div>
+      <div className="bg-[#F8FAFC]">
+        {/* Basic Info - Always visible */}
+        <BasicInfo />
 
-      {/* Mobile/Tablet View - Tabbed interface (below lg) */}
-      <div className="lg:hidden">
-        <FundTabs 
-          selectedCategory={selectedCategory}
-          onCategorySelect={setSelectedCategory}
-        />
+        {/* Desktop View - All components stacked (lg and above) */}
+        <div className="hidden xl:block px-4 py-2 md:px-6 md:py-4 lg:px-20 lg:py-10">
+          <FundPicks onCategorySelect={setSelectedCategory} />
+          <div className="">
+            <ChooseCard selectedCategory={selectedCategory} />
+            <InvestmentReturns />
+            <Ratios />
+          </div>
+        </div>
+
+        {/* Mobile/Tablet View - Tabbed interface (below lg) */}
+        <div className="xl:hidden">
+          <FundTabs
+            selectedCategory={selectedCategory}
+            onCategorySelect={setSelectedCategory}
+          />
+        </div>
       </div>
     </div>
   )

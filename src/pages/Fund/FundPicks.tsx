@@ -48,7 +48,7 @@ const FundCard: React.FC<FundCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className="relative rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl overflow-hidden h-full min-h-[300px] lg:min-h-[240px]"
+      className="relative rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-7 xl:p-6 2xl:p-7 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl overflow-hidden h-[280px] md:h-[300px] lg:h-[280px] xl:h-[256px] 2xl:h-[307px]"
       style={{
         background: `url(${SpiralBg}), ${bgGradient}`,
         backgroundSize: 'cover, 100% 100%',
@@ -165,7 +165,7 @@ const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
   };
 
   return (
-    <div className="bg-white">
+    <div >
       {/* Header with Navigation Arrows */}
       <div className="flex items-center justify-between mb-6 md:mb-8 px-4 py-6 md:py-4 lg:py-0">
         <h2 className="text-base md:text-lg font-semibold text-navy font-outfit">
@@ -173,11 +173,11 @@ const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
         </h2>
         
         {/* Navigation Arrows - Hidden on mobile and tablet */}
-        <div className="hidden lg:flex items-center gap-3">
+        {/* <div className="hidden xl:flex items-center gap-3">
           <button
             onClick={handlePrev}
             disabled={!canScrollLeft}
-            className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 flex items-center justify-center transition-all ${
+            className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 flex items-center justify-center transition-=${
               canScrollLeft
                 ? "border-gray-300 hover:border-purple hover:bg-purple-50 cursor-pointer"
                 : "border-gray-200 opacity-40 cursor-not-allowed"
@@ -223,15 +223,15 @@ const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
               />
             </svg>
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Cards Container - Horizontal scroll on mobile and tablet, grid on desktop */}
-      <div className="flex gap-3 overflow-x-auto lg:grid lg:grid-cols-5 lg:gap-5 xl:gap-4 lg:overflow-x-visible scrollbar-hide pl-4">
+      <div className="flex justify-between gap-3 overflow-x-auto xl:grid xl:grid-cols-5 xl:gap-4 2xl:gap-5 xl:overflow-x-visible scrollbar-hide p-4">
         {smartFundPicks.map((pick) => {
           const styles = cardStyles[pick.id];
           return (
-            <div key={pick.id} className="flex-shrink-0 w-[250px] md:w-[280px] lg:w-auto lg:flex-shrink">
+            <div key={pick.id} className="flex-shrink-0 w-[180px] md:w-[220px] lg:w-[200px] xl:w-[200px] 2xl:w-[240px]">
               <FundCard
                 id={pick.id}
                 title={pick.title}

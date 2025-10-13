@@ -36,7 +36,7 @@ const BasicInfo: React.FC = () => {
           {/* Right: Save and Menu Icons */}
           <div className="flex items-start flex-shrink-0 ml-2">
             {/* Save/Bookmark Icon */}
-            <button 
+            <button
               className="p-1 hover:bg-white/50 rounded-lg transition-colors"
               aria-label="Save to watchlist"
             >
@@ -55,7 +55,7 @@ const BasicInfo: React.FC = () => {
 
             {/* Three Dots Menu */}
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-1 hover:bg-white/50 rounded-lg transition-colors"
                 aria-label="More options"
@@ -74,8 +74,8 @@ const BasicInfo: React.FC = () => {
 
               {/* Dropdown Menu */}
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2 z-10">
-                  <button 
+                <div className="absolute right-0 mt-2 w-40 rounded-lg shadow-lg py-2 z-10">
+                  <button
                     className="w-full px-4 py-2 text-left text-navy hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -93,7 +93,7 @@ const BasicInfo: React.FC = () => {
                     </svg>
                     Share
                   </button>
-                  <button 
+                  <button
                     className="w-full px-4 py-2 text-left text-navy hover:bg-gray-100 flex items-center gap-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -153,7 +153,7 @@ const BasicInfo: React.FC = () => {
       </div>
 
       {/* Desktop Layout (>= 1024px) */}
-      <div className="hidden lg:block bg-white px-20 pt-16 rounded-lg">
+      <div className="hidden lg:block px-20 pt-16 rounded-lg">
         {/* Top Section */}
         <div className="flex items-start justify-between mb-8">
           {/* Left: Logo + Fund Name + Tags */}
@@ -178,7 +178,7 @@ const BasicInfo: React.FC = () => {
           </div>
           {/* Right: Action Icons */}
           <div className="flex items-center gap-2">
-            <button 
+            <button
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="Share"
             >
@@ -197,7 +197,7 @@ const BasicInfo: React.FC = () => {
               </svg>
             </button>
             {/* Save/Bookmark Icon */}
-            <button 
+            <button
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="Save to watchlist"
             >
@@ -218,7 +218,7 @@ const BasicInfo: React.FC = () => {
             </button>
 
             {/* Download Icon */}
-            <button 
+            <button
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="Download"
             >
@@ -246,7 +246,7 @@ const BasicInfo: React.FC = () => {
           </div>
         </div>
         {/* Bottom Section: Metrics */}
-        <div className="flex items-start gap-12 px-2">
+        <div className="flex items-center gap-12 px-2">
           <div>
             <div className="text-xl font-semibold text-navy font-outfit leading-[35px] mb-1">
               {fundHeader.nav.value}
@@ -255,12 +255,13 @@ const BasicInfo: React.FC = () => {
           </div>
           {/* Annual Returns */}
           <div>
-            <div className="text-xl font-semibold  text-purple font-outfit leading-[35px]0 mb-1">{fundHeader.annualReturns.value}</div>
-            <div className="text-smfont-normal font-outfit text-gray leading-[20px] flex items-start gap-1">
+            <div className="text-xl font-semibold  text-purple font-outfit leading-[35px] mb-1">{fundHeader.annualReturns.value}</div>
+            <div className="text-sm font-normal font-outfit text-gray leading-[20px] flex items-center gap-1">
               {fundHeader.annualReturns.period}
-              <svg className="w-5 h-5 text-purple" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8 0l3 4H5l3-4zm0 16l-3-4h6l-3 4z"/>
+              <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0.213805 4.41537C0.171168 4.3126 0.159968 4.19949 0.18162 4.09035C0.203272 3.98122 0.256804 3.88095 0.335445 3.80224L3.71045 0.427242C3.76269 0.374943 3.82472 0.333453 3.89301 0.305146C3.9613 0.276838 4.03449 0.262268 4.10841 0.262268C4.18234 0.262268 4.25553 0.276838 4.32382 0.305146C4.3921 0.333453 4.45414 0.374943 4.50638 0.427242L7.88138 3.80224C7.96014 3.88091 8.01378 3.98118 8.03552 4.09035C8.05727 4.19952 8.04612 4.31269 8.00351 4.41553C7.9609 4.51837 7.88874 4.60625 7.79615 4.66805C7.70357 4.72986 7.59473 4.7628 7.48341 4.76271H0.733414C0.622163 4.76269 0.513417 4.72968 0.420927 4.66785C0.328438 4.60602 0.256358 4.51816 0.213805 4.41537ZM7.48341 10.3877H0.733414C0.622098 10.3876 0.513259 10.4206 0.420674 10.4824C0.32809 10.5442 0.255925 10.6321 0.213314 10.7349C0.170703 10.8377 0.159563 10.9509 0.181304 11.0601C0.203045 11.1692 0.256689 11.2695 0.335445 11.3482L3.71045 14.7232C3.76269 14.7755 3.82472 14.817 3.89301 14.8453C3.9613 14.8736 4.03449 14.8882 4.10841 14.8882C4.18234 14.8882 4.25553 14.8736 4.32382 14.8453C4.3921 14.817 4.45414 14.7755 4.50638 14.7232L7.88138 11.3482C7.96014 11.2695 8.01378 11.1692 8.03552 11.0601C8.05727 10.9509 8.04612 10.8377 8.00351 10.7349C7.9609 10.6321 7.88874 10.5442 7.79615 10.4824C7.70357 10.4206 7.59473 10.3876 7.48341 10.3877Z" fill="#AC72FF" />
               </svg>
+
             </div>
           </div>
           {/* AUM */}

@@ -124,11 +124,12 @@ const InvestmentReturns: React.FC = () => {
   const performanceTimePeriods = [...investmentReturns.timePeriods, 'YTD'];
 
   return (
-    <div className="px-4 py-6 md:px-6 md:py-8 lg:px-20 lg:py-10 bg-white">
-      {/* Section Title */}
-      <h2 className="text-base md:text-lg font-semibold text-navy leading-[145%] tracking-[]0.15%] mb-4 md:mb-6">Investment Returns</h2>
+    <div>
+      <div className="p-4 md:p-6 lg:p-4 xl:p-0">
+    <h2 className="text-base md:text-lg font-semibold text-navy leading-[145%] tracking-[]0.15%] mb-4 md:mb-6">Investment Returns</h2>
 
       {/* Main Tabs - Returns / Performance */}
+      
       <div className="flex gap-3 md:gap-4 mb-6 md:mb-8 overflow-x-auto scrollbar-hide">
         {investmentReturns.tabs.map((tab) => (
           <Chip
@@ -139,6 +140,10 @@ const InvestmentReturns: React.FC = () => {
           />
         ))}
       </div>
+      </div>
+    <div className="transition-all duration-300 bg-white p-4 md:p-6 rounded-2xl w-full lg:w-2/3">
+      {/* Section Title */}
+      
 
       {/* Returns Tab Content */}
       {activeTab === 'Returns' && (
@@ -262,6 +267,7 @@ const InvestmentReturns: React.FC = () => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };
