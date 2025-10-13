@@ -37,7 +37,7 @@ export const BarChart: React.FC<BarChartProps> = ({
     <div className="w-full">
       {/* Chart container with bars */}
       <div className="relative">
-        <div className="flex items-end justify-around gap-8 px-8 relative" style={{ height: `${height}px` }}>
+        <div className="flex items-end justify-center gap-8 px-8 relative" style={{ height: `${height}px` }}>
           {data.map((item, index) => {
             // Calculate actual pixel height based on value proportion
             const barHeightPx = (item.value / max) * height;

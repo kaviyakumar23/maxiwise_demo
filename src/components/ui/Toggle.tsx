@@ -19,8 +19,8 @@ export const Toggle: React.FC<ToggleProps> = ({
   variant = 'light',
 }) => {
   const containerClasses = variant === 'light' 
-    ? 'bg-gray-100 p-1 rounded-full inline-flex gap-1'
-    : 'bg-gray-800 p-1 rounded-full inline-flex gap-1';
+    ? 'bg-gray-100 rounded-full inline-flex gap-1'
+    : 'bg-gray-800 rounded-full inline-flex gap-1';
 
   const buttonBaseClasses = 'px-3 py-1 lg:px-8 lg:py-3 rounded-full lg:text-base lg:font-medium text-sm font-normal transition-all duration-300 cursor-pointer';
   

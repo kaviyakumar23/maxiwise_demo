@@ -112,8 +112,24 @@ export interface Ratios {
 }
 
 export interface AssetAllocation {
-  debt: string;
-  others: string;
+  equity: {
+    total: string;
+    smallCap: number;
+    midCap: number;
+    largeCap: number;
+  };
+  debt: {
+    total: string;
+    smallCap: number;
+    midCap: number;
+    largeCap: number;
+  };
+  others: {
+    total: string;
+    smallCap: number;
+    midCap: number;
+    largeCap: number;
+  };
 }
 
 export interface CreditQuality {
@@ -158,14 +174,31 @@ export interface FundManager {
   avatar?: string;
 }
 
+export interface ConsistencyData {
+  benchmark: number;
+  fund: number;
+}
+
+export interface TrendDataPoint {
+  period: string;
+  level: number; // 0: Low, 1: Below Avg, 2: Average, 3: Above Avg, 4: High
+}
+
+export interface MetricData {
+  consistency: ConsistencyData;
+  trend: TrendDataPoint[];
+}
+
 export interface CAARVA {
-  tabs: string[];
-  activeTab: string;
-  subTabs: string[];
-  activeSubTab: string;
-  chartData: {
-    benchmark: number;
-    fund: number;
+  metrics: string[];
+  activeMetric: string;
+  metricsData: {
+    Cycles: MetricData;
+    Alpha: MetricData;
+    Return: MetricData;
+    Risk: MetricData;
+    Volatility: MetricData;
+    Analysis: MetricData;
   };
 }
 
@@ -441,8 +474,24 @@ export const fundData: FundData = {
   },
 
   assetAllocation: {
-    debt: "96.83%",
-    others: "3.17%",
+    equity: {
+      total: "90%",
+      smallCap: 20,
+      midCap: 20,
+      largeCap: 50,
+    },
+    debt: {
+      total: "96.83%",
+      smallCap: 30,
+      midCap: 40,
+      largeCap: 30,
+    },
+    others: {
+      total: "3.17%",
+      smallCap: 25,
+      midCap: 35,
+      largeCap: 40,
+    },
   },
 
   creditQuality: {
@@ -503,13 +552,69 @@ export const fundData: FundData = {
   ],
 
   caarva: {
-    tabs: ["Return", "Risk", "Yield", "Quality"],
-    activeTab: "Return",
-    subTabs: ["Consistency", "Trend"],
-    activeSubTab: "Consistency",
-    chartData: {
-      benchmark: 51,
-      fund: 100,
+    metrics: ['Cycles', 'Alpha', 'Return', 'Risk', 'Volatility', 'Analysis'],
+    activeMetric: 'Cycles',
+    metricsData: {
+      Cycles: {
+        consistency: { benchmark: 51, fund: 100 },
+        trend: [
+          { period: '5y', level: 4 },
+          { period: '4y', level: 4 },
+          { period: '3y', level: 3 },
+          { period: '2y', level: 3 },
+          { period: '1y', level: 1 },
+        ],
+      },
+      Alpha: {
+        consistency: { benchmark: 45, fund: 87 },
+        trend: [
+          { period: '5y', level: 3 },
+          { period: '4y', level: 4 },
+          { period: '3y', level: 3 },
+          { period: '2y', level: 2 },
+          { period: '1y', level: 2 },
+        ],
+      },
+      Return: {
+        consistency: { benchmark: 62, fund: 95 },
+        trend: [
+          { period: '5y', level: 4 },
+          { period: '4y', level: 3 },
+          { period: '3y', level: 3 },
+          { period: '2y', level: 2 },
+          { period: '1y', level: 3 },
+        ],
+      },
+      Risk: {
+        consistency: { benchmark: 38, fund: 72 },
+        trend: [
+          { period: '5y', level: 2 },
+          { period: '4y', level: 2 },
+          { period: '3y', level: 3 },
+          { period: '2y', level: 3 },
+          { period: '1y', level: 2 },
+        ],
+      },
+      Volatility: {
+        consistency: { benchmark: 55, fund: 88 },
+        trend: [
+          { period: '5y', level: 3 },
+          { period: '4y', level: 3 },
+          { period: '3y', level: 2 },
+          { period: '2y', level: 3 },
+          { period: '1y', level: 1 },
+        ],
+      },
+      Analysis: {
+        consistency: { benchmark: 48, fund: 92 },
+        trend: [
+          { period: '5y', level: 4 },
+          { period: '4y', level: 4 },
+          { period: '3y', level: 3 },
+          { period: '2y', level: 2 },
+          { period: '1y', level: 2 },
+        ],
+      },
     },
   },
 

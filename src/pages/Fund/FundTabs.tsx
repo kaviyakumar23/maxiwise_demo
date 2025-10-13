@@ -3,6 +3,8 @@ import FundPicks from './FundPicks';
 import ChooseCard from './ChooseCard';
 import InvestmentReturns from './InvestmentReturns';
 import Ratios from './Ratios';
+import Carrva from './Carrva';
+import AssetAllocation from './AssetAllocation';
 
 interface FundTabsProps {
   selectedCategory: string | null;
@@ -16,16 +18,6 @@ const FundTabs: React.FC<FundTabsProps> = ({ selectedCategory, onCategorySelect 
 
   const tabs: TabType[] = ['Insights', 'Returns', 'Ratios', 'Details'];
 
-  // Dummy component for Ratios and Details
-  const DummyContent: React.FC<{ title: string }> = ({ title }) => (
-    <div className="px-4 py-8 bg-white">
-      <div className="text-center">
-        <h3 className="text-xl font-semibold text-navy font-outfit mb-4">{title}</h3>
-        <p className="text-gray-600 font-outfit">Content coming soon...</p>
-      </div>
-    </div>
-  );
-
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Insights':
@@ -38,9 +30,15 @@ const FundTabs: React.FC<FundTabsProps> = ({ selectedCategory, onCategorySelect 
       case 'Returns':
         return <InvestmentReturns />;
       case 'Ratios':
-        return <Ratios />;
+        return (
+          <>
+            <Ratios />
+            <Carrva />
+            <AssetAllocation />
+          </>
+        );
       case 'Details':
-        return <DummyContent title="Details" />;
+        return 'This is details section';
       default:
         return null;
     }

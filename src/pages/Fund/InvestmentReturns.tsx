@@ -147,7 +147,7 @@ const InvestmentReturns: React.FC = () => {
 
       {/* Returns Tab Content */}
       {activeTab === 'Returns' && (
-        <div className="w-full lg:w-2/3 bg-white rounded-2xl md:rounded-3xl p-4 md:p-6">
+        <div>
           {/* Toggle for Rolling Returns / Point to Point */}
           <div className="flex justify-center text-sm md:text-base mb-6 md:mb-8">
             <Toggle

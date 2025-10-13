@@ -191,7 +191,7 @@ const Ratios: React.FC = () => {
                               
                               {/* Bar */}
                               <div
-                                className="w-full rounded-t-[5px] md:rounded-t-[10px] lg:rounded-t-[15px] transition-all duration-500 ease-out relative overflow-hidden"
+                                className="w-full rounded-t-[5px] md:rounded-t-[10px] lg:rounded-t-[10px] transition-all duration-500 ease-out relative overflow-hidden"
                                 style={{
                                   height: `${(metric.category / maxValue) * 200}px`,
                                   zIndex: 1,
@@ -240,7 +240,7 @@ const Ratios: React.FC = () => {
                             
                             {/* Bar */}
                             <div
-                              className="w-full rounded-t-[5px] md:rounded-t-[10px] lg:rounded-t-[15px] transition-all duration-500 ease-out relative overflow-hidden"
+                              className="w-full rounded-t-[5px] md:rounded-t-[10px] lg:rounded-t-[10px] transition-all duration-500 ease-out relative overflow-hidden"
                               style={{
                                 height: `${(metric.benchmark / maxValue) * 200}px`,
                                 zIndex: 1,
@@ -288,7 +288,7 @@ const Ratios: React.FC = () => {
                             
                             {/* Bar */}
                             <div
-                              className="w-full rounded-t-[5px] md:rounded-t-[10px] lg:rounded-t-[15px] transition-all duration-500 ease-out relative overflow-hidden"
+                              className="w-full rounded-t-[5px] md:rounded-t-[10px] lg:rounded-t-[10px] transition-all duration-500 ease-out relative overflow-hidden"
                               style={{
                                 height: `${(metric.fund / maxValue) * 200}px`,
                                 zIndex: 1,
