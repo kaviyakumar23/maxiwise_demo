@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { fundData } from "./DummyData.tsx";
 import SpiralBg from "../../assets/images/spiral-bg-card.png";
 import Shadow from "../../assets/images/Shadow.png";
@@ -139,26 +139,6 @@ interface FundPicksProps {
 
 const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
   const { smartFundPicks } = fundData;
-  const [currentIndex, setCurrentIndex] = useState(0);
-  
-  // Number of cards to show at once
-  const cardsPerView = 5;
-  
-  // Calculate if we can scroll
-  const canScrollLeft = currentIndex > 0;
-  const canScrollRight = currentIndex + cardsPerView < smartFundPicks.length;
-
-  const handleNext = () => {
-    if (canScrollRight) {
-      setCurrentIndex((prev) => Math.min(prev + 1, smartFundPicks.length - cardsPerView));
-    }
-  };
-
-  const handlePrev = () => {
-    if (canScrollLeft) {
-      setCurrentIndex((prev) => Math.max(prev - 1, 0));
-    }
-  };
 
   const handleCardClick = (categoryId: string) => {
     onCategorySelect(categoryId);
