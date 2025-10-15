@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import GetStarted from "../../../components/common/GetStarted"
 import BackgroundHero from "../../../assets/images/BackgroundHero.png"
 
-const AnimatedKeyword = ({ word, position, isActive }) => {
+const AnimatedKeyword = ({ word, position, isActive }: { word: string, position: { top: string, left?: string, right?: string }, isActive: boolean }) => {
   return (
     <div
       className={`absolute font-inter text-2xl font-normal text-purple transition-all duration-1000 ease-in-out ${
