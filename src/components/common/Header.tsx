@@ -3,8 +3,8 @@ import Search from "./Search"
 import SearchModal from "./SearchModal"
 import GetStarted from "./GetStarted"
 import Logo from "../../assets/images/Logo.png"
-import LogoBlack from "../../assets/images/Logo_black.png"
-import LogoWhite from "../../assets/images/Logo-white.png"
+import LogoBlack from "../../assets/images/LogoBlack.png"
+import LogoWhite from "../../assets/images/LogoWhite.png"
 
 type HeaderStyle = 'hero' | 'light' | 'dark'
 
@@ -112,14 +112,14 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
         return {
           background: 'bg-transparent',
           textColor: 'text-white',
-          logo: LogoWhite
+          logo: Logo
         }
       case 'hero':
       default:
         return {
           background: 'bg-transparent',
           textColor: 'text-white',
-          logo: Logo
+          logo: LogoWhite
         }
     }
   }
@@ -153,7 +153,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
         <div className="flex items-center">
           <button 
             onClick={toggleMobileMenu}
-            className="p-2 transition-colors duration-300 text-navy"
+            className="p-2 transition-colors duration-300 text-white"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
@@ -163,7 +163,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
 
         {/* Centered Logo - Absolutely positioned to center of screen */}
         <div className="absolute left-1/2 transform -translate-x-1/2 justify-center">
-          <img src={LogoBlack} alt="Logo" className="h-8 transition-opacity duration-300" />
+          <img src={LogoWhite} alt="Logo" className="h-8 transition-opacity duration-300" />
         </div>
 
         {/* Right Side - Search Icon and Profile Icon */}
@@ -171,7 +171,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
           {/* Search Icon Only */}
           <button 
             onClick={() => setIsSearchModalOpen(true)}
-            className="transition-colors duration-300 text-navy"
+            className="transition-colors duration-300 text-white"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -179,7 +179,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
           </button>
           
           {/* Profile/Account Icon */}
-          <button className="p-2 transition-colors duration-300 text-navy">
+          <button className="p-2 transition-colors duration-300 text-white">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>

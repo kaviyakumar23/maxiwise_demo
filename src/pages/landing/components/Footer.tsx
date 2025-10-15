@@ -1,4 +1,4 @@
-import Logo_black from "../../../assets/images/Logo_black.png"
+import LogoBlack from "../../../assets/images/LogoBlack.png"
 import Button from "../../../components/ui/Button"
 import Facebook from "../../../assets/images/Facebook.png"
 import Instagram from "../../../assets/images/Instagram.png"
@@ -28,7 +28,7 @@ const Footer = () => {
                 {/* Header Section with Logo and Social Icons */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-10 lg:mb-12 gap-4 sm:gap-0">
                     <div className="flex items-center">
-                        <img src={Logo_black} alt="MAXIWISE" className="h-6 sm:h-7 lg:h-8" />
+                        <img src={LogoBlack} alt="MAXIWISE" className="h-6 sm:h-7 lg:h-8" />
                     </div>
                     <div className="flex gap-3 sm:gap-4">
                         <img src={Facebook} alt="Facebook" className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 cursor-pointer hover:opacity-80 transition-opacity" />

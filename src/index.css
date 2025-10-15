@@ -6,10 +6,14 @@
   --color-lime: #D1F349;
   --color-gray: #4B5563;
   --font-family-outfit: 'Outfit', sans-serif;
+  --font-family-inter: 'Inter', sans-serif;
 }
 
 @utility font-outfit {
   font-family: var(--font-family-outfit);
+}
+@utility font-inter{
+  font-family: 'Inter', sans-serif;
 }
 
 /* Custom animations */

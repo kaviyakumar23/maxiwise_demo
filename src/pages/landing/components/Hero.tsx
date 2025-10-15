@@ -1,111 +1,143 @@
+import { useState, useEffect } from 'react';
 import GetStarted from "../../../components/common/GetStarted"
-import backgroundHero from "../../../assets/images/Background_Hero_page.png"
-import backgroundGradient from "../../../assets/images/hero-bg.png"
+import BackgroundHero from "../../../assets/images/BackgroundHero.png"
+
+const AnimatedKeyword = ({ word, position, isActive }) => {
+  return (
+    <div
+      className={`absolute font-inter text-2xl font-normal text-purple transition-all duration-1000 ease-in-out ${
+        isActive 
+          ? 'opacity-100 blur-0 scale-100' 
+          : 'opacity-0 blur-md scale-95'
+      }`}
+      style={position}
+    >
+      {word}
+    </div>
+  );
+};
+
 export const Hero = () => {
-    return(
+  const [activeIndex, setActiveIndex] = useState(0);
+  
+  const keywords = [
+    { word: 'Equity', position: { top: '15%', left: '15%' } },
+    { word: 'Portfolio', position: { top: '40%', left: '10%' } },
+    { word: 'Funds', position: { top: '65%', left: '15%' } },
+    { word: 'Assets', position: { top: '15%', right: '15%' } },
+    { word: 'Returns', position: { top: '40%', right: '10%' } },
+    { word: 'Expense Ratio', position: { top: '65%', right: '15%' } }
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % keywords.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [keywords.length]);
+
+  return (
     <>
-        <div className="min-h-screen bg-white h-100vh bg-cover bg-center relative font-outfit" style={{ backgroundImage: `url(${backgroundGradient}), url(${backgroundHero})` }}>
-            {/* Gradient overlay matching design specs */}
-            <div 
-                className="absolute inset-0 opacity-10 blur-[10px]" 
-                style={{
-                    background: `linear-gradient(to bottom right, #AC72FF, rgba(172, 114, 255, 0))`,
-                    mixBlendMode: 'hue'
-                }}
-            ></div>
-            
-            {/* Desktop Layout (1025px and above) */}
-            <div className="relative z-10 hidden xl:flex justify-between items-end min-h-[calc(100vh-80px)] px-8 py-16 tracking-normal">
-                <div className="flex flex-col items-start bottom-0 left-0 text-white">
-                    <div>
-                        <h1 className="text-7xl font-medium leading-tight">
-                            Clarity in
-                        </h1>
-                    </div>
-                    <div>
-                        <h1 className="text-7xl font-medium leading-tight mb-4">
-                            Every Choice
-                        </h1>
-                    </div>
-                    <div>
-                        <p className="text-xl leading-relaxed font-normal">
-                            We believe clarity is the most powerful investment tool
-                        </p>
-                    </div>
-                </div>
+      <div className="min-h-screen bg-white h-100vh bg-cover bg-center relative font-outfit">
+        <img src={BackgroundHero} alt="BackgroundHero" className="absolute inset-0 w-full h-full object-cover" />
+        
+        {/* Desktop Layout (1025px and above) */}
+        <div className="relative z-10 hidden xl:flex flex-col justify-center items-center min-h-screen px-8 tracking-normal">
+          {/* Animated Keywords - Only on desktop */}
+          {keywords.map((keyword, index) => (
+            <AnimatedKeyword
+              key={keyword.word}
+              word={keyword.word}
+              position={keyword.position}
+              isActive={activeIndex === index}
+            />
+          ))}
 
-                {/* Bottom section - CTA and footer */}
-                <div className="flex flex-col items-end right-0 bottom-0 gap-6">
-                    <div className="flex flex-col items-end">
-                        <GetStarted />
-                    </div>
-                    <div className="text-white text-md font-normal">
-                        Want to talk or need help? <span className="font-bold hover"> <a href="#"> Get in touch →</a></span>
-                    </div>
-                </div>
+          {/* Main content - centered in the middle of the page */}
+          <div className="flex flex-col items-center justify-center text-center">
+            <div className="text-2xl font-normal leading-[35px] font-outfit text-purple mb-8">
+              <p>Get the clarity to choose right</p>
             </div>
-
-            {/* Tablet Layout (768px - 1024px) */}
-            <div className="relative z-10 hidden md:flex xl:hidden justify-between items-end min-h-[calc(100vh-80px)] px-6 py-12 tracking-normal">
-                <div className="flex flex-col items-start bottom-0 left-0 text-white">
-                    <div>
-                        <h1 className="text-5xl lg:text-6xl font-medium leading-tight">
-                            Clarity in
-                        </h1>
-                    </div>
-                    <div>
-                        <h1 className="text-5xl lg:text-6xl font-medium leading-tight mb-4">
-                            Every Choice
-                        </h1>
-                    </div>
-                    <div className="max-w-lg">
-                        <p className="text-lg font-normal leading-relaxed">
-                            We believe clarity is the most powerful investment tool
-                        </p>
-                    </div>
-                </div>
-
-                {/* Tablet CTA Section */}
-                <div className="flex flex-col items-end right-0 bottom-0 gap-4">
-                    <div className="flex flex-col items-end">
-                        <GetStarted className="w-50" />
-                    </div>
-                    <div className="text-white text-sm font-normal text-right max-w-xs">
-                        Want to talk or need help? <span className="font-bold hover"> <a href="#"> Get in touch →</a></span>
-                    </div>
-                </div>
+            <div className="mb-12">
+              <h1 className="text-7xl font-medium font-outfit text-white py-2">
+                India's decision layer
+              </h1>
+              <h1 className="text-7xl font-medium font-outfit text-white mb-4">
+                for investing
+              </h1>
             </div>
-
-            {/* Mobile Layout (below 768px) */}
-            <div className="relative z-10 flex md:hidden flex-col justify-center items-start min-h-screen px-6 pt-8">
-                <div className="flex flex-col items-start text-white mb-8">
-                    <div>
-                        <h1 className="text-4xl sm:text-5xl font-medium leading-tight">
-                            Clarity in
-                        </h1>
-                    </div>
-                    <div>
-                        <h1 className="text-4xl sm:text-5xl font-medium leading-tight mb-6">
-                            Every Choice
-                        </h1>
-                    </div>
-                    <div className="max-w-sm">
-                        <p className="text-base sm:text-lg leading-relaxed font-normal">
-                            We believe clarity is the most powerful investment tool
-                        </p>
-                    </div>
-                </div>
-
-                {/* Mobile CTA Section */}
-                <div className="flex flex-col content-end gap-4 pt-18">
-                    <GetStarted className="w-46" />
-                    <div className="text-white text-sm font-normal">
-                        Want to talk or need help? <span className="font-bold"> <a href="#"> Get in touch →</a></span>
-                    </div>
-                </div>
+            <div>
+              <GetStarted>Start Maxiwising</GetStarted>
             </div>
+          </div>
+
+          {/* Bottom section - CTA and footer - positioned at bottom */}
+          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-6">
+            <div className="text-white text-sm font-normal text-center">
+              Want to talk or need help? <span className="font-bold hover"> <a href="#"> Get in touch →</a></span>
+            </div>
+          </div>
         </div>
+
+        {/* Tablet Layout (768px - 1024px) */}
+        <div className="relative z-10 hidden md:flex xl:hidden flex-col justify-center items-center min-h-screen px-6 tracking-normal">
+          {/* Main content - centered in the middle of the page */}
+          <div className="flex flex-col items-center justify-center text-center">
+            <div className="text-2xl font-normal leading-[35px] font-outfit text-purple mb-8">
+              <p>Get the clarity to choose right</p>
+            </div>
+            <div className="mb-12">
+              <h1 className="text-5xl lg:text-6xl font-medium leading-tight py-2 font-outfit text-white">
+                India's decision layer
+              </h1>
+              <h1 className="text-5xl lg:text-6xl font-medium leading-tight mb-4 font-outfit text-white">
+                for investing
+              </h1>
+            </div>
+            <div>
+              <GetStarted>Start Maxiwising</GetStarted>
+            </div>
+          </div>
+
+          {/* Bottom section - CTA and footer - positioned at bottom */}
+          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-6">
+            <div className="text-white text-sm font-normal text-center">
+              Want to talk or need help? <span className="font-bold hover"> <a href="#"> Get in touch →</a></span>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Layout (below 768px) */}
+        <div className="relative z-10 flex md:hidden flex-col justify-center items-start min-h-screen px-2 tracking-normal">
+          {/* Main content - centered vertically, left-aligned horizontally */}
+          <div className="flex flex-col items-start justify-center text-left pl-4">
+            <div className="text-base font-normal leading-[35px] font-outfit text-purple mb-8">
+              <p>Get the clarity to choose right</p>
+            </div>
+            <div className="mb-12">
+              <h1 className="text-4xl sm:text-5xl font-medium leading-tight py-2 font-outfit text-white">
+                India's decision
+              </h1>
+              <h1 className="text-4xl sm:text-5xl font-medium leading-tight mb-4 font-outfit text-white">
+                layer for investing
+              </h1>
+            </div>
+            <div>
+              <GetStarted>Start Maxiwising</GetStarted>
+            </div>
+          </div>
+
+          {/* Bottom section - CTA and footer - positioned at bottom */}
+          <div className="absolute bottom-16 left-6 flex flex-col items-start justify-start gap-6 pl-4">
+            <div className="text-white text-sm font-normal text-left">
+              Want to talk or need help? <span className="font-bold"> <a href="#"> Get in touch →</a></span>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
-    )
-}
-export default Hero
+  );
+};
+
+export default Hero;

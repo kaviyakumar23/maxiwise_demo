@@ -3,12 +3,13 @@ import Button, { type ButtonProps } from "../ui/Button"
 import { cn } from '../../utils/cn';
 import { useLoginModal } from '../../pages/getStarted/LoginModal';
 
-const GetStarted: React.FC<ButtonProps> = ({
+const GetStarted: React.FC<ButtonProps & { children?: React.ReactNode }> = ({
   variant = 'primary',
   color = 'purple',
   size = 'lg',
   className,
   onClick,
+  children,
   ...props
 }) => {
   const { openModal } = useLoginModal();
@@ -38,7 +39,7 @@ const GetStarted: React.FC<ButtonProps> = ({
         onClick={handleClick}
         {...props}
       >
-        Get Started
+        {children || 'Get Started'}
       </Button>
     </div>
   )
