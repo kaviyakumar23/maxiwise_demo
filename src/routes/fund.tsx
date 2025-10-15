@@ -17,11 +17,11 @@ export const Route = createFileRoute('/fund')({
 })
 
 function FundPage() {
-  const { fundId } = Route.useSearch()
+  // const { fundId } = Route.useSearch()
   
   return (
     <LoginModalProvider>
-      <FundMain fundId={fundId} />
+      <FundMain />
     </LoginModalProvider>
   )
 }
