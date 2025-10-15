@@ -4,6 +4,7 @@ import { fundData } from './DummyData';
 import Qustion from '../../assets/images/Question.svg';
 
 type AssetType = 'equity' | 'debt' | 'others';
+type CreditAssetType = 'debt' | 'others';
 
 interface CapData {
   smallCap: number;
@@ -21,8 +22,9 @@ interface Segment {
 }
 
 const AssetAllocation: React.FC = () => {
-  const { assetAllocation } = fundData;
+  const { assetAllocation, creditQuality } = fundData;
   const [activeAsset, setActiveAsset] = useState<AssetType>('equity');
+  const [activeCreditAsset, setActiveCreditAsset] = useState<CreditAssetType>('debt');
 
   // Chart constants
   const radius = 80;
@@ -105,7 +107,7 @@ const AssetAllocation: React.FC = () => {
         <h1 className="text-sm md:text-base lg:text-lg font-semibold font-outfit text-navy leading-[145%] tracking-[0.15%] py-4">
           Asset Allocation
         </h1>
-        <button className="w-4 h-4 md:w-10 md:h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-gray-400 transition-colors">
+        <button className="w-4 h-4 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:border-gray-400 transition-colors lg:hidden">
           <span><img src={Qustion} alt="Question" /></span>
         </button>
       </div>
@@ -113,7 +115,7 @@ const AssetAllocation: React.FC = () => {
 
       {/* Toggle Buttons */}
       <div className="transition-all duration-300 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3">
-      <div className="flex justify-center mb-8 md:mb-10">
+      <div className="flex justify-center mb-6 md:mb-8">
         <Toggle
           options={[
             { value: 'equity', label: 'Equity' },
@@ -127,12 +129,12 @@ const AssetAllocation: React.FC = () => {
       </div>
 
       {/* Doughnut Chart */}
-      <div className="flex flex-col items-center justify-center py-8">
+      <div className="flex flex-col items-center justify-center px-4">
         <svg
-          width="300"
-          height="300"
-          viewBox="0 0 200 200"
-          className="mb-4"
+          width="280"
+          height="280"
+          viewBox="0 0 240 240"
+          className="w-full max-w-[280px] md:max-w-[320px] lg:max-w-[360px] h-auto mb-6 md:mb-8"
         >
           {segments.map((segment, index) => {
             const labelPos = getLabelPosition(segment.midAngle);
@@ -146,8 +148,8 @@ const AssetAllocation: React.FC = () => {
                 <text
                   x={labelPos.x}
                   y={labelPos.y}
-                  fill="white"
-                  fontSize="16"
+                  fill={segment.color === '#D1F349' ? 'black' : 'white'}
+                  fontSize="10"
                   fontWeight="600"
                   textAnchor="middle"
                   dominantBaseline="middle"
@@ -163,7 +165,7 @@ const AssetAllocation: React.FC = () => {
           <text
             x="120"
             y="110"
-            fontSize="32"
+            fontSize="20"
             fontWeight="700"
             textAnchor="middle"
             fill="#1F2937"
@@ -173,7 +175,7 @@ const AssetAllocation: React.FC = () => {
           <text
             x="120"
             y="135"
-            fontSize="14"
+            fontSize="12"
             fontWeight="500"
             textAnchor="middle"
             fill="#4B5563"
@@ -184,13 +186,13 @@ const AssetAllocation: React.FC = () => {
         </svg>
 
         {/* Legend */}
-        <div className="w-full max-w-md space-y-4">
+        <div className="w-full max-w-md space-y-2 md:space-y-3">
           {segments.map((segment, index) => (
             <div
               key={index}
-              className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0"
+              className="flex items-center justify-between py-2 md:py-3 border-b border-gray-100 last:border-b-0"
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
                 <div
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: segment.color }}
@@ -205,6 +207,85 @@ const AssetAllocation: React.FC = () => {
             </div>
           ))}
           </div>
+        </div>
+      </div>
+
+      {/* Credit Quality Section */}
+      <div className="mt-8 bg-white py-4 md:py-6 rounded-2xl w-full">
+        {/* Toggle Buttons for Debt and Others */}
+        <div className="flex justify-center mb-6 md:mb-8">
+          <Toggle
+            options={[
+              { value: 'debt', label: 'Debt' },
+              { value: 'others', label: 'Others' },
+            ]}
+            activeValue={activeCreditAsset}
+            onChange={(value) => setActiveCreditAsset(value as CreditAssetType)}
+            variant="light"
+          />
+        </div>
+
+        {/* Credit Quality Header */}
+        <div className="flex items-center justify-between px-4 mb-6">
+          <h3 className="text-base md:text-lg font-semibold text-navy">Credit Quality</h3>
+          <h3 className="text-base md:text-lg font-semibold text-navy">Fund</h3>
+        </div>
+
+        {/* Horizontal Bar Chart */}
+        <div className="px-4 mb-8">
+          <div className="flex h-12 rounded-full overflow-hidden bg-gray-100">
+            {creditQuality.ratings.slice(0, 2).map((rating, index) => {
+              const percentage = parseFloat(rating.percentage);
+              if (percentage === 0) return null;
+              return (
+                <div
+                  key={rating.name}
+                  className={`h-full ${
+                    index === 0 ? 'bg-[#8B5CF6]' : 'bg-[#DDD6FE]'
+                  }`}
+                  style={{ width: `${percentage}%` }}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Credit Ratings List */}
+        <div className="px-4 space-y-4">
+          {creditQuality.ratings.map((rating, index) => (
+            <div
+              key={rating.name}
+              className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0"
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    index === 0
+                      ? 'bg-purple-500'
+                      : index === 1
+                      ? 'bg-purple-400'
+                      : index === 2
+                      ? 'bg-purple-300'
+                      : index === 3
+                      ? 'bg-purple-200'
+                      : index === 4
+                      ? 'bg-purple-200'
+                      : index === 5
+                      ? 'bg-purple-200'
+                      : index === 6
+                      ? 'bg-purple-100'
+                      : 'bg-gray-400'
+                  }`}
+                />
+                <span className="text-sm md:text-base font-medium text-gray-700">
+                  {rating.name}
+                </span>
+              </div>
+              <span className="text-sm md:text-base font-semibold text-gray-900">
+                {rating.percentage}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

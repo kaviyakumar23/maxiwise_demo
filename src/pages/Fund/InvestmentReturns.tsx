@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { fundData } from './DummyData';
 import { Chip } from '../../components/ui/Chip';
 import { Toggle } from '../../components/ui/Toggle';
 import { TimeButton } from '../../components/ui/TimeButton';
 import { BarChart } from '../../components/ui/BarChart';
 import type { BarData } from '../../components/ui/BarChart';
+import Qustion from "../../assets/images/Question.svg";
+import ChartBar from "../../assets/images/ChartBar.svg";
+import Percent from "../../assets/images/Percent.svg";
 
 const InvestmentReturns: React.FC = () => {
   const { investmentReturns } = fundData;
@@ -12,6 +15,7 @@ const InvestmentReturns: React.FC = () => {
   const [activeTab, setActiveTab] = useState(investmentReturns.tabs[0]);
   const [activeSubTab, setActiveSubTab] = useState(investmentReturns.subTabs[0]);
   const [activeTimePeriod, setActiveTimePeriod] = useState(investmentReturns.activeTimePeriod);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
   // Get chart data based on active tab, subtab, and time period
   const getReturnsChartData = (): BarData[] => {
@@ -123,10 +127,31 @@ const InvestmentReturns: React.FC = () => {
 
   const performanceTimePeriods = [...investmentReturns.timePeriods, 'YTD'];
 
+  // Handle body scroll lock when modal is open
+  useEffect(() => {
+    if (isInfoModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isInfoModalOpen]);
+
   return (
     <div>
       <div className="p-4 md:p-6 lg:p-4 xl:p-0">
-    <h2 className="text-base md:text-lg font-semibold text-navy leading-[145%] tracking-[]0.15%] mb-4 md:mb-6">Investment Returns</h2>
+      <div className="flex items-center justify-between mb-4 md:mb-6">
+        <h2 className="text-base md:text-lg font-semibold text-navy leading-[145%] tracking-[0.15%]">Investment Returns</h2>
+        <button 
+          onClick={() => setIsInfoModalOpen(true)}
+          className="w-4 h-4 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors lg:hidden"
+        >
+          <img src={Qustion} alt="Question" />
+        </button>
+      </div>
 
       {/* Main Tabs - Returns / Performance */}
       
@@ -268,6 +293,87 @@ const InvestmentReturns: React.FC = () => {
         </div>
       )}
     </div>
+
+      {/* Information Modal - Bottom Sheet */}
+      {isInfoModalOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/40 z-50 lg:hidden animate-[fadeIn_0.3s_ease-out]"
+            onClick={() => setIsInfoModalOpen(false)}
+          />
+          
+          {/* Modal Content */}
+          <div 
+            className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 lg:hidden animate-[slideUp_0.3s_ease-out]"
+          >
+            <div className="p-6">
+              {/* Handle Bar */}
+              <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6" />
+              
+              {/* Header */}
+              <h1 className="text-navy font-bold text-lg font-outfit mb-4">
+                Investment Returns
+              </h1>
+              
+              {/* Description */}
+              <p className="text-[#4B5563] font-normal text-sm font-outfit mb-6">
+                Investment Returns measure the growth of your fund.
+              </p>
+              
+              {/* Content Sections */}
+              <div className="space-y-4 mb-6">
+                {/* Point-to-Point Section */}
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 flex-shrink-0 mt-0.5">
+                  <img src={ChartBar} alt="Chart Bar" />
+                  </div>
+                  <div>
+                    <h3 className="text-navy font-semibold text-base font-outfit mb-1">Point-to-Point</h3>
+                    <p className="text-[#4B5563] font-normal text-sm font-outfit">Returns show performance between two fixed dates.</p>
+                  </div>
+                </div>
+                
+                {/* Divider */}
+                <div className="border-t border-gray-200"></div>
+                
+                {/* Rolling Returns Section */}
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 flex-shrink-0 mt-0.5">
+                  <img src={ChartBar} alt="Chart Bar" />
+                  </div>
+                  <div>
+                    <h3 className="text-navy font-semibold text-base font-outfit mb-1">Rolling Returns</h3>
+                    <p className="text-[#4B5563] font-normal text-sm font-outfit">Average returns across multiple time periods, giving a more consistent and reliable view.</p>
+                  </div>
+                </div>
+                
+                {/* Divider */}
+                <div className="border-t border-gray-200"></div>
+                
+                {/* Performance Section */}
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 flex-shrink-0 mt-0.5">
+                    <img src={Percent} alt="Performance Percent" />
+                  </div>
+                  <div>
+                    <h3 className="text-navy font-semibold text-base font-outfit mb-1">Performance</h3>
+                    <p className="text-[#4B5563] font-normal text-sm font-outfit">Performance shows how your investment would have grown over time compared to other options. It helps you see how this fund stacks up against alternatives like Bank Accounts, Gold, and the overall category average.</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Close Button */}
+              <button
+                onClick={() => setIsInfoModalOpen(false)}
+                className="w-full bg-purple text-white font-semibold text-base font-outfit py-4 rounded-full hover:bg-[#7E22CE] transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

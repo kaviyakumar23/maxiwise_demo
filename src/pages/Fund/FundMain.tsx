@@ -8,6 +8,9 @@ import InvestmentReturns from "./InvestmentReturns.tsx"
 import Ratios from "./Ratios.tsx"
 import Carrva from "./Carrva.tsx"
 import AssetAllocation from "./AssetAllocation.tsx"
+import FundInformation from "./FundInformation.tsx"
+import AboutTheFund from "./AboutTheFund.tsx"
+import FundManagers from "./FundManagers.tsx"
 import FundTabs from "./FundTabs.tsx"
 
 const FundMain = () => {
@@ -33,6 +36,9 @@ const FundMain = () => {
             <Ratios />
             <Carrva />
             <AssetAllocation />
+            <FundInformation />
+            <AboutTheFund />
+            <FundManagers />
           </div>
         </div>
 

@@ -160,7 +160,7 @@ export const BarChart: React.FC<BarChartProps> = ({
         </div>
         
         {/* Baseline */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-300 z-10"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-200 z-10"></div>
       </div>
       
       {/* Labels below baseline */}

@@ -5,6 +5,9 @@ import InvestmentReturns from './InvestmentReturns';
 import Ratios from './Ratios';
 import Carrva from './Carrva';
 import AssetAllocation from './AssetAllocation';
+import FundInformation from './FundInformation';
+import AboutTheFund from './AboutTheFund';
+import FundManagers from './FundManagers';
 
 interface FundTabsProps {
   selectedCategory: string | null;
@@ -38,7 +41,13 @@ const FundTabs: React.FC<FundTabsProps> = ({ selectedCategory, onCategorySelect 
           </>
         );
       case 'Details':
-        return 'This is details section';
+        return (
+          <>
+            <FundInformation />
+            <AboutTheFund />
+            <FundManagers />
+          </>
+        );
       default:
         return null;
     }

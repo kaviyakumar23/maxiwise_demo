@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { fundData } from "./DummyData.tsx";
 import SpiralBg from "../../assets/images/spiral-bg-card.png";
 import Shadow from "../../assets/images/Shadow.png";
+import Qustion from "../../assets/images/Question.svg";
+import ButtonPrevious from "../../assets/images/ButtonPrevious.svg";
+import ButtonNext from "../../assets/images/ButtonNext.svg";
 
 // Card styling configurations
 const cardStyles: Record<string, { bgGradient: string; textColor: string }> = {
@@ -139,6 +142,67 @@ interface FundPicksProps {
 
 const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
   const { smartFundPicks } = fundData;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+
+  // Check scroll position
+  const checkScrollPosition = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  // Initialize scroll position check
+  useEffect(() => {
+    checkScrollPosition();
+    const container = scrollContainerRef.current;
+    if (container) {
+      container.addEventListener('scroll', checkScrollPosition);
+      window.addEventListener('resize', checkScrollPosition);
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', checkScrollPosition);
+      }
+      window.removeEventListener('resize', checkScrollPosition);
+    };
+  }, []);
+
+  // Handle body scroll lock when modal is open
+  useEffect(() => {
+    if (isInfoModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isInfoModalOpen]);
+
+  // Scroll functions
+  const handlePrev = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: -250,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  const handleNext = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: 250,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   const handleCardClick = (categoryId: string) => {
     onCategorySelect(categoryId);
@@ -152,62 +216,51 @@ const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
           Smart Fund Picks
         </h2>
         
-        {/* Navigation Arrows - Hidden on mobile and tablet */}
-        {/* <div className="hidden xl:flex items-center gap-3">
+        {/* Information Button - Visible on mobile and tablet only */}
+        <button 
+          onClick={() => setIsInfoModalOpen(true)}
+          className="w-4 h-4 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors lg:hidden"
+        >
+          <img src={Qustion} alt="Question" />
+        </button>
+        
+        {/* Navigation Arrows - Hidden on mobile and tablet, visible on desktop */}
+        <div className="hidden lg:flex items-center gap-3">
           <button
             onClick={handlePrev}
             disabled={!canScrollLeft}
-            className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 flex items-center justify-center transition-=${
-              canScrollLeft
-                ? "border-gray-300 hover:border-purple hover:bg-purple-50 cursor-pointer"
-                : "border-gray-200 opacity-40 cursor-not-allowed"
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+              canScrollLeft ? 'opacity-100 hover:scale-110' : 'opacity-40 cursor-not-allowed'
             }`}
+            style={{
+              filter: canScrollLeft ? 'none' : 'grayscale(100%)',
+            }}
             aria-label="Previous"
           >
-            <svg
-              className={`w-5 h-5 md:w-6 md:h-6 ${canScrollLeft ? "text-gray-600" : "text-gray-400"}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <img src={ButtonPrevious} alt="Previous" className="w-full h-full" />
           </button>
 
           <button
             onClick={handleNext}
             disabled={!canScrollRight}
-            className={`w-10 h-10 md:w-12 md:h-12 rounded-full border-2 flex items-center justify-center transition-all ${
-              canScrollRight
-                ? "border-purple bg-purple hover:bg-purple-600 cursor-pointer"
-                : "border-gray-200 bg-gray-100 opacity-40 cursor-not-allowed"
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+              canScrollRight ? 'opacity-100 hover:scale-110' : 'opacity-40 cursor-not-allowed'
             }`}
+            style={{
+              filter: canScrollRight ? 'none' : 'grayscale(100%)',
+            }}
             aria-label="Next"
           >
-            <svg
-              className={`w-5 h-5 md:w-6 md:h-6 ${canScrollRight ? "text-white" : "text-gray-400"}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
+            <img src={ButtonNext} alt="Next" className="w-full h-full" />
           </button>
-        </div> */}
+        </div>
       </div>
 
       {/* Cards Container - Horizontal scroll on mobile and tablet, grid on desktop */}
-      <div className="flex justify-between gap-3 overflow-x-auto xl:grid xl:grid-cols-5 xl:gap-4 2xl:gap-5 xl:overflow-x-visible scrollbar-hide p-4">
+      <div 
+        ref={scrollContainerRef}
+        className="flex justify-between gap-3 overflow-x-auto xl:grid xl:grid-cols-5 xl:gap-4 2xl:gap-5 xl:overflow-x-visible scrollbar-hide p-4"
+      >
         {smartFundPicks.map((pick) => {
           const styles = cardStyles[pick.id];
           return (
@@ -225,6 +278,45 @@ const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
           );
         })}
       </div>
+
+      {/* Information Modal - Bottom Sheet */}
+      {isInfoModalOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+  className="fixed inset-0 bg-black/40 z-50 lg:hidden animate-[fadeIn_0.3s_ease-out]"
+  onClick={() => setIsInfoModalOpen(false)}
+/>
+          
+          {/* Modal Content */}
+          <div 
+            className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 lg:hidden animate-[slideUp_0.3s_ease-out]"
+          >
+            <div className="p-6">
+              {/* Handle Bar */}
+              <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6" />
+              
+              {/* Header */}
+              <h1 className="text-navy font-bold text-lg font-outfit mb-4">
+                What is Smart Fund Picks?
+              </h1>
+              
+              {/* Description */}
+              <p className="text-[#4B5563] font-normal text-sm font-outfit mb-6">
+                Smart Fund Picks are curated using the <span className="font-semibold">CARRVA</span> framework, which looks at <span className="font-semibold">Market Cycles, Alpha, Returns, Risk, Volatility,</span> and <span className="font-semibold">Analysis</span>. This data-driven approach helps identify funds that balance risk and reward, making it easier for you to choose the right investment.
+              </p>
+              
+              {/* Close Button */}
+              <button
+                onClick={() => setIsInfoModalOpen(false)}
+                className="w-full bg-purple text-white font-semibold text-base font-outfit py-4 rounded-full hover:bg-[#7E22CE] transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

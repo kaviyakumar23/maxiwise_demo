@@ -12,6 +12,7 @@ const Ratios: React.FC = () => {
   const [activeTab, setActiveTab] = useState(ratios.activeTab);
   const [hoveredMetric, setHoveredMetric] = useState<number | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number } | null>(null);
+  const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   const metricRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Calculate tooltip position when metric is hovered
@@ -27,6 +28,19 @@ const Ratios: React.FC = () => {
       setTooltipPosition(null);
     }
   }, [hoveredMetric]);
+
+  // Handle body scroll lock when modal is open
+  useEffect(() => {
+    if (isInfoModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isInfoModalOpen]);
 
   // Get the active ratio section based on selected tab
   const getActiveSection = (): RatioSection => {
@@ -95,7 +109,10 @@ const Ratios: React.FC = () => {
         <h2 className="text-sm md:text-base lg:text-lg font-semibold font-outfit text-navy leading-[145%] tracking-[0.15%] py-4">
           Ratios
         </h2>
-        <button className="w-4 h-4 md:w-10 md:h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-gray-400 transition-colors">
+        <button 
+          onClick={() => setIsInfoModalOpen(true)}
+          className="w-4 h-4 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:border-gray-400 transition-colors lg:hidden"
+        >
           <span><img src={Qustion} alt="Question" /></span>
         </button>
       </div>
@@ -320,7 +337,7 @@ const Ratios: React.FC = () => {
                 </div>
                 
                 {/* Baseline */}
-                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-300 z-10"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-200 z-10"></div>
               </div>
             </div>
             
@@ -362,6 +379,83 @@ const Ratios: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Information Modal - Bottom Sheet */}
+      {isInfoModalOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/40 z-50 lg:hidden animate-[fadeIn_0.3s_ease-out]"
+            onClick={() => setIsInfoModalOpen(false)}
+          />
+          
+          {/* Modal Content */}
+          <div 
+            className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 lg:hidden animate-[slideUp_0.3s_ease-out]"
+          >
+            <div className="p-6">
+              {/* Handle Bar */}
+              <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6" />
+              
+              {/* Header */}
+              <h1 className="text-navy font-bold text-lg font-outfit mb-4">
+                Ratios
+              </h1>
+              
+              {/* Description */}
+              <p className="text-[#4B5563] font-normal text-sm font-outfit mb-6">
+                Ratios explain a fund's quality beyond just returns:
+              </p>
+              
+              {/* Content Sections */}
+              <div className="space-y-4 mb-6">
+                  <div>
+                    <h1 className="text-navy font-semibold text-base font-outfit mb-1">Risk & Volatility</h1>
+                    <p className="text-[#4B5563] font-normal text-sm font-outfit">Shows how stable or unpredictable the fund is (lower is better).</p>
+                  </div>
+                
+                {/* Divider */}
+                <div className="border-t border-gray-200"></div>
+                
+                {/* Trade-Off Ratios Section */}
+                
+                  <div>
+                    <h3 className="text-navy font-semibold text-base font-outfit mb-1">Trade-Off Ratios</h3>
+                    <p className="text-[#4B5563] font-normal text-sm font-outfit">Measures risk-adjusted returns (higher is better).</p>
+                  </div>
+                
+                {/* Divider */}
+                <div className="border-t border-gray-200"></div>
+                
+                {/* Market Cycle Section */}
+                
+                  <div>
+                    <h3 className="text-navy font-semibold text-base font-outfit mb-1">Market Cycle</h3>
+                    <p className="text-[#4B5563] font-normal text-sm font-outfit">Evaluates how the fund performs in up and down markets (higher is better).</p>
+                  </div>
+               
+                {/* Divider */}
+                <div className="border-t border-gray-200"></div>
+                
+                {/* Outperformance (Alpha) Section */}
+                
+                  <div>
+                    <h3 className="text-navy font-semibold text-base font-outfit mb-1">Outperformance (Alpha)</h3>
+                    <p className="text-[#4B5563] font-normal text-sm font-outfit">Extra return the fund generates over its benchmark (higher is better).</p>
+                  </div>
+                </div>
+              
+              {/* Close Button */}
+              <button
+                onClick={() => setIsInfoModalOpen(false)}
+                className="w-full bg-purple text-white font-semibold text-base font-outfit py-4 rounded-full hover:bg-[#7E22CE] transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 };

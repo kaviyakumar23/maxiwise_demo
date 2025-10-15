@@ -1,11 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { fundData } from "./DummyData";
 import CaretUpDown from "../../assets/images/CaretUpDown.svg";
 import NipponLogo from "../../assets/images/Nippon India Mutual Fund.png"
+import type { FundDetails } from "../../utils/fundData";
 
-const BasicInfo: React.FC = () => {
+interface BasicInfoProps {
+  fundDetails?: FundDetails;
+}
+
+const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
   const { fundHeader } = fundData;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Helper function to format fund size
+  const formatFundSize = (size: string): string => {
+    const sizeNum = parseFloat(size);
+    if (isNaN(sizeNum)) return size;
+    
+    if (sizeNum >= 10000000000) { // 1000 Cr
+      return `₹ ${(sizeNum / 10000000).toFixed(0)} Cr`;
+    } else if (sizeNum >= 100000000) { // 10 Cr
+      return `₹ ${(sizeNum / 10000000).toFixed(2)} Cr`;
+    } else {
+      return `₹ ${(sizeNum / 100000).toFixed(2)} L`;
+    }
+  };
+
+  // Helper function to format date
+  const formatDate = (dateStr: string): string => {
+    const date = new Date(dateStr);
+    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+    return date.toLocaleDateString('en-IN', options);
+  };
+
+  // Prepare fund header data from API or use dummy data
+  const displayData = useMemo(() => {
+    if (!fundDetails) {
+      return fundHeader;
+    }
+
+    // Extract tags from fund details
+    const tags = [
+      fundDetails.fund_type,
+      fundDetails.morningstar_category,
+      fundDetails.purchase_mode
+    ].filter(Boolean);
+
+    return {
+      name: fundDetails.fund_name,
+      tags: tags,
+      nav: {
+        value: "N/A", // NAV not available in current API response
+        date: `as on ${formatDate(fundDetails.fund_size_date)}`,
+      },
+      annualReturns: {
+        period: "Annual Returns",
+        value: "N/A", // Returns data would come from other endpoints
+      },
+      aum: {
+        label: "AUM (Fund size)",
+        value: formatFundSize(fundDetails.fund_size),
+      },
+    };
+  }, [fundDetails, fundHeader]);
+
+  const currentHeader = fundDetails ? displayData : fundHeader;
 
   return (
     <>
@@ -18,13 +77,13 @@ const BasicInfo: React.FC = () => {
             <img src={NipponLogo} alt="Fund Logo" className="w-12 h-12 rounded-lg flex-shrink-0" />
             <div className="flex-1">
               <h1 className="text-lg font-semibold text-navy font-outfit leading-[24px] mb-2">
-                {fundHeader.name}
+                {currentHeader.name}
               </h1>
               <div className="flex items-center gap-2 text-sm text-[#64748B] font-outfit font-normal">
-                {fundHeader.tags.map((tag, index) => (
+                {currentHeader.tags.map((tag, index) => (
                   <React.Fragment key={tag}>
                     <span className="text-sm">{tag}</span>
-                    {index < fundHeader.tags.length - 1 && (
+                    {index < currentHeader.tags.length - 1 && (
                       <span>•</span>
                     )}
                   </React.Fragment>
@@ -129,20 +188,20 @@ const BasicInfo: React.FC = () => {
           {/* NAV */}
           <div>
             <div className="text-lg font-semibold text-navy font-outfit mb-1">
-              {fundHeader.nav.value}
+              {currentHeader.nav.value}
             </div>
             <div className="text-sm font-normal font-outfit text-[#64748B]">
-              {fundHeader.nav.date}
+              {currentHeader.nav.date}
             </div>
           </div>
 
           {/* Annual Returns */}
           <div>
             <div className="text-lg font-semibold text-[#8B5CF6] font-outfit mb-1">
-              {fundHeader.annualReturns.value}
+              {currentHeader.annualReturns.value}
             </div>
             <div className="text-sm font-normal font-outfit text-[#64748B] flex items-center gap-0">
-              <span>{fundHeader.annualReturns.period}</span>
+              <span>{currentHeader.annualReturns.period}</span>
               {/* <svg className="w-5 h-5 text-[#8B5CF6]" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M8 0l3 4H5l3-4zm0 16l-3-4h6l-3 4z"/>
               </svg> */}
@@ -162,13 +221,13 @@ const BasicInfo: React.FC = () => {
             {/* Fund Name and Tags */}
             <div>
               <h1 className="text-2xl font-semibold text-navy font-outfit leading-[32px] mb-2">
-                {fundHeader.name}
+                {currentHeader.name}
               </h1>
               <div className="flex items-center gap-2 text-sm text-[#64748B] font-outfit font-normal leading-[20px] tracking-[-0.6%]">
-                {fundHeader.tags.map((tag, index) => (
+                {currentHeader.tags.map((tag, index) => (
                   <React.Fragment key={tag}>
                     <span className="text-sm text-gray-600">{tag}</span>
-                    {index < fundHeader.tags.length - 1 && (
+                    {index < currentHeader.tags.length - 1 && (
                       <span className="text-gray-400">•</span>
                     )}
                   </React.Fragment>
@@ -249,15 +308,15 @@ const BasicInfo: React.FC = () => {
         <div className="flex items-center gap-12 px-2">
           <div>
             <div className="text-xl font-semibold text-navy font-outfit leading-[35px] mb-1">
-              {fundHeader.nav.value}
+              {currentHeader.nav.value}
             </div>
-            <div className="text-sm font-normal font-outfit text-gray leading-[20px]">{fundHeader.nav.date}</div>
+            <div className="text-sm font-normal font-outfit text-gray leading-[20px]">{currentHeader.nav.date}</div>
           </div>
           {/* Annual Returns */}
           <div>
-            <div className="text-xl font-semibold  text-purple font-outfit leading-[35px] mb-1">{fundHeader.annualReturns.value}</div>
+            <div className="text-xl font-semibold  text-purple font-outfit leading-[35px] mb-1">{currentHeader.annualReturns.value}</div>
             <div className="text-sm font-normal font-outfit text-gray leading-[20px] flex items-center gap-1">
-              {fundHeader.annualReturns.period}
+              {currentHeader.annualReturns.period}
               <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0.213805 4.41537C0.171168 4.3126 0.159968 4.19949 0.18162 4.09035C0.203272 3.98122 0.256804 3.88095 0.335445 3.80224L3.71045 0.427242C3.76269 0.374943 3.82472 0.333453 3.89301 0.305146C3.9613 0.276838 4.03449 0.262268 4.10841 0.262268C4.18234 0.262268 4.25553 0.276838 4.32382 0.305146C4.3921 0.333453 4.45414 0.374943 4.50638 0.427242L7.88138 3.80224C7.96014 3.88091 8.01378 3.98118 8.03552 4.09035C8.05727 4.19952 8.04612 4.31269 8.00351 4.41553C7.9609 4.51837 7.88874 4.60625 7.79615 4.66805C7.70357 4.72986 7.59473 4.7628 7.48341 4.76271H0.733414C0.622163 4.76269 0.513417 4.72968 0.420927 4.66785C0.328438 4.60602 0.256358 4.51816 0.213805 4.41537ZM7.48341 10.3877H0.733414C0.622098 10.3876 0.513259 10.4206 0.420674 10.4824C0.32809 10.5442 0.255925 10.6321 0.213314 10.7349C0.170703 10.8377 0.159563 10.9509 0.181304 11.0601C0.203045 11.1692 0.256689 11.2695 0.335445 11.3482L3.71045 14.7232C3.76269 14.7755 3.82472 14.817 3.89301 14.8453C3.9613 14.8736 4.03449 14.8882 4.10841 14.8882C4.18234 14.8882 4.25553 14.8736 4.32382 14.8453C4.3921 14.817 4.45414 14.7755 4.50638 14.7232L7.88138 11.3482C7.96014 11.2695 8.01378 11.1692 8.03552 11.0601C8.05727 10.9509 8.04612 10.8377 8.00351 10.7349C7.9609 10.6321 7.88874 10.5442 7.79615 10.4824C7.70357 10.4206 7.59473 10.3876 7.48341 10.3877Z" fill="#AC72FF" />
               </svg>
@@ -266,8 +325,8 @@ const BasicInfo: React.FC = () => {
           </div>
           {/* AUM */}
           <div>
-            <div className="text-xl font-semibold  text-navy font-outfit leading-[35px] mb-1">{fundHeader.aum.value}</div>
-            <div className="text-sm font-normal font-outfit text-gray leading-[20px]">{fundHeader.aum.label}</div>
+            <div className="text-xl font-semibold  text-navy font-outfit leading-[35px] mb-1">{currentHeader.aum.value}</div>
+            <div className="text-sm font-normal font-outfit text-gray leading-[20px]">{currentHeader.aum.label}</div>
           </div>
         </div>
       </div>
