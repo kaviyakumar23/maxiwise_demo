@@ -104,6 +104,7 @@ const Carrva: React.FC = () => {
 
             {/* Grid lines */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none">
+              {/* Vertical lines */}
               {[0, 1, 2, 3, 4, 5].map((i) => (
                 <line
                   key={`v-${i}`}
@@ -112,39 +113,56 @@ const Carrva: React.FC = () => {
                   x2={`${i * 20}%`}
                   y2="100%"
                   stroke="white"
-                  strokeOpacity="0.3"
-                  strokeWidth="1"
+                  strokeOpacity="0.8"
+                  strokeWidth="2"
+                />
+              ))}
+              {/* Horizontal lines */}
+              {[0, 1, 2, 3, 4].map((i) => (
+                <line
+                  key={`h-${i}`}
+                  x1="0"
+                  y1={`${i * 20}%`}
+                  x2="100%"
+                  y2={`${i * 20}%`}
+                  stroke="white"
+                  strokeOpacity="0.8"
+                  strokeWidth="2"
                 />
               ))}
             </svg>
 
-            {/* Line chart */}
-            <svg className="absolute inset-0 w-full h-full">
+            {/* Line chart - stretches with container */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
               {/* Line path */}
               <polyline
                 points={trendData
                   .map((point, index) => {
-                    const x = (index / (trendData.length - 1)) * 100;
+                    // Add left padding (20%) to account for Y-axis labels
+                    const x = 20 + (index / (trendData.length - 1)) * 77;
                     const y = getYPosition(point.level);
                     return `${x},${y}`;
                   })
                   .join(' ')}
                 fill="none"
-                stroke="#6EE7B7"
-                strokeWidth="2.5"
+                stroke="#1F2937"
+                strokeWidth="0.5"
                 vectorEffect="non-scaling-stroke"
               />
+            </svg>
               
-              {/* Data points */}
+            {/* Data points - preserves aspect ratio for perfect circles */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="xMidYMid meet">
               {trendData.map((point, index) => {
-                const x = (index / (trendData.length - 1)) * 100;
-                const y = getYPosition(point.level);
+                // Add left padding (20%) to account for Y-axis labels
+                const xPercent = 20 + (index / (trendData.length - 1)) * 77;
+                const yPercent = getYPosition(point.level);
                 return (
                   <circle
                     key={index}
-                    cx={`${x}%`}
-                    cy={`${y}%`}
-                    r="5"
+                    cx={`${xPercent}%`}
+                    cy={`${yPercent}%`}
+                    r="6"
                     fill="#1F2937"
                     stroke="white"
                     strokeWidth="2"

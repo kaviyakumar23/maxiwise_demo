@@ -38,6 +38,7 @@ interface FundCardProps {
   bgGradient: string;
   textColor: string;
   onClick: () => void;
+  isFocused?: boolean;
 }
 
 const FundCard: React.FC<FundCardProps> = ({
@@ -47,11 +48,16 @@ const FundCard: React.FC<FundCardProps> = ({
   bgGradient,
   textColor,
   onClick,
+  isFocused = false,
 }) => {
   return (
     <div
       onClick={onClick}
-      className="relative rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-7 xl:p-6 2xl:p-7 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl overflow-hidden h-[280px] md:h-[300px] lg:h-[280px] xl:h-[256px] 2xl:h-[307px]"
+      className={`relative rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-7 xl:p-6 2xl:p-7 cursor-pointer overflow-hidden transition-all duration-500 ease-out
+        ${isFocused ? 'h-[320px] md:h-[340px] scale-100 shadow-2xl' : 'h-[280px] md:h-[300px] scale-90'}
+        lg:h-[280px] lg:scale-100 lg:shadow-none lg:hover:scale-105 lg:hover:shadow-2xl
+        xl:h-[256px] 2xl:h-[307px]
+      `}
       style={{
         background: `url(${SpiralBg}), ${bgGradient}`,
         backgroundSize: 'cover, 100% 100%',
@@ -142,13 +148,26 @@ interface FundPicksProps {
 
 const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
   const { smartFundPicks } = fundData;
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const mobileScrollContainerRef = useRef<HTMLDivElement>(null);
+  const desktopScrollContainerRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  const [focusedCardId, setFocusedCardId] = useState<string>("all-parameters");
+  const isInitialMount = useRef(true);
+
+  // Reorder cards to put "all-parameters" in the middle for mobile/tablet
+  const reorderedPicks = [...smartFundPicks];
+  const allParamsIndex = reorderedPicks.findIndex(pick => pick.id === "all-parameters");
+  if (allParamsIndex !== -1) {
+    const allParamsCard = reorderedPicks.splice(allParamsIndex, 1)[0];
+    reorderedPicks.splice(2, 0, allParamsCard); // Insert at index 2 (middle of 5 cards)
+  }
 
   // Check scroll position
   const checkScrollPosition = () => {
+    const scrollContainerRef = window.innerWidth >= 1024 ? desktopScrollContainerRef : mobileScrollContainerRef;
     if (scrollContainerRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
       setCanScrollLeft(scrollLeft > 0);
@@ -156,21 +175,101 @@ const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
     }
   };
 
+  // Detect which card is in focus based on scroll position
+  const detectFocusedCard = () => {
+    if (mobileScrollContainerRef.current && window.innerWidth < 1024) {
+      const container = mobileScrollContainerRef.current;
+      const containerRect = container.getBoundingClientRect();
+      const containerCenter = containerRect.left + containerRect.width / 2;
+
+      let closestCard = null;
+      let closestDistance = Infinity;
+
+      Object.entries(cardRefs.current).forEach(([id, element]) => {
+        if (element) {
+          const cardRect = element.getBoundingClientRect();
+          const cardCenter = cardRect.left + cardRect.width / 2;
+          const distance = Math.abs(containerCenter - cardCenter);
+
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestCard = id;
+          }
+        }
+      });
+
+      if (closestCard && closestCard !== focusedCardId) {
+        setFocusedCardId(closestCard);
+      }
+    } else if (window.innerWidth >= 1024) {
+      // Reset focus for desktop view
+      setFocusedCardId("");
+    }
+  };
+
+  // Initialize and center "all-parameters" card on mount for mobile/tablet
+  useEffect(() => {
+    if (isInitialMount.current && window.innerWidth < 1024) {
+      // Small delay to ensure elements are rendered
+      const timer = setTimeout(() => {
+        const allParamsCard = cardRefs.current["all-parameters"];
+        const container = mobileScrollContainerRef.current;
+        
+        if (allParamsCard && container) {
+          const cardRect = allParamsCard.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+          
+          // Calculate scroll position to center the card
+          const scrollLeft = 
+            allParamsCard.offsetLeft - 
+            (containerRect.width / 2) + 
+            (cardRect.width / 2);
+          
+          container.scrollLeft = scrollLeft;
+          isInitialMount.current = false;
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   // Initialize scroll position check
   useEffect(() => {
     checkScrollPosition();
-    const container = scrollContainerRef.current;
-    if (container) {
-      container.addEventListener('scroll', checkScrollPosition);
-      window.addEventListener('resize', checkScrollPosition);
-    }
-    return () => {
-      if (container) {
-        container.removeEventListener('scroll', checkScrollPosition);
-      }
-      window.removeEventListener('resize', checkScrollPosition);
+    detectFocusedCard();
+    
+    const mobileContainer = mobileScrollContainerRef.current;
+    const desktopContainer = desktopScrollContainerRef.current;
+    
+    const handleScroll = () => {
+      checkScrollPosition();
+      detectFocusedCard();
     };
-  }, []);
+    
+    const handleResize = () => {
+      checkScrollPosition();
+      detectFocusedCard();
+    };
+    
+    if (mobileContainer) {
+      mobileContainer.addEventListener('scroll', handleScroll);
+    }
+    if (desktopContainer) {
+      desktopContainer.addEventListener('scroll', handleScroll);
+    }
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      if (mobileContainer) {
+        mobileContainer.removeEventListener('scroll', handleScroll);
+      }
+      if (desktopContainer) {
+        desktopContainer.removeEventListener('scroll', handleScroll);
+      }
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [focusedCardId]);
 
   // Handle body scroll lock when modal is open
   useEffect(() => {
@@ -187,6 +286,7 @@ const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
 
   // Scroll functions
   const handlePrev = () => {
+    const scrollContainerRef = window.innerWidth >= 1024 ? desktopScrollContainerRef : mobileScrollContainerRef;
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
         left: -250,
@@ -196,6 +296,7 @@ const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
   };
 
   const handleNext = () => {
+    const scrollContainerRef = window.innerWidth >= 1024 ? desktopScrollContainerRef : mobileScrollContainerRef;
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
         left: 250,
@@ -257,14 +358,23 @@ const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
       </div>
 
       {/* Cards Container - Horizontal scroll on mobile and tablet, grid on desktop */}
+      
+      {/* Mobile/Tablet view - Carousel with reordered cards */}
       <div 
-        ref={scrollContainerRef}
-        className="flex justify-between gap-3 overflow-x-auto xl:grid xl:grid-cols-5 xl:gap-4 2xl:gap-5 xl:overflow-x-visible scrollbar-hide p-4"
+        ref={mobileScrollContainerRef}
+        className="lg:hidden flex items-center justify-start gap-4 md:gap-6 overflow-x-auto scrollbar-hide px-4 py-8 snap-x snap-mandatory"
+        style={{ scrollPaddingLeft: '50%', scrollPaddingRight: '50%' }}
       >
-        {smartFundPicks.map((pick) => {
+        {reorderedPicks.map((pick) => {
           const styles = cardStyles[pick.id];
+          const isFocused = focusedCardId === pick.id;
+          
           return (
-            <div key={pick.id} className="flex-shrink-0 w-[180px] md:w-[220px] lg:w-[200px] xl:w-[200px] 2xl:w-[240px]">
+            <div 
+              key={pick.id}
+              ref={(el) => { cardRefs.current[pick.id] = el; }}
+              className="flex-shrink-0 w-[240px] md:w-[280px] snap-center"
+            >
               <FundCard
                 id={pick.id}
                 title={pick.title}
@@ -273,6 +383,35 @@ const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
                 bgGradient={styles.bgGradient}
                 textColor={styles.textColor}
                 onClick={() => handleCardClick(pick.id)}
+                isFocused={isFocused}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop view - Grid with original order */}
+      <div 
+        ref={desktopScrollContainerRef}
+        className="hidden lg:grid lg:grid-cols-5 xl:gap-4 2xl:gap-5 gap-3 py-4"
+      >
+        {smartFundPicks.map((pick) => {
+          const styles = cardStyles[pick.id];
+          
+          return (
+            <div 
+              key={pick.id}
+              className="w-full"
+            >
+              <FundCard
+                id={pick.id}
+                title={pick.title}
+                subtitle={pick.subtitle}
+                fundsCount={pick.fundsCount}
+                bgGradient={styles.bgGradient}
+                textColor={styles.textColor}
+                onClick={() => handleCardClick(pick.id)}
+                isFocused={false}
               />
             </div>
           );
