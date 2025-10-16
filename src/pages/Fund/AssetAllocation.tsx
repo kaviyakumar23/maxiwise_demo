@@ -211,7 +211,7 @@ const AssetAllocation: React.FC = () => {
       </div>
 
       {/* Credit Quality Section */}
-      <div className="mt-8 bg-white py-4 md:py-6 rounded-2xl w-full">
+      <div className="mt-8 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3">
         {/* Toggle Buttons for Debt and Others */}
         <div className="flex justify-center mb-6 md:mb-8">
           <Toggle

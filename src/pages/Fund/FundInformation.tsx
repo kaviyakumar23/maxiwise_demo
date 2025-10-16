@@ -19,7 +19,7 @@ const FundInformation: React.FC = () => {
   ];
 
   return (
-    <div className="p-4 md:p-2 lg:p-4 xl:p-0">
+    <div className="p-4 md:p-2 lg:p-4 xl:p-0 w-full lg:w-2/3">
       {/* Title */}
       <div className="flex items-center justify-between">
         <h1 className="text-sm md:text-base lg:text-lg font-semibold font-outfit text-navy leading-[145%] tracking-[0.15%] py-4">

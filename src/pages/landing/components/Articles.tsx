@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router"
 import RightArrow from "../../../assets/images/RightArrow.png"
 const Articles = () => {
     return (
@@ -20,16 +21,16 @@ const Articles = () => {
             
             {/* Read All Articles link */}
             <div className="flex justify-center mb-6 sm:mb-8">
-                <a href="#" className="font-outfit font-medium text-sm sm:text-base text-[#101828] hover:underline inline-flex items-center gap-2 leading-[20.8px] tracking-[0.48px]">
+                <Link to="/blogs" className="font-outfit font-medium text-sm sm:text-base text-[#101828] hover:underline inline-flex items-center gap-2 leading-[20.8px] tracking-[0.48px]">
                     Read All Articles
                     <img src={RightArrow} alt="RightArrow" className="w-3 h-3 sm:w-4 sm:h-4" />
-                </a>
+                </Link>
             </div>
             <div className="w-full mt-8">
                 <div className="w-full bg-white py-8">
                     <div className="flex gap-4 overflow-x-auto pb-4">
                         {/* Article Card 1 */}
-                        <div className="bg-gradient-to-b from-gray-700 to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
+                        <div className="bg-gradient-to-b from-[#797979] to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
                                 <span className="text-white text-sm">Insight</span>
@@ -38,7 +39,7 @@ const Articles = () => {
                         </div>
 
                         {/* Article Card 2 */}
-                        <div className="bg-gradient-to-b from-gray-700 to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
+                        <div className="bg-gradient-to-b from-[#797979] to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
                                 <span className="text-white text-sm">Technology</span>
@@ -47,21 +48,21 @@ const Articles = () => {
                         </div>
 
                         {/* Article Card 3 */}
-                        <div className="bg-gradient-to-b from-gray-700 to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
+                        <div className="bg-gradient-to-b from-[#797979] to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
                                 <span className="text-white text-sm">News</span>
                             </div>
                             <h3 className="text-white font-light text-base leading-tight">Effective Marketing Strategies for Apps in 2025</h3>
                         </div>
-                        <div className="bg-gradient-to-b from-gray-700 to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
+                        <div className="bg-gradient-to-b from-[#797979] to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
                                 <span className="text-white text-sm">News</span>
                             </div>
                             <h3 className="text-white font-light text-base leading-tight">Effective Marketing Strategies for Apps in 2025</h3>
                         </div>
-                        <div className="bg-gradient-to-b from-gray-700 to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
+                        <div className="bg-gradient-to-b from-[#797979] to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
                             <div className="flex items-center gap-2 mb-3">
                                 <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
                                 <span className="text-white text-sm">News</span>

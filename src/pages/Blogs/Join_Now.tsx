@@ -1,6 +1,6 @@
-import Star from "../../../assets/images/Star.png"
-import Join_now_bg from "../../../assets/images/Join_now_bg.png"
-import GetStarted from "../../../components/common/GetStarted"
+import Star from "../../assets/images/Star.png"
+import Join_now_bg from "../../assets/images/Join_now_bg.png"
+import GetStarted from "../../components/common/GetStarted"
 
 const Join_Now = () => {
     return (

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { Link } from "@tanstack/react-router"
 import Search from "./Search"
 import SearchModal from "./SearchModal"
 import GetStarted from "./GetStarted"
@@ -133,12 +134,12 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
         <div className={`p-2 flex flex-row gap-12 cursor-pointer transition-colors duration-300 ${styles.textColor}`}>
           <div onClick={() => scrollToSection('about')} className="hover:opacity-80 transition-opacity">About</div>
           <div onClick={() => scrollToSection('features')}>Features</div>
-          <div onClick={() => scrollToSection('blog')} >Blog</div>
+          <Link to="/blogs" className="hover:opacity-80 transition-opacity">Blog</Link>
           <div onClick={() => scrollToSection('contact')}>Contact</div>
         </div>
         <div className="flex justify-center">
           <div>
-            <img src={styles.logo} alt="Logo" className="h-10 transition-opacity duration-300" />
+            <img src={styles.logo} alt="Logo" className="h-6 transition-opacity duration-300" />
           </div>
         </div>
         <div className="flex flex-row gap-8 justify-end items-center">
@@ -209,12 +210,13 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
             >
               Features
             </button>
-            <button 
-              onClick={() => scrollToSection('blog')} 
+            <Link 
+              to="/blogs"
+              onClick={() => setIsMobileMenuOpen(false)}
               className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
             >
               Blog
-            </button>
+            </Link>
             <button 
               onClick={() => scrollToSection('contact')} 
               className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"

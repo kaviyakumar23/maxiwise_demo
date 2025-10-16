@@ -69,3 +69,13 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Hide scrollbar globally for the entire page */
+body, html {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+body::-webkit-scrollbar, html::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
