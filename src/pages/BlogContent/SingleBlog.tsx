@@ -4,7 +4,7 @@ import Great from "../../assets/images/Great.svg"
 
 const SingleBlog = () => {
     return (
-        <div className="max-w-[700px] mx-auto px-4 sm:px-6 py-8 md:py-12 lg:py-16 font-outfit">
+        <div id="blog-content" className="max-w-[700px] mx-auto px-4 sm:px-6 py-8 md:py-12 lg:py-16 font-outfit">
             {/* Introduction Section */}
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-medium text-navy mb-6 md:mb-8 leading-tight lg:leading-[60px] tracking-[-1.4px]">Introduction</h2>
             

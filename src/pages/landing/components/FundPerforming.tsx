@@ -17,7 +17,7 @@ const FundPerforming = () => {
 
       {/* Fund Cards Section */}
       <div className="mt-8 mb-12">
-        <FundCards enableEnlargementEffect={false} />
+        <FundCards enableEnlargementEffect={false} useLandingPageStyles={true} />
       </div>
     </div>
   );

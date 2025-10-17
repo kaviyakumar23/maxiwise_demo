@@ -24,8 +24,32 @@ const defaultCardStyle = {
   textColor: "#FFFFFF",
 };
 
-// Card styling configurations based on new column mapping
-const cardStyles: Record<string, { bgGradient: string; textColor: string }> = {
+// Landing Page Card Styles
+const landingPageCardStyles: Record<string, { bgGradient: string; textColor: string }> = {
+  "all-parameters": {
+    bgGradient: "linear-gradient(135deg, #9F7AEA 0%, #7C3AED 100%)",
+    textColor: "#FFFFFF",
+  },
+  "same-risk-higher-returns": {
+    bgGradient: "linear-gradient(135deg, #312E81 0%, #1E1B4B 100%)",
+    textColor: "#AC72FF",
+  },
+  "low-risk-similar-returns": {
+    bgGradient: "linear-gradient(135deg, #D4FF00 0%, #BFEF00 100%)",
+    textColor: "#170630",
+  },
+  "higher-returns-lower-risk": {
+    bgGradient: "linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%)",
+    textColor: "#FFFFFF",
+  },
+  "higher-risk-higher-returns": {
+    bgGradient: "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)",
+    textColor: "#FFFFFF",
+  },
+};
+
+// Fund Page Card Styles
+const fundPageCardStyles: Record<string, { bgGradient: string; textColor: string }> = {
   // All Parameters
   "all-parameters": {
     bgGradient: "linear-gradient(135deg, #9F7AEA 0%, #7C3AED 100%)",
@@ -180,6 +204,8 @@ interface FundCardsProps {
   enableAutoScroll?: boolean;
   scrollSpeed?: number; // pixels per second
   autoScrollResetDelay?: number; // milliseconds before auto-scroll resumes after user interaction
+  // Style variant
+  useLandingPageStyles?: boolean; // If true, uses landing page card styles; otherwise uses fund page styles
 }
 
 // Helper function to map API column names to card IDs
@@ -225,9 +251,13 @@ const FundCards: React.FC<FundCardsProps> = ({
   enableAutoScroll = true,
   scrollSpeed = 40,
   autoScrollResetDelay = 5000,
+  useLandingPageStyles = false,
 }) => {
   const smartFundPicks = transformBetterFundsToCards(fundDetails);
   const isXL = useIsXL();
+  
+  // Select the appropriate card styles based on the variant
+  const cardStyles = useLandingPageStyles ? landingPageCardStyles : fundPageCardStyles;
   const mobileScrollContainerRef = useRef<HTMLDivElement>(null);
   const desktopScrollContainerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});

@@ -107,6 +107,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
           return 'hero'
         case 'why-maxiwise-2': // Lime background
         case 'why-maxiwise-3': // Purple background
+        case 'blog-content':
           return 'light'
         default:
           return 'hero'
