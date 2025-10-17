@@ -1,6 +1,6 @@
-import Bad from "../../assets/images/bad.svg"
-import Neutral from "../../assets/images/neutral.svg"
-import Great from "../../assets/images/great.svg"
+import Bad from "../../assets/images/Bad.svg"
+import Neutral from "../../assets/images/Neutral.svg"
+import Great from "../../assets/images/Great.svg"
 
 const SingleBlog = () => {
     return (
