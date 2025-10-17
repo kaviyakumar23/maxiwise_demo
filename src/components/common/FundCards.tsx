@@ -4,6 +4,19 @@ import SpiralBg from "../../assets/images/spiral-bg-card.png";
 import Shadow from "../../assets/images/Shadow.png";
 import CaretDown from "../../assets/images/CaretDoubleDown.svg";
 
+// Custom hook to match Tailwind's xl breakpoint (1280px)
+function useIsXL() {
+  const [isXL, setIsXL] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1280px)');
+    const update = () => setIsXL(mq.matches);
+    update();
+    mq.addEventListener?.('change', update);
+    return () => mq.removeEventListener?.('change', update);
+  }, []);
+  return isXL;
+}
+
 // Card styling configurations
 const cardStyles: Record<string, { bgGradient: string; textColor: string }> = {
   "all-parameters": {
@@ -40,6 +53,7 @@ interface FundCardProps {
   enableEnlargementEffect?: boolean;
   focusedScale?: number;
   unfocusedScale?: number;
+  isXL?: boolean;
 }
 
 const FundCard: React.FC<FundCardProps> = ({
@@ -53,6 +67,7 @@ const FundCard: React.FC<FundCardProps> = ({
   enableEnlargementEffect = true,
   focusedScale = 1.0,
   unfocusedScale = 0.9,
+  isXL = false,
 }) => {
   // Calculate height classes based on enlargement effect
   const getHeightClass = () => {
@@ -70,7 +85,7 @@ const FundCard: React.FC<FundCardProps> = ({
       `}
       style={{
         background: bgGradient,
-        transform: window.innerWidth < 1280 ? `scale(${enableEnlargementEffect ? (isFocused ? focusedScale : unfocusedScale) : 1})` : undefined,
+        transform: !isXL && enableEnlargementEffect ? `scale(${isFocused ? focusedScale : unfocusedScale})` : undefined,
       }}
     >
       {/* Spiral background with reduced opacity */}
@@ -164,6 +179,7 @@ const FundCards: React.FC<FundCardsProps> = ({
   autoScrollResetDelay = 5000,
 }) => {
   const { smartFundPicks } = fundData;
+  const isXL = useIsXL();
   const mobileScrollContainerRef = useRef<HTMLDivElement>(null);
   const desktopScrollContainerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -171,6 +187,10 @@ const FundCards: React.FC<FundCardsProps> = ({
   const isInitialMount = useRef(true);
   const isHoveringRef = useRef(false); // Ref to track hover state for intervals
   const userInteractedRef = useRef(false);
+  
+  // Helper to get the active container based on breakpoint
+  const getActiveContainer = () => 
+    isXL ? desktopScrollContainerRef.current : mobileScrollContainerRef.current;
 
   // Reorder cards to put "all-parameters" in the middle for both mobile/tablet and desktop
   const reorderedPicks = [...smartFundPicks];
@@ -190,12 +210,12 @@ const FundCards: React.FC<FundCardsProps> = ({
 
   // Detect which card is in focus based on scroll position
   const detectFocusedCard = () => {
-    if (mobileScrollContainerRef.current && window.innerWidth < 1280) {
+    if (mobileScrollContainerRef.current && !isXL) {
       const container = mobileScrollContainerRef.current;
       const containerRect = container.getBoundingClientRect();
       const containerCenter = containerRect.left + containerRect.width / 2;
 
-      let closestCard = null;
+      let closestBaseId: string | null = null;
       let closestDistance = Infinity;
 
       Object.entries(cardRefs.current).forEach(([id, element]) => {
@@ -206,15 +226,16 @@ const FundCards: React.FC<FundCardsProps> = ({
 
           if (distance < closestDistance) {
             closestDistance = distance;
-            closestCard = id;
+            // Extract base ID by removing duplicate suffix
+            closestBaseId = id.replace(/-dup\d+$/, '');
           }
         }
       });
 
-      if (closestCard && closestCard !== focusedCardId) {
-        setFocusedCardId(closestCard);
+      if (closestBaseId && closestBaseId !== focusedCardId) {
+        setFocusedCardId(closestBaseId);
       }
-    } else if (window.innerWidth >= 1280) {
+    } else if (isXL) {
       // Reset focus for desktop view (xl and above)
       setFocusedCardId("");
     }
@@ -222,7 +243,7 @@ const FundCards: React.FC<FundCardsProps> = ({
 
   // Initialize and center "all-parameters" card on mount for mobile/tablet/lg screens
   useEffect(() => {
-    if (isInitialMount.current && window.innerWidth < 1280) {
+    if (isInitialMount.current && !isXL) {
       // Small delay to ensure elements are rendered
       const timer = setTimeout(() => {
         const allParamsCard = cardRefs.current["all-parameters"];
@@ -244,11 +265,11 @@ const FundCards: React.FC<FundCardsProps> = ({
       }, 100);
       
       return () => clearTimeout(timer);
-    } else if (isInitialMount.current && window.innerWidth >= 1280) {
+    } else if (isInitialMount.current && isXL) {
       // For xl and above desktop, the card is already centered due to reordering
       isInitialMount.current = false;
     }
-  }, []);
+  }, [isXL]);
 
   // Initialize scroll position check
   useEffect(() => {
@@ -280,76 +301,56 @@ const FundCards: React.FC<FundCardsProps> = ({
   // Auto-scroll effect - smooth 60fps scrolling using requestAnimationFrame
   useEffect(() => {
     if (!enableAutoScroll) return;
-
-    let animationFrameId: number | undefined;
-    let resetIntervalId: number | undefined;
-    let lastTimestamp = 0;
     
-    // Wait for component to fully mount and render
-    const initTimer = setTimeout(() => {
-      const animate = (timestamp: number) => {
-        const container = window.innerWidth >= 1280 
-          ? desktopScrollContainerRef.current 
-          : mobileScrollContainerRef.current;
-        
-        if (!container) {
-          animationFrameId = requestAnimationFrame(animate);
-          return;
-        }
-        
-        // Calculate time delta in seconds
-        const deltaTime = lastTimestamp ? (timestamp - lastTimestamp) / 1000 : 0;
-        lastTimestamp = timestamp;
-        
-        // Check the current state from refs (not state, to avoid closure issues)
-        const shouldScroll = !isHoveringRef.current && !userInteractedRef.current;
-        
-        if (shouldScroll && deltaTime > 0) {
-          const maxScroll = container.scrollWidth - container.clientWidth;
-          const currentScroll = container.scrollLeft;
-          
-          if (maxScroll > 0) {
-            if (currentScroll >= maxScroll - 5) {
-              // Loop back to start
-              container.scrollLeft = 0;
-            } else {
-              // Smooth scroll based on time delta
-              container.scrollLeft += scrollSpeed * deltaTime;
-            }
+    let rafId = 0;
+    let last = 0;
+    let resetIntervalId: number | undefined;
+
+    const tick = (t: number) => {
+      const container = getActiveContainer();
+      if (container) {
+        const dt = last ? (t - last) / 1000 : 0;
+        last = t;
+
+        // only scroll if not interacting
+        if (!isHoveringRef.current && !userInteractedRef.current && dt > 0) {
+          const max = container.scrollWidth - container.clientWidth;
+          const x = container.scrollLeft;
+          if (max > 0) {
+            container.scrollLeft = x >= max - 5 ? 0 : x + scrollSpeed * dt;
           }
         }
-        
-        // Continue animation loop
-        animationFrameId = requestAnimationFrame(animate);
-      };
-      
-      // Start animation loop
-      animationFrameId = requestAnimationFrame(animate);
-      
-      // Reset user interaction flag periodically
-      resetIntervalId = window.setInterval(() => {
-        if (!isHoveringRef.current) {
-          userInteractedRef.current = false;
-        }
-      }, autoScrollResetDelay);
-      
-    }, 500);
-    
-    return () => {
-      clearTimeout(initTimer);
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
       }
+      rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    
+    // Reset user interaction flag periodically
+    resetIntervalId = window.setInterval(() => {
+      if (!isHoveringRef.current) {
+        userInteractedRef.current = false;
+      }
+    }, autoScrollResetDelay);
+
+    return () => {
+      cancelAnimationFrame(rafId);
       if (resetIntervalId) {
         clearInterval(resetIntervalId);
       }
     };
-  }, [enableAutoScroll, scrollSpeed, autoScrollResetDelay]); // Re-run if props change
+  }, [enableAutoScroll, scrollSpeed, autoScrollResetDelay, isXL]);
 
   const handleCardClick = (categoryId: string) => {
     if (onCategorySelect) {
       onCategorySelect(categoryId);
     }
+  };
+  
+  // Clear interaction state
+  const clearInteraction = () => {
+    isHoveringRef.current = false;
+    userInteractedRef.current = false;
   };
 
   return (
@@ -358,13 +359,17 @@ const FundCards: React.FC<FundCardsProps> = ({
       <div 
         ref={mobileScrollContainerRef}
         className="xl:hidden flex items-center justify-start gap-4 md:gap-6 lg:gap-8 overflow-x-auto scrollbar-hide px-4 md:px-6 lg:px-8 py-8"
-        style={{ scrollPaddingLeft: '50%', scrollPaddingRight: '50%', scrollBehavior: 'auto' }}
+        style={{ 
+          scrollPaddingLeft: '50%', 
+          scrollPaddingRight: '50%', 
+          scrollBehavior: 'auto',
+          WebkitOverflowScrolling: 'touch',
+        }}
         onMouseEnter={() => {
           isHoveringRef.current = true;
         }}
         onMouseLeave={() => {
-          isHoveringRef.current = false;
-          userInteractedRef.current = false;
+          clearInteraction();
         }}
         onTouchStart={() => {
           isHoveringRef.current = true;
@@ -376,8 +381,16 @@ const FundCards: React.FC<FundCardsProps> = ({
           // Reset interaction after a short delay to allow scroll momentum to finish
           setTimeout(() => {
             userInteractedRef.current = false;
-          }, 2000);
+          }, 1200);
         }}
+        onTouchCancel={clearInteraction}
+        onPointerDown={() => {
+          userInteractedRef.current = true;
+        }}
+        onPointerUp={() => {
+          setTimeout(clearInteraction, 1200);
+        }}
+        onPointerCancel={clearInteraction}
         onMouseDown={() => {
           userInteractedRef.current = true;
         }}
@@ -408,6 +421,7 @@ const FundCards: React.FC<FundCardsProps> = ({
                 enableEnlargementEffect={enableEnlargementEffect}
                 focusedScale={focusedScale}
                 unfocusedScale={unfocusedScale}
+                isXL={isXL}
               />
             </div>
           );
@@ -418,14 +432,23 @@ const FundCards: React.FC<FundCardsProps> = ({
       <div 
         ref={desktopScrollContainerRef}
         className="hidden xl:flex items-center justify-start gap-4 overflow-x-auto scrollbar-hide px-8 py-4"
-        style={{ scrollBehavior: 'auto' }}
+        style={{ 
+          scrollBehavior: 'auto',
+          WebkitOverflowScrolling: 'touch',
+        }}
         onMouseEnter={() => {
           isHoveringRef.current = true;
         }}
         onMouseLeave={() => {
-          isHoveringRef.current = false;
-          userInteractedRef.current = false;
+          clearInteraction();
         }}
+        onPointerDown={() => {
+          userInteractedRef.current = true;
+        }}
+        onPointerUp={() => {
+          setTimeout(clearInteraction, 1200);
+        }}
+        onPointerCancel={clearInteraction}
         onMouseDown={() => {
           userInteractedRef.current = true;
         }}
@@ -454,6 +477,7 @@ const FundCards: React.FC<FundCardsProps> = ({
                 enableEnlargementEffect={false}
                 focusedScale={1.0}
                 unfocusedScale={1.0}
+                isXL={isXL}
               />
             </div>
           );
