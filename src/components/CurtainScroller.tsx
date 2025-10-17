@@ -67,6 +67,8 @@ export default function CurtainScroller({ sections, children }: Props) {
           {sections.slice(0, 4).map((node, i) => (
             <section
               key={i}
+              id={`why-maxiwise-${i + 1}`}
+              data-header-section
               ref={(el) => {
                 sectionRefs.current[i] = el as HTMLDivElement | null;
               }}

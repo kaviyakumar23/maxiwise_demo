@@ -21,7 +21,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
     if (element) {
-      element.scrollIntoView({ 
+      element.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
       })
@@ -56,37 +56,49 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
     // Skip intersection observer if a fixed style is provided
     if (fixedStyle) return
 
-    const observerOptions = {
-      root: null,
-      rootMargin: '-50% 0px -50% 0px', // Trigger when section is in center of viewport
-      threshold: 0
+    const getStyleForSection = (sectionId: string): HeaderStyle => {
+      switch (sectionId) {
+        case 'hero':
+          return 'hero'
+        case 'fund-performing':
+        case 'engine':
+        case 'section-2':
+        case 'articles':
+        case 'footer':
+        case 'start-now':
+          return 'light'
+        case 'why-maxiwise-1': // Navy background
+        case 'why-maxiwise-4': // Navy background
+          return 'hero'
+        case 'why-maxiwise-2': // Lime background
+        case 'why-maxiwise-3': // Purple background
+          return 'light'
+        default:
+          return 'hero'
+      }
     }
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      let maxRatio = 0
+      let topSectionId = ''
+      
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const sectionId = entry.target.id
-          
-          switch (sectionId) {
-            case 'hero':
-              setHeaderStyle('hero')
-              break
-            case 'section-2':
-            case 'about':
-            case 'founders':
-            case 'articles':
-            case 'footer':
-              setHeaderStyle('light')
-              break
-            case 'why-maxiwise':
-            case 'join-now':
-              setHeaderStyle('dark')
-              break
-            default:
-              setHeaderStyle('hero')
-          }
+        if (entry.intersectionRatio > maxRatio) {
+          maxRatio = entry.intersectionRatio
+          topSectionId = entry.target.id
         }
       })
+      
+      // Only change if section occupies more than 50% of viewport to reduce flickering
+      if (topSectionId && maxRatio > 0.5) {
+        setHeaderStyle(getStyleForSection(topSectionId))
+      }
+    }
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: [0, 0.25, 0.5, 0.75, 1] // Reduced threshold points to minimize callbacks
     }
 
     const observer = new IntersectionObserver(observerCallback, observerOptions)
@@ -132,10 +144,10 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
       {/* Desktop Layout */}
       <div className="hidden xl:grid grid-cols-3 items-center px-8 py-4">
         <div className={`p-2 flex flex-row gap-12 cursor-pointer transition-colors duration-300 ${styles.textColor}`}>
-          <div onClick={() => scrollToSection('about')} className="hover:opacity-80 transition-opacity">About</div>
-          <div onClick={() => scrollToSection('features')}>Features</div>
+          <div onClick={() => scrollToSection('fund-performing')} className="hover:opacity-80 transition-opacity">Funds</div>
+          <div onClick={() => scrollToSection('engine')} className="hover:opacity-80 transition-opacity">Engine</div>
           <Link to="/blogs" className="hover:opacity-80 transition-opacity">Blog</Link>
-          <div onClick={() => scrollToSection('contact')}>Contact</div>
+          <div onClick={() => scrollToSection('footer')} className="hover:opacity-80 transition-opacity">Contact</div>
         </div>
         <div className="flex justify-center">
           <div>
@@ -152,9 +164,9 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
       <div className="flex xl:hidden items-center justify-start px-4 py-3 relative mobile-menu-container">
         {/* Hamburger Menu - Left */}
         <div className="flex items-center">
-          <button 
+          <button
             onClick={toggleMobileMenu}
-            className="p-2 transition-colors duration-300 text-white"
+            className={`p-2 transition-colors duration-300 ${styles.textColor}`}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
@@ -164,23 +176,23 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
 
         {/* Centered Logo - Absolutely positioned to center of screen */}
         <div className="absolute left-1/2 transform -translate-x-1/2 justify-center">
-          <img src={LogoWhite} alt="Logo" className="h-5 transition-opacity duration-300" />
+          <img src={styles.logo} alt="Logo" className="h-6 transition-opacity duration-300" />
         </div>
 
         {/* Right Side - Search Icon and Profile Icon */}
         <div className="flex items-center ml-auto justify-end gap-2">
           {/* Search Icon Only */}
-          <button 
+          <button
             onClick={() => setIsSearchModalOpen(true)}
-            className="transition-colors duration-300 text-white"
+            className={`transition-colors duration-300 ${styles.textColor}`}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </button>
-          
+
           {/* Profile/Account Icon */}
-          <button className="p-2 transition-colors duration-300 text-white">
+          <button className={`p-2 transition-colors duration-300 ${styles.textColor}`}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
@@ -189,36 +201,36 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
       </div>
 
       {/* Search Modal for Mobile */}
-      <SearchModal 
-        isOpen={isSearchModalOpen} 
-        onClose={() => setIsSearchModalOpen(false)} 
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
       />
 
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
         <div className="xl:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 z-40 mobile-menu-container">
           <div className="flex flex-col py-4">
-            <button 
-              onClick={() => scrollToSection('about')} 
+            <button
+              onClick={() => scrollToSection('fund-performing')}
               className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
             >
-              About
+              Funds
             </button>
-            <button 
-              onClick={() => scrollToSection('features')} 
+            <button
+              onClick={() => scrollToSection('engine')}
               className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
             >
-              Features
+              Engine
             </button>
-            <Link 
+            <Link
               to="/blogs"
               onClick={() => setIsMobileMenuOpen(false)}
               className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
             >
               Blog
             </Link>
-            <button 
-              onClick={() => scrollToSection('contact')} 
+            <button
+              onClick={() => scrollToSection('footer')}
               className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
             >
               Contact
