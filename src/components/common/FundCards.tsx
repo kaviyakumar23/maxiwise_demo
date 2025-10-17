@@ -323,11 +323,8 @@ const FundCards: React.FC<FundCardsProps> = ({
   }, [focusedCardId]);
 
   // Auto-scroll effect - smooth 60fps scrolling using requestAnimationFrame
-  // Only enable on desktop to avoid conflicts with touch scrolling
   useEffect(() => {
-    // Disable auto-scroll on mobile/tablet to prevent interference with touch
-    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    if (!enableAutoScroll || isMobile) return;
+    if (!enableAutoScroll) return;
 
     let animationFrameId: number | undefined;
     let resetIntervalId: number | undefined;
@@ -336,10 +333,9 @@ const FundCards: React.FC<FundCardsProps> = ({
     // Wait for component to fully mount and render
     const initTimer = setTimeout(() => {
       const animate = (timestamp: number) => {
-        // Only run on desktop (xl and above)
         const container = window.innerWidth >= 1280 
           ? desktopScrollContainerRef.current 
-          : null;
+          : mobileScrollContainerRef.current;
         
         if (!container) {
           animationFrameId = requestAnimationFrame(animate);
@@ -359,11 +355,12 @@ const FundCards: React.FC<FundCardsProps> = ({
           
           if (maxScroll > 0) {
             if (currentScroll >= maxScroll - 5) {
-              // Loop back to start
-              container.scrollLeft = 0;
+              // Loop back to start smoothly
+              container.scrollTo({ left: 0, behavior: 'auto' });
             } else {
-              // Smooth scroll based on time delta
-              container.scrollLeft += scrollSpeed * deltaTime;
+              // Smooth scroll based on time delta - use scrollTo for smoother results
+              const newPosition = currentScroll + (scrollSpeed * deltaTime);
+              container.scrollTo({ left: newPosition, behavior: 'auto' });
             }
           }
         }
@@ -382,7 +379,7 @@ const FundCards: React.FC<FundCardsProps> = ({
         }
       }, autoScrollResetDelay);
       
-    }, 500);
+    }, 1000); // Longer delay to ensure smooth initialization
     
     return () => {
       clearTimeout(initTimer);
@@ -410,7 +407,7 @@ const FundCards: React.FC<FundCardsProps> = ({
         style={{ 
           scrollPaddingLeft: '50%', 
           scrollPaddingRight: '50%', 
-          scrollBehavior: 'smooth',
+          scrollBehavior: 'auto', // Use auto for programmatic scrolling
           WebkitOverflowScrolling: 'touch',
         }}
         onMouseEnter={() => {

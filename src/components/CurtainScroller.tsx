@@ -20,8 +20,12 @@ export default function CurtainScroller({ sections, children }: Props) {
     // Configure ScrollTrigger for better mobile performance
     ScrollTrigger.config({
       autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
-      limitCallbacks: true, // Optimize performance on mobile
+      limitCallbacks: true,
     });
+
+    let resizeTimer: number | undefined;
+    let handleOrientationChange: (() => void) | undefined;
+    let handleResize: (() => void) | undefined;
 
     // Small delay to ensure DOM is ready
     const timer = setTimeout(() => {
@@ -34,8 +38,10 @@ export default function CurtainScroller({ sections, children }: Props) {
         zIndex: (i: number, _: Element, all: Element[]) => all.length - i,
       });
 
+      // Detect if mobile device
+      const isMobile = window.innerWidth < 768;
+
       // Animate all panels except the last one
-      // Use scrub: 1 instead of true for smoother mobile scrolling
       gsap.to(panels.slice(0, 3), {
         yPercent: -100,
         ease: "none",
@@ -44,44 +50,59 @@ export default function CurtainScroller({ sections, children }: Props) {
           trigger: containerRef.current,
           start: "top top",
           end: "+=300%",
-          scrub: 1, // Smoother than true, adds slight delay for smoothness
+          scrub: isMobile ? 0.5 : 1, // Lighter scrub on mobile for more responsive feel
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           refreshPriority: 1,
-          fastScrollEnd: true, // Better performance on fast scrolls
+          fastScrollEnd: true,
+          markers: false,
+          onRefresh: () => {
+            // Force layout recalculation on mobile
+            if (containerRef.current && isMobile) {
+              containerRef.current.style.height = '100vh';
+            }
+          },
         },
       });
 
       // Refresh ScrollTrigger on orientation change (mobile)
-      const handleOrientationChange = () => {
+      handleOrientationChange = () => {
         setTimeout(() => {
           ScrollTrigger.refresh();
-        }, 100);
+        }, 150);
       };
 
-      window.addEventListener("orientationchange", handleOrientationChange);
-      
       // Also refresh on resize with debounce
-      let resizeTimer: number | undefined;
-      const handleResize = () => {
+      handleResize = () => {
         if (resizeTimer) clearTimeout(resizeTimer);
         resizeTimer = window.setTimeout(() => {
           ScrollTrigger.refresh();
-        }, 250);
+        }, 300);
       };
 
+      window.addEventListener("orientationchange", handleOrientationChange);
       window.addEventListener("resize", handleResize);
 
-      return () => {
-        window.removeEventListener("orientationchange", handleOrientationChange);
-        window.removeEventListener("resize", handleResize);
-        if (resizeTimer) clearTimeout(resizeTimer);
-      };
-    }, 200); // Increased delay for mobile
+      // Force initial refresh after a delay for mobile
+      if (isMobile) {
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 500);
+      }
+    }, 300); // Longer delay for mobile devices
 
     return () => {
       clearTimeout(timer);
+      if (resizeTimer) clearTimeout(resizeTimer);
+      
+      if (handleOrientationChange) {
+        window.removeEventListener("orientationchange", handleOrientationChange);
+      }
+      if (handleResize) {
+        window.removeEventListener("resize", handleResize);
+      }
+      
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
