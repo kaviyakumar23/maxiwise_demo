@@ -11,20 +11,29 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const Section_2 = () => {
-    const containerRef = useRef(null);
-    const textRef = useRef(null);
-    const image1Ref = useRef(null);
-    const image2Ref = useRef(null);
-    const image3Ref = useRef(null);
-    const image4Ref = useRef(null);
-    const image5Ref = useRef(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const textRef = useRef<HTMLDivElement>(null);
+    const image1Ref = useRef<HTMLImageElement>(null);
+    const image2Ref = useRef<HTMLImageElement>(null);
+    const image3Ref = useRef<HTMLImageElement>(null);
+    const image4Ref = useRef<HTMLImageElement>(null);
+    const image5Ref = useRef<HTMLImageElement>(null);
 
     useEffect(() => {
         const container = containerRef.current;
         const textElement = textRef.current;
-        const images = [image1Ref.current, image2Ref.current, image3Ref.current, image4Ref.current, image5Ref.current];
+        const imageRefs = [
+            image1Ref.current,
+            image2Ref.current,
+            image3Ref.current,
+            image4Ref.current,
+            image5Ref.current
+        ];
 
-        if (!container || !textElement || images.some(img => !img)) return;
+        if (!container || !textElement || imageRefs.some(img => !img)) return;
+
+        // All images are guaranteed to be non-null after the check above
+        const images = imageRefs.filter((img): img is HTMLImageElement => img !== null);
 
         // Function to get responsive positioning based on screen size
         const getResponsivePositions = () => {
@@ -88,7 +97,9 @@ const Section_2 = () => {
                     scrub: 1.2,
                     pin: true,
                     pinSpacing: true,
-                    anticipatePin: 1
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true, // Recalculate on refresh for mobile
+                    refreshPriority: -1 // Prevent issues with iOS Safari momentum scrolling
                 }
             });
 
@@ -168,10 +179,27 @@ const Section_2 = () => {
         };
 
         window.addEventListener('resize', handleResize);
+        window.addEventListener('orientationchange', handleResize);
+
+        // Refresh ScrollTrigger after images load (helps on mobile)
+        const imageLoadPromises = images.map(img => {
+            if (img instanceof HTMLImageElement) {
+                return img.complete ? Promise.resolve() : new Promise<void>(resolve => {
+                    img.onload = () => resolve();
+                    img.onerror = () => resolve();
+                });
+            }
+            return Promise.resolve();
+        });
+
+        Promise.all(imageLoadPromises).then(() => {
+            ScrollTrigger.refresh();
+        });
 
         // Cleanup
         return () => {
             window.removeEventListener('resize', handleResize);
+            window.removeEventListener('orientationchange', handleResize);
             clearTimeout(resizeTimeout);
             ScrollTrigger.getAll().forEach(trigger => trigger.kill());
         };

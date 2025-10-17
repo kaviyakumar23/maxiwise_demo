@@ -79,8 +79,3 @@ body, html {
 body::-webkit-scrollbar, html::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
-
-/* Improve touch scrolling on mobile devices */
-* {
-  -webkit-tap-highlight-color: transparent;
-}

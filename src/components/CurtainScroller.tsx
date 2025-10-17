@@ -17,16 +17,6 @@ export default function CurtainScroller({ sections, children }: Props) {
   const sectionRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
-    // Configure ScrollTrigger for better mobile performance
-    ScrollTrigger.config({
-      autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
-      limitCallbacks: true,
-    });
-
-    let resizeTimer: number | undefined;
-    let handleOrientationChange: (() => void) | undefined;
-    let handleResize: (() => void) | undefined;
-
     // Small delay to ensure DOM is ready
     const timer = setTimeout(() => {
       // Ensure we have refs
@@ -38,9 +28,6 @@ export default function CurtainScroller({ sections, children }: Props) {
         zIndex: (i: number, _: Element, all: Element[]) => all.length - i,
       });
 
-      // Detect if mobile device
-      const isMobile = window.innerWidth < 768;
-
       // Animate all panels except the last one
       gsap.to(panels.slice(0, 3), {
         yPercent: -100,
@@ -50,59 +37,32 @@ export default function CurtainScroller({ sections, children }: Props) {
           trigger: containerRef.current,
           start: "top top",
           end: "+=300%",
-          scrub: isMobile ? 0.5 : 1, // Lighter scrub on mobile for more responsive feel
+          scrub: true,
           pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          refreshPriority: 1,
-          fastScrollEnd: true,
-          markers: false,
-          onRefresh: () => {
-            // Force layout recalculation on mobile
-            if (containerRef.current && isMobile) {
-              containerRef.current.style.height = '100vh';
-            }
-          },
+          anticipatePin: 1, // Helps with mobile pinning
+          invalidateOnRefresh: true, // Recalculate on refresh
         },
       });
+    }, 100);
 
-      // Refresh ScrollTrigger on orientation change (mobile)
-      handleOrientationChange = () => {
-        setTimeout(() => {
-          ScrollTrigger.refresh();
-        }, 150);
-      };
+    // Handle mobile browser resize (address bar show/hide)
+    let resizeTimer: number;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 250);
+    };
 
-      // Also refresh on resize with debounce
-      handleResize = () => {
-        if (resizeTimer) clearTimeout(resizeTimer);
-        resizeTimer = window.setTimeout(() => {
-          ScrollTrigger.refresh();
-        }, 300);
-      };
-
-      window.addEventListener("orientationchange", handleOrientationChange);
-      window.addEventListener("resize", handleResize);
-
-      // Force initial refresh after a delay for mobile
-      if (isMobile) {
-        setTimeout(() => {
-          ScrollTrigger.refresh();
-        }, 500);
-      }
-    }, 300); // Longer delay for mobile devices
+    window.addEventListener('resize', handleResize);
+    // Also listen for orientation changes on mobile
+    window.addEventListener('orientationchange', handleResize);
 
     return () => {
       clearTimeout(timer);
-      if (resizeTimer) clearTimeout(resizeTimer);
-      
-      if (handleOrientationChange) {
-        window.removeEventListener("orientationchange", handleOrientationChange);
-      }
-      if (handleResize) {
-        window.removeEventListener("resize", handleResize);
-      }
-      
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
   }, []);
@@ -110,12 +70,7 @@ export default function CurtainScroller({ sections, children }: Props) {
   return (
     <>
       {/* Wrapper to provide scroll height */}
-      <div 
-        style={{ 
-          position: "relative", 
-          height: "400vh",
-        }}
-      >
+      <div style={{ position: "relative", height: "400vh" }}>
         {/* Container - pins at viewport */}
         <div
           ref={containerRef}
@@ -142,6 +97,7 @@ export default function CurtainScroller({ sections, children }: Props) {
                 left: 0,
                 width: "100%",
                 height: "100%",
+                willChange: "transform",
               }}
             >
               {node}
