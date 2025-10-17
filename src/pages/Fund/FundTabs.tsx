@@ -8,15 +8,30 @@ import AssetAllocation from './AssetAllocation';
 import FundInformation from './FundInformation';
 import AboutTheFund from './AboutTheFund';
 import FundManagers from './FundManagers';
+import type { BetterFunds, FundDetails } from '../../types/fundTypes';
+
+interface FundScheme {
+  id: number;
+  isin: string;
+  fund_name: string;
+  small_cap: string;
+  mid_cap: string;
+  large_cap: string;
+  fund_type: string;
+  purchase_mode: string;
+}
 
 interface FundTabsProps {
+  fundDetails?: BetterFunds;
+  fundDetailsData?: FundDetails;
+  allFundSchemes: FundScheme[];
   selectedCategory: string | null;
   onCategorySelect: (categoryId: string) => void;
 }
 
 type TabType = 'Insights' | 'Returns' | 'Ratios' | 'Details';
 
-const FundTabs: React.FC<FundTabsProps> = ({ selectedCategory, onCategorySelect }) => {
+const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFundSchemes, selectedCategory, onCategorySelect }) => {
   const [activeTab, setActiveTab] = useState<TabType>('Insights');
 
   const tabs: TabType[] = ['Insights', 'Returns', 'Ratios', 'Details'];
@@ -26,8 +41,8 @@ const FundTabs: React.FC<FundTabsProps> = ({ selectedCategory, onCategorySelect 
       case 'Insights':
         return (
           <>
-            <FundPicks onCategorySelect={onCategorySelect} />
-            <ChooseCard selectedCategory={selectedCategory} />
+            <FundPicks fundDetails={fundDetails} onCategorySelect={onCategorySelect} />
+            <ChooseCard fundDetails={fundDetails} allFundSchemes={allFundSchemes} selectedCategory={selectedCategory} />
           </>
         );
       case 'Returns':
@@ -43,9 +58,9 @@ const FundTabs: React.FC<FundTabsProps> = ({ selectedCategory, onCategorySelect 
       case 'Details':
         return (
           <>
-            <FundInformation />
-            <AboutTheFund />
-            <FundManagers />
+            <FundInformation fundDetails={fundDetailsData} />
+            <AboutTheFund fundDetails={fundDetailsData} />
+            <FundManagers fundDetails={fundDetailsData} />
           </>
         );
       default:

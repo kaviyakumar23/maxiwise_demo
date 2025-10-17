@@ -1,20 +1,44 @@
 import React from 'react';
-import { fundData } from './DummyData';
+import type { FundDetails } from '../../types/fundTypes';
 import Qustion from '../../assets/images/Question.svg';
 
-const FundInformation: React.FC = () => {
-  const { fundInformation } = fundData;
+interface FundInformationProps {
+  fundDetails?: FundDetails;
+}
+
+const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
+  const formatCurrency = (value: number | undefined) => {
+    if (!value) return 'N/A';
+    return `₹${value.toLocaleString('en-IN')}`;
+  };
+
+  const formatAUM = (fundSize: string | undefined) => {
+    if (!fundSize) return 'N/A';
+    try {
+      // Remove any non-numeric characters except decimal point
+      const numericValue = parseFloat(fundSize.replace(/[^\d.]/g, ''));
+      if (isNaN(numericValue)) return fundSize;
+      
+      // Convert to crores and format with 2 decimal places
+      const crores = numericValue / 10000000;
+      return `₹ ${crores.toFixed(2)} Crores`;
+    } catch {
+      return fundSize;
+    }
+  };
 
   const informationItems = [
-    { label: 'Latest NAV', value: fundInformation.latestNav },
-    { label: 'Expense Ratio', value: fundInformation.expenseRatio },
-    { label: 'Stamp Duty', value: fundInformation.stampDuty },
-    { label: 'Exit load', value: fundInformation.exitLoad },
-    { label: 'AUM (Fund size)', value: fundInformation.aum },
-    { label: 'Lock-in Period', value: fundInformation.lockInPeriod },
+    { label: 'Latest NAV', value: 'N/A' },
+    { label: 'Expense Ratio', value: `${fundDetails?.net_expense_ratio}%` || 'N/A' },
+    { label: 'Stamp Duty', value: 'N/A' },
+    { label: 'Exit load', value: `${fundDetails?.exit_load}%` || 'N/A' },
+    { label: 'AUM (Fund size)', value: formatAUM(fundDetails?.fund_size) },
+    { label: 'Lock-in Period', value: 'N/A' },
     { 
       label: 'Min. investment', 
-      value: `SIP: ${fundInformation.minInvestment.sip} & Lumpsum: ${fundInformation.minInvestment.lumpsum}` 
+      value: fundDetails?.minimum_investment 
+        ? `SIP: ${formatCurrency(fundDetails.minimum_investment)} & Lumpsum: ${formatCurrency(fundDetails.minimum_additional_purchase)}` 
+        : 'N/A'
     },
   ];
 

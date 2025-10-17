@@ -3,12 +3,14 @@ import Qustion from "../../assets/images/Question.svg";
 import ButtonPrevious from "../../assets/images/ButtonPrevious.svg";
 import ButtonNext from "../../assets/images/ButtonNext.svg";
 import FundCards from "../../components/common/FundCards";
+import type { BetterFunds } from "../../types/fundTypes";
 
 interface FundPicksProps {
+  fundDetails?: BetterFunds;
   onCategorySelect: (categoryId: string) => void;
 }
 
-const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
+const FundPicks: React.FC<FundPicksProps> = ({ fundDetails, onCategorySelect }) => {
   const fundCardsRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -118,7 +120,7 @@ const FundPicks: React.FC<FundPicksProps> = ({ onCategorySelect }) => {
 
       {/* Cards Container */}
       <div ref={fundCardsRef}>
-        <FundCards onCategorySelect={onCategorySelect} />
+        <FundCards fundDetails={fundDetails} onCategorySelect={onCategorySelect} />
       </div>
 
       {/* Information Modal - Bottom Sheet */}

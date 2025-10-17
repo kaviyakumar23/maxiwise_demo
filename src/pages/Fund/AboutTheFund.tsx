@@ -1,12 +1,43 @@
 import React from 'react';
-import { fundData } from './DummyData';
+import type { FundDetails } from '../../types/fundTypes';
 
-const AboutTheFund: React.FC = () => {
-  const { aboutFund } = fundData;
+interface AboutTheFundProps {
+  fundDetails?: FundDetails;
+}
+
+const AboutTheFund: React.FC<AboutTheFundProps> = ({ fundDetails: fundDetailsData }) => {
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'N/A';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-IN', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatAUM = (fundSize: string | undefined) => {
+    if (!fundSize) return 'N/A';
+    try {
+      // Remove any non-numeric characters except decimal point
+      const numericValue = parseFloat(fundSize.replace(/[^\d.]/g, ''));
+      if (isNaN(numericValue)) return fundSize;
+      
+      // Convert to crores and format with 2 decimal places
+      const crores = numericValue / 10000000;
+      return `₹ ${crores.toFixed(2)} Crores`;
+    } catch {
+      return fundSize;
+    }
+  };
 
   const fundDetails = [
-    { label: 'Total AUM', value: aboutFund.totalAum },
-    { label: 'Launch Date', value: aboutFund.launchDate },
+    { label: 'Total AUM', value: formatAUM(fundDetailsData?.fund_size) },
+    { label: 'Launch Date', value: formatDate(fundDetailsData?.inception_date) },
   ];
 
   return (
@@ -21,7 +52,7 @@ const AboutTheFund: React.FC = () => {
       
         {/* Description */}
         <p className="text-sm md:text-base font-normal text-[#4B5563] leading-relaxed mb-6 md:mb-8 lg:mb-10">
-          {aboutFund.description}
+          {fundDetailsData?.investment_strategy || 'N/A'}
         </p>
         </div>
 

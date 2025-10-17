@@ -5,6 +5,7 @@ import { LoginModalProvider } from '../pages/getStarted/LoginModal'
 // Define search params type
 type FundSearchParams = {
   fundId?: number
+  isin?: string
 }
 
 export const Route = createFileRoute('/fund')({
@@ -12,6 +13,7 @@ export const Route = createFileRoute('/fund')({
   validateSearch: (search: Record<string, unknown>): FundSearchParams => {
     return {
       fundId: search.fundId as number | undefined,
+      isin: search.isin as string | undefined,
     }
   },
 })

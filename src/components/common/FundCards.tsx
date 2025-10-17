@@ -3,6 +3,7 @@ import { fundData } from "../../pages/Fund/DummyData.tsx";
 import SpiralBg from "../../assets/images/spiral-bg-card.png";
 import Shadow from "../../assets/images/Shadow.png";
 import CaretDown from "../../assets/images/CaretDoubleDown.svg";
+import type { BetterFunds, BetterFundCategory } from "../../types/fundTypes";
 
 // Custom hook to match Tailwind's xl breakpoint (1280px)
 function useIsXL() {
@@ -17,25 +18,36 @@ function useIsXL() {
   return isXL;
 }
 
-// Card styling configurations
+// Default fallback style
+const defaultCardStyle = {
+  bgGradient: "linear-gradient(135deg, #6B7280 0%, #4B5563 100%)",
+  textColor: "#FFFFFF",
+};
+
+// Card styling configurations based on new column mapping
 const cardStyles: Record<string, { bgGradient: string; textColor: string }> = {
+  // All Parameters
   "all-parameters": {
     bgGradient: "linear-gradient(135deg, #9F7AEA 0%, #7C3AED 100%)",
     textColor: "#FFFFFF",
   },
-  "same-risk-higher-returns": {
-    bgGradient: "linear-gradient(135deg, #312E81 0%, #1E1B4B 100%)",
-    textColor: "#AC72FF",
-  },
-  "low-risk-similar-returns": {
-    bgGradient: "linear-gradient(135deg, #D4FF00 0%, #BFEF00 100%)",
-    textColor: "#170630",
-  },
-  "higher-returns-lower-risk": {
+  // Higher Returns with Lower/Equal Risk & Volatility
+  "higher-returns-with-lower-equal-risk-volatility": {
     bgGradient: "linear-gradient(135deg, #60A5FA 0%, #3B82F6 100%)",
     textColor: "#FFFFFF",
   },
-  "higher-risk-higher-returns": {
+  // Similar Risk & Volatility but Higher Returns
+  "similar-risk-volatility-but-higher-returns": {
+    bgGradient: "linear-gradient(135deg, #312E81 0%, #1E1B4B 100%)",
+    textColor: "#AC72FF",
+  },
+  // Similar Returns with Low Risk & Volatility
+  "similar-returns-with-low-risk-volatility": {
+    bgGradient: "linear-gradient(135deg, #D4FF00 0%, #BFEF00 100%)",
+    textColor: "#170630",
+  },
+  // Higher Returns with Higher Risk & Volatility
+  "higher-returns-with-higher-risk-volatility": {
     bgGradient: "linear-gradient(135deg, #EF4444 0%, #DC2626 100%)",
     textColor: "#FFFFFF",
   },
@@ -158,6 +170,7 @@ const FundCard: React.FC<FundCardProps> = ({
 };
 
 interface FundCardsProps {
+  fundDetails?: BetterFunds;
   onCategorySelect?: (categoryId: string) => void;
   // Enlargement effect configuration
   enableEnlargementEffect?: boolean;
@@ -169,7 +182,42 @@ interface FundCardsProps {
   autoScrollResetDelay?: number; // milliseconds before auto-scroll resumes after user interaction
 }
 
+// Helper function to map API column names to card IDs
+const getCardIdFromColumn = (column: string): string => {
+  // Clean the column name and create a consistent ID
+  return column.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+};
+
+// Helper function to split title into main title and subtitle
+const splitTitle = (title: string): { title: string; subtitle?: string } => {
+  // Handle specific patterns where we want to split on comma
+  const parts = title.split(',').map(s => s.trim());
+  if (parts.length === 2) {
+    return { title: parts[0] + ',', subtitle: parts[1] };
+  }
+  return { title };
+};
+
+// Helper function to transform API data to card format
+const transformBetterFundsToCards = (betterFunds?: BetterFunds) => {
+  if (!betterFunds?.success || !betterFunds.data) {
+    return fundData.smartFundPicks;
+  }
+
+  return betterFunds.data.map((category: BetterFundCategory) => {
+    // column is the title, value is the description/count
+    const { title, subtitle } = splitTitle(category.column);
+    return {
+      id: getCardIdFromColumn(category.column),
+      title,
+      subtitle,
+      fundsCount: category.fundList.length, // Use actual count from fundList
+    };
+  });
+};
+
 const FundCards: React.FC<FundCardsProps> = ({ 
+  fundDetails,
   onCategorySelect,
   enableEnlargementEffect = true,
   focusedScale = 1.0,
@@ -178,7 +226,7 @@ const FundCards: React.FC<FundCardsProps> = ({
   scrollSpeed = 40,
   autoScrollResetDelay = 5000,
 }) => {
-  const { smartFundPicks } = fundData;
+  const smartFundPicks = transformBetterFundsToCards(fundDetails);
   const isXL = useIsXL();
   const mobileScrollContainerRef = useRef<HTMLDivElement>(null);
   const desktopScrollContainerRef = useRef<HTMLDivElement>(null);
@@ -434,7 +482,7 @@ const FundCards: React.FC<FundCardsProps> = ({
       >
         {duplicatedPicks.map((pick) => {
           const baseId = pick.id.replace(/-dup\d+$/, '');
-          const styles = cardStyles[baseId];
+          const styles = cardStyles[baseId] || defaultCardStyle;
           const isFocused = focusedCardId === baseId;
           
           return (
@@ -495,7 +543,7 @@ const FundCards: React.FC<FundCardsProps> = ({
       >
         {duplicatedPicks.map((pick) => {
           const baseId = pick.id.replace(/-dup\d+$/, '');
-          const styles = cardStyles[baseId];
+          const styles = cardStyles[baseId] || defaultCardStyle;
           
           return (
             <div 
