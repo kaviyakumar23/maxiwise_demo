@@ -79,3 +79,12 @@ body, html {
 body::-webkit-scrollbar, html::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
+
+/* iOS Safari flexbox overflow fix */
+.scroller {
+  min-width: 0;
+  min-height: 0;
+}
+.scroller > * {
+  min-width: 0;
+}

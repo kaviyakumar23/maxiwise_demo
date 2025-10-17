@@ -271,6 +271,19 @@ const FundCards: React.FC<FundCardsProps> = ({
     }
   }, [isXL]);
 
+  // Debug logging for overflow detection (temporary - remove in production)
+  useEffect(() => {
+    const c = mobileScrollContainerRef.current;
+    if (c) {
+      console.log('[FundCards Debug]', { 
+        scrollWidth: c.scrollWidth, 
+        clientWidth: c.clientWidth, 
+        canScroll: c.scrollWidth > c.clientWidth,
+        isXL,
+      });
+    }
+  }, [isXL]);
+
   // Initialize scroll position check
   useEffect(() => {
     detectFocusedCard();
@@ -303,28 +316,44 @@ const FundCards: React.FC<FundCardsProps> = ({
     if (!enableAutoScroll) return;
     
     let rafId = 0;
-    let last = 0;
+    let intervalId: number | null = null;
     let resetIntervalId: number | undefined;
+    let last = 0;
 
-    const tick = (t: number) => {
+    const step = (t: number) => {
       const container = getActiveContainer();
-      if (container) {
-        const dt = last ? (t - last) / 1000 : 0;
-        last = t;
+      if (!container) return;
+      
+      const dt = last ? (t - last) / 1000 : 0;
+      last = t;
 
-        // only scroll if not interacting
-        if (!isHoveringRef.current && !userInteractedRef.current && dt > 0) {
-          const max = container.scrollWidth - container.clientWidth;
-          const x = container.scrollLeft;
-          if (max > 0) {
-            container.scrollLeft = x >= max - 5 ? 0 : x + scrollSpeed * dt;
-          }
+      // only scroll if not interacting
+      if (!isHoveringRef.current && !userInteractedRef.current && dt > 0) {
+        const max = container.scrollWidth - container.clientWidth;
+        const x = container.scrollLeft;
+        if (max > 0) {
+          container.scrollLeft = x >= max - 5 ? 0 : x + scrollSpeed * dt;
         }
       }
-      rafId = requestAnimationFrame(tick);
     };
 
-    rafId = requestAnimationFrame(tick);
+    const loop = (t: number) => { 
+      step(t); 
+      rafId = requestAnimationFrame(loop); 
+    };
+    
+    // Initial nudge to wake up programmatic scroll on iOS
+    const c = getActiveContainer();
+    if (c) {
+      const x = c.scrollLeft;
+      c.scrollLeft = x + 1;
+      c.scrollLeft = x;
+    }
+    
+    rafId = requestAnimationFrame(loop);
+    
+    // Fallback interval for low-power modes (~80ms)
+    intervalId = window.setInterval(() => step(performance.now()), 80);
     
     // Reset user interaction flag periodically
     resetIntervalId = window.setInterval(() => {
@@ -335,9 +364,8 @@ const FundCards: React.FC<FundCardsProps> = ({
 
     return () => {
       cancelAnimationFrame(rafId);
-      if (resetIntervalId) {
-        clearInterval(resetIntervalId);
-      }
+      if (intervalId) clearInterval(intervalId);
+      if (resetIntervalId) clearInterval(resetIntervalId);
     };
   }, [enableAutoScroll, scrollSpeed, autoScrollResetDelay, isXL]);
 
@@ -355,15 +383,21 @@ const FundCards: React.FC<FundCardsProps> = ({
 
   return (
     <>
-      {/* Mobile/Tablet/LG view - Carousel with reordered cards (swipeable) */}
+      {/* Mobile/Tablet/LG view - Carousel with reordered cards (swipeable) 
+          Note: If auto-scroll doesn't work, check for ancestor 3D transforms.
+          Ensure parent elements don't have transform: translateZ or similar that might
+          interfere with scrolling on iOS. Add transform: none to wrapper if needed. */}
       <div 
         ref={mobileScrollContainerRef}
-        className="xl:hidden flex items-center justify-start gap-4 md:gap-6 lg:gap-8 overflow-x-auto scrollbar-hide px-4 md:px-6 lg:px-8 py-8"
+        className="scroller xl:hidden flex items-center justify-start gap-4 md:gap-6 lg:gap-8 overflow-x-scroll scrollbar-hide px-4 md:px-6 lg:px-8 py-8"
         style={{ 
           scrollPaddingLeft: '50%', 
           scrollPaddingRight: '50%', 
           scrollBehavior: 'auto',
           WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-x',
+          overscrollBehaviorX: 'contain',
+          overscrollBehaviorY: 'none',
         }}
         onMouseEnter={() => {
           isHoveringRef.current = true;
@@ -431,10 +465,13 @@ const FundCards: React.FC<FundCardsProps> = ({
       {/* Desktop view (XL and above) - Horizontal scrolling carousel */}
       <div 
         ref={desktopScrollContainerRef}
-        className="hidden xl:flex items-center justify-start gap-4 overflow-x-auto scrollbar-hide px-8 py-4"
+        className="scroller hidden xl:flex items-center justify-start gap-4 overflow-x-scroll scrollbar-hide px-8 py-4"
         style={{ 
           scrollBehavior: 'auto',
           WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-x',
+          overscrollBehaviorX: 'contain',
+          overscrollBehaviorY: 'none',
         }}
         onMouseEnter={() => {
           isHoveringRef.current = true;
