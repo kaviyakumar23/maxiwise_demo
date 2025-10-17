@@ -17,6 +17,22 @@ export default function CurtainScroller({ sections, children }: Props) {
   const sectionRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
+    // Configure ScrollTrigger for better mobile performance
+    ScrollTrigger.config({
+      // Normalize scroll for better touch device support
+      autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
+    });
+
+    // Enable normalizeScroll for touch devices
+    ScrollTrigger.normalizeScroll({
+      allowNestedScroll: true,
+      lockAxis: false,
+      momentum: (self: { velocityY: number }) => {
+        // Reduce momentum on mobile for more controlled scrolling
+        return Math.min(3, self.velocityY / 1000);
+      },
+    });
+
     // Small delay to ensure DOM is ready
     const timer = setTimeout(() => {
       // Ensure we have refs
@@ -39,8 +55,35 @@ export default function CurtainScroller({ sections, children }: Props) {
           end: "+=300%",
           scrub: true,
           pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          refreshPriority: 1,
         },
       });
+
+      // Refresh ScrollTrigger on orientation change (mobile)
+      const handleOrientationChange = () => {
+        ScrollTrigger.refresh();
+      };
+
+      window.addEventListener("orientationchange", handleOrientationChange);
+      
+      // Also refresh on resize with debounce
+      let resizeTimer: number | undefined;
+      const handleResize = () => {
+        if (resizeTimer) clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 250);
+      };
+
+      window.addEventListener("resize", handleResize);
+
+      return () => {
+        window.removeEventListener("orientationchange", handleOrientationChange);
+        window.removeEventListener("resize", handleResize);
+        if (resizeTimer) clearTimeout(resizeTimer);
+      };
     }, 100);
 
     return () => {
@@ -52,7 +95,13 @@ export default function CurtainScroller({ sections, children }: Props) {
   return (
     <>
       {/* Wrapper to provide scroll height */}
-      <div style={{ position: "relative", height: "400vh" }}>
+      <div 
+        style={{ 
+          position: "relative", 
+          height: "400vh",
+          touchAction: "pan-y",
+        }}
+      >
         {/* Container - pins at viewport */}
         <div
           ref={containerRef}
@@ -61,6 +110,8 @@ export default function CurtainScroller({ sections, children }: Props) {
             width: "100%",
             height: "100vh",
             overflow: "hidden",
+            touchAction: "pan-y",
+            WebkitOverflowScrolling: "touch",
           }}
         >
           {/* Panels - all absolutely positioned */}
@@ -80,6 +131,7 @@ export default function CurtainScroller({ sections, children }: Props) {
                 width: "100%",
                 height: "100%",
                 willChange: "transform",
+                touchAction: "pan-y",
               }}
             >
               {node}

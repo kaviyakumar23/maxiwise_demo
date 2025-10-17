@@ -54,15 +54,37 @@ const FundCard: React.FC<FundCardProps> = ({
   focusedScale = 1.0,
   unfocusedScale = 0.9,
 }) => {
+  const [isDragging, setIsDragging] = React.useState(false);
+  const startX = React.useRef(0);
+
   // Calculate height classes based on enlargement effect
   const getHeightClass = () => {
     if (!enableEnlargementEffect) return 'h-[300px] md:h-[320px]';
     return isFocused ? 'h-[320px] md:h-[340px]' : 'h-[280px] md:h-[300px]';
   };
 
+  const handlePointerDown = (e: React.PointerEvent) => {
+    startX.current = e.clientX;
+    setIsDragging(false);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (Math.abs(e.clientX - startX.current) > 5) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleClick = () => {
+    if (!isDragging) {
+      onClick();
+    }
+  };
+
   return (
     <div
-      onClick={onClick}
+      onClick={handleClick}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
       className={`relative rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-6 xl:p-6 2xl:p-7 cursor-pointer overflow-hidden transition-all duration-500 ease-out
         ${getHeightClass()} ${enableEnlargementEffect && isFocused ? 'shadow-2xl' : ''}
         lg:h-[300px] lg:scale-100 lg:shadow-none lg:hover:scale-105 lg:hover:shadow-2xl
@@ -71,6 +93,8 @@ const FundCard: React.FC<FundCardProps> = ({
       style={{
         background: bgGradient,
         transform: window.innerWidth < 1280 ? `scale(${enableEnlargementEffect ? (isFocused ? focusedScale : unfocusedScale) : 1})` : undefined,
+        touchAction: 'pan-x',
+        userSelect: 'none',
       }}
     >
       {/* Spiral background with reduced opacity */}
@@ -255,9 +279,24 @@ const FundCards: React.FC<FundCardsProps> = ({
     detectFocusedCard();
     
     const mobileContainer = mobileScrollContainerRef.current;
+    const desktopContainer = desktopScrollContainerRef.current;
+    let scrollTimeout: number | undefined;
     
     const handleScroll = () => {
       detectFocusedCard();
+      
+      // Mark as user interaction when manually scrolling
+      userInteractedRef.current = true;
+      
+      // Clear existing timeout
+      if (scrollTimeout) clearTimeout(scrollTimeout);
+      
+      // Reset user interaction flag after scroll ends
+      scrollTimeout = window.setTimeout(() => {
+        if (!isHoveringRef.current) {
+          userInteractedRef.current = false;
+        }
+      }, 1000);
     };
     
     const handleResize = () => {
@@ -265,7 +304,10 @@ const FundCards: React.FC<FundCardsProps> = ({
     };
     
     if (mobileContainer) {
-      mobileContainer.addEventListener('scroll', handleScroll);
+      mobileContainer.addEventListener('scroll', handleScroll, { passive: true });
+    }
+    if (desktopContainer) {
+      desktopContainer.addEventListener('scroll', handleScroll, { passive: true });
     }
     window.addEventListener('resize', handleResize);
     
@@ -273,7 +315,11 @@ const FundCards: React.FC<FundCardsProps> = ({
       if (mobileContainer) {
         mobileContainer.removeEventListener('scroll', handleScroll);
       }
+      if (desktopContainer) {
+        desktopContainer.removeEventListener('scroll', handleScroll);
+      }
       window.removeEventListener('resize', handleResize);
+      if (scrollTimeout) clearTimeout(scrollTimeout);
     };
   }, [focusedCardId]);
 
@@ -358,7 +404,14 @@ const FundCards: React.FC<FundCardsProps> = ({
       <div 
         ref={mobileScrollContainerRef}
         className="xl:hidden flex items-center justify-start gap-4 md:gap-6 lg:gap-8 overflow-x-auto scrollbar-hide px-4 md:px-6 lg:px-8 py-8"
-        style={{ scrollPaddingLeft: '50%', scrollPaddingRight: '50%', scrollBehavior: 'auto' }}
+        style={{ 
+          scrollPaddingLeft: '50%', 
+          scrollPaddingRight: '50%', 
+          scrollBehavior: 'auto',
+          touchAction: 'pan-x',
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehaviorX: 'contain',
+        }}
         onMouseEnter={() => {
           isHoveringRef.current = true;
         }}
@@ -373,7 +426,7 @@ const FundCards: React.FC<FundCardsProps> = ({
         onTouchEnd={() => {
           setTimeout(() => {
             isHoveringRef.current = false;
-          }, 3000);
+          }, 1500);
         }}
         onMouseDown={() => {
           userInteractedRef.current = true;
@@ -415,7 +468,12 @@ const FundCards: React.FC<FundCardsProps> = ({
       <div 
         ref={desktopScrollContainerRef}
         className="hidden xl:flex items-center justify-start gap-4 overflow-x-auto scrollbar-hide px-8 py-4"
-        style={{ scrollBehavior: 'auto' }}
+        style={{ 
+          scrollBehavior: 'auto',
+          touchAction: 'pan-x',
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehaviorX: 'contain',
+        }}
         onMouseEnter={() => {
           isHoveringRef.current = true;
         }}

@@ -223,7 +223,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
         {/* Centered Logo - Absolutely positioned to center of screen */}
         <div className="absolute left-1/2 transform -translate-x-1/2 justify-center">
           <Link to="/">
-            <img src={styles.logo} alt="Logo" className="h-6 transition-opacity duration-300 cursor-pointer" />
+            <img src={styles.logo} alt="Logo" className="h-5 transition-opacity duration-300 cursor-pointer" />
           </Link>
         </div>
 
