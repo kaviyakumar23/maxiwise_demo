@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { useAuth, useSignUp } from '@clerk/clerk-react';
 import CreateAccount from "../../assets/images/CreateAccount.png";
 import Button from "../../components/ui/Button";
 import SignupForm from "./SignupForm";
@@ -46,8 +47,38 @@ interface LoginModalComponentProps {
 }
 
 const LoginModalComponent: React.FC<LoginModalComponentProps> = ({ onClose }) => {
+  const { isSignedIn } = useAuth();
+  const { signUp, isLoaded: signUpLoaded } = useSignUp();
   const [currentView, setCurrentView] = useState<'login' | 'signup'>('login');
   const [signupMode, setSignupMode] = useState<'signup' | 'login'>('signup');
+
+  // Close modal when user is signed in
+  useEffect(() => {
+    if (isSignedIn) {
+      // Small delay to show success animation
+      const timer = setTimeout(() => {
+        onClose();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSignedIn, onClose]);
+
+  // Google OAuth handler
+  const handleGoogleSignIn = async () => {
+    if (!signUpLoaded) return;
+
+    try {
+      // Use signUp for new users, will automatically redirect to signIn if user exists
+      await signUp?.authenticateWithRedirect({
+        strategy: 'oauth_google',
+        redirectUrl: '/sso-callback',
+        redirectUrlComplete: '/',
+      });
+    } catch (err: any) {
+      console.error('Error signing in with Google:', err);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50">
       {/* Backdrop */}
@@ -60,7 +91,7 @@ const LoginModalComponent: React.FC<LoginModalComponentProps> = ({ onClose }) =>
       <div className="relative z-10 h-full flex items-center justify-center lg:items-center lg:justify-center">
         {/* Desktop Layout */}
         <div className="hidden lg:block max-h-[90vh] max-w-[90vw] overflow-auto rounded-2xl shadow-2xl">
-          <div className="grid grid-cols-2 w-full max-w-4xl mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl">
+          <div className="grid grid-cols-2 w-full max-w-4xl min-w-[896px] mx-auto bg-white rounded-2xl overflow-hidden shadow-2xl">
             {/* Left Section - Purple Gradient with 3D Graphics */}
             <div className="bg-[#D4B6FF] flex flex-col justify-center items-start relative overflow-hidden">
               {/* Background decorative elements */}
@@ -103,7 +134,7 @@ const LoginModalComponent: React.FC<LoginModalComponentProps> = ({ onClose }) =>
               </button>
 
               {currentView === 'login' ? (
-                <div className="w-full max-w-sm">
+                <div className="w-full max-w-sm mx-auto">
                   {/* Header */}
                   <div className="text-center mb-6">
                     <h1 className="font-outfit font-semibold text-2xl text-[#170630] mb-2">
@@ -156,6 +187,7 @@ const LoginModalComponent: React.FC<LoginModalComponentProps> = ({ onClose }) =>
                     color="purple" 
                     size="md" 
                     fullWidth
+                    onClick={handleGoogleSignIn}
                     className="py-3 text-base font-medium border-gray-300 text-navy hover:bg-transparent hover:text-navy hover:border-gray-300"
                     leftIcon={
                       <svg className="w-5" viewBox="0 0 24 24">
@@ -181,7 +213,13 @@ const LoginModalComponent: React.FC<LoginModalComponentProps> = ({ onClose }) =>
           </div>
                 </div>
               ) : (
-                <SignupForm onBackToLogin={() => setCurrentView('login')} mode={signupMode} />
+                <div className="w-full max-w-sm mx-auto">
+                  <SignupForm 
+                    onBackToLogin={() => setCurrentView('login')} 
+                    onSwitchMode={(mode) => setSignupMode(mode)}
+                    mode={signupMode} 
+                  />
+                </div>
               )}
             </div>
           </div>
@@ -259,6 +297,7 @@ const LoginModalComponent: React.FC<LoginModalComponentProps> = ({ onClose }) =>
                   color="purple" 
                   size="lg" 
                   fullWidth
+                  onClick={handleGoogleSignIn}
                   className="py-4 text-base font-medium border-gray-300 text-navy hover:border-gray-300 mb-6"
                   leftIcon={
                     <svg className="w-5" viewBox="0 0 24 24">
@@ -284,7 +323,11 @@ const LoginModalComponent: React.FC<LoginModalComponentProps> = ({ onClose }) =>
           </div>
               </>
             ) : (
-              <SignupForm onBackToLogin={() => setCurrentView('login')} mode={signupMode} />
+              <SignupForm 
+                onBackToLogin={() => setCurrentView('login')} 
+                onSwitchMode={(mode) => setSignupMode(mode)}
+                mode={signupMode} 
+              />
             )}
           </div>
         </div>

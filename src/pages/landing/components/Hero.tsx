@@ -39,7 +39,7 @@ export const Hero = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-white h-100vh bg-cover bg-center relative font-outfit">
+      <div id='hero' className="min-h-screen bg-white h-100vh bg-cover bg-center relative font-outfit">
         <img src={BackgroundHero} alt="BackgroundHero" className="absolute inset-0 w-full h-full object-cover" />
         
         {/* Desktop Layout (1025px and above) */}

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react"
-import { Link } from "@tanstack/react-router"
+import { Link, useNavigate, useLocation } from "@tanstack/react-router"
+import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
 import Search from "./Search"
 import SearchModal from "./SearchModal"
 import GetStarted from "./GetStarted"
+import { useLoginModal } from "../../pages/getStarted/LoginModal"
 import Logo from "../../assets/images/Logo.png"
 import LogoBlack from "../../assets/images/LogoBlack.png"
 import LogoWhite from "../../assets/images/LogoWhite.png"
@@ -17,6 +19,9 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
   const [headerStyle, setHeaderStyle] = useState<HeaderStyle>(fixedStyle || 'hero')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
+  const { openModal } = useLoginModal()
+  const navigate = useNavigate()
+  const location = useLocation()
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -28,6 +33,19 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
     }
     // Close mobile menu after navigation
     setIsMobileMenuOpen(false)
+  }
+
+  const navigateToSection = (sectionId: string) => {
+    // Close mobile menu
+    setIsMobileMenuOpen(false)
+    
+    // If we're already on the landing page, just scroll
+    if (location.pathname === '/') {
+      scrollToSection(sectionId)
+    } else {
+      // Navigate to landing page with hash
+      navigate({ to: '/', hash: sectionId })
+    }
   }
 
   const toggleMobileMenu = () => {
@@ -52,6 +70,23 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
     }
   }, [isMobileMenuOpen])
 
+  // Keyboard shortcut to open search (Cmd+K on Mac, Ctrl+K on Windows)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Check for Cmd+K (Mac) or Ctrl+K (Windows/Linux)
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault()
+        setIsSearchModalOpen(true)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
   useEffect(() => {
     // Skip intersection observer if a fixed style is provided
     if (fixedStyle) return
@@ -60,7 +95,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
       switch (sectionId) {
         case 'hero':
           return 'hero'
-        case 'fund-performing':
+        case 'funds':
         case 'engine':
         case 'section-2':
         case 'articles':
@@ -144,19 +179,30 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
       {/* Desktop Layout */}
       <div className="hidden xl:grid grid-cols-3 items-center px-8 py-4">
         <div className={`p-2 flex flex-row gap-12 cursor-pointer transition-colors duration-300 ${styles.textColor}`}>
-          <div onClick={() => scrollToSection('fund-performing')} className="hover:opacity-80 transition-opacity">Funds</div>
-          <div onClick={() => scrollToSection('engine')} className="hover:opacity-80 transition-opacity">Engine</div>
+          <div onClick={() => navigateToSection('funds')} className="hover:opacity-80 transition-opacity">Funds</div>
+          <div onClick={() => navigateToSection('engine')} className="hover:opacity-80 transition-opacity">Engine</div>
           <Link to="/blogs" className="hover:opacity-80 transition-opacity">Blog</Link>
-          <div onClick={() => scrollToSection('footer')} className="hover:opacity-80 transition-opacity">Contact</div>
+          <div onClick={() => navigateToSection('footer')} className="hover:opacity-80 transition-opacity">Contact</div>
         </div>
         <div className="flex justify-center">
-          <div>
-            <img src={styles.logo} alt="Logo" className="h-6 transition-opacity duration-300" />
-          </div>
+          <Link to="/">
+            <img src={styles.logo} alt="Logo" className="h-6 transition-opacity duration-300 cursor-pointer" />
+          </Link>
         </div>
         <div className="flex flex-row gap-8 justify-end items-center">
           <div><Search /></div>
-          <div><GetStarted /></div>
+          <SignedOut>
+            <div><GetStarted /></div>
+          </SignedOut>
+          <SignedIn>
+            <UserButton 
+              appearance={{
+                elements: {
+                  avatarBox: "w-10 h-10"
+                }
+              }}
+            />
+          </SignedIn>
         </div>
       </div>
 
@@ -176,7 +222,9 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
 
         {/* Centered Logo - Absolutely positioned to center of screen */}
         <div className="absolute left-1/2 transform -translate-x-1/2 justify-center">
-          <img src={styles.logo} alt="Logo" className="h-6 transition-opacity duration-300" />
+          <Link to="/">
+            <img src={styles.logo} alt="Logo" className="h-6 transition-opacity duration-300 cursor-pointer" />
+          </Link>
         </div>
 
         {/* Right Side - Search Icon and Profile Icon */}
@@ -192,11 +240,27 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
           </button>
 
           {/* Profile/Account Icon */}
-          <button className={`p-2 transition-colors duration-300 ${styles.textColor}`}>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </button>
+          <SignedOut>
+            <button 
+              onClick={openModal}
+              className={`p-2 transition-colors duration-300 ${styles.textColor}`}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </button>
+          </SignedOut>
+          <SignedIn>
+            <div className="p-2">
+              <UserButton 
+                appearance={{
+                  elements: {
+                    avatarBox: "w-8 h-8"
+                  }
+                }}
+              />
+            </div>
+          </SignedIn>
         </div>
       </div>
 
@@ -211,13 +275,13 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
         <div className="xl:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 z-40 mobile-menu-container">
           <div className="flex flex-col py-4">
             <button
-              onClick={() => scrollToSection('fund-performing')}
+              onClick={() => navigateToSection('funds')}
               className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
             >
               Funds
             </button>
             <button
-              onClick={() => scrollToSection('engine')}
+              onClick={() => navigateToSection('engine')}
               className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
             >
               Engine
@@ -230,7 +294,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
               Blog
             </Link>
             <button
-              onClick={() => scrollToSection('footer')}
+              onClick={() => navigateToSection('footer')}
               className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
             >
               Contact

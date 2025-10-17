@@ -1,13 +1,39 @@
 import React, { useState, useEffect } from "react";
+import { useSignUp, useSignIn } from "@clerk/clerk-react";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 
 interface SignupFormProps {
   onBackToLogin: () => void;
+  onSwitchMode?: (mode: 'signup' | 'login') => void;
   mode?: 'signup' | 'login';
 }
 
-const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' }) => {
+const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, onSwitchMode, mode = 'signup' }) => {
+  // Clerk hooks
+  const { signUp, isLoaded: signUpLoaded, setActive: setActiveSignUp } = useSignUp();
+  const { signIn, isLoaded: signInLoaded, setActive: setActiveSignIn } = useSignIn();
+
+  // Google OAuth handler
+  const handleGoogleSignIn = async () => {
+    if (!signUpLoaded || !signInLoaded) return;
+
+    try {
+      const signUpOrIn = mode === 'signup' ? signUp : signIn;
+      await signUpOrIn?.authenticateWithRedirect({
+        strategy: 'oauth_google',
+        redirectUrl: '/sso-callback',
+        redirectUrlComplete: '/',
+      });
+    } catch (err: any) {
+      console.error('Error signing in with Google:', err);
+      setErrors(prev => ({ 
+        ...prev, 
+        general: 'Failed to sign in with Google. Please try again.' 
+      }));
+    }
+  };
+  
   const [currentStep, setCurrentStep] = useState<'phone' | 'otp' | 'password' | 'create-password' | 'success'>('phone');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
@@ -37,31 +63,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
     return emailRegex.test(email);
   };
 
-  const validatePhoneNumber = (phone: string): boolean => {
-    // Remove all non-digit characters
-    const cleanPhone = phone.replace(/\D/g, '');
-    // Check if it's a valid Indian mobile number (exactly 10 digits)
-    // Indian mobile numbers start with 6, 7, 8, or 9
-    return cleanPhone.length === 10 && /^[6-9]\d{9}$/.test(cleanPhone);
-  };
-
-  const isEmail = (input: string): boolean => {
-    return input.includes('@');
-  };
-
   const validateInput = (input: string): { isValid: boolean; error?: string } => {
     if (!input.trim()) {
       return { isValid: false, error: 'This field is required.' };
     }
 
-    if (isEmail(input)) {
-      if (!validateEmail(input)) {
-        return { isValid: false, error: 'Please enter a valid email address.' };
-      }
-    } else {
-      if (!validatePhoneNumber(input)) {
-        return { isValid: false, error: 'Please enter a valid 10-digit mobile number.' };
-      }
+    if (!validateEmail(input)) {
+      return { isValid: false, error: 'Please enter a valid email address.' };
     }
 
     return { isValid: true };
@@ -105,7 +113,9 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
     return () => clearTimeout(timer);
   }, [countdown, isCountdownActive]);
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
+    if (!signUpLoaded || !signInLoaded) return;
+
     const validation = validateInput(phoneNumber);
     
     if (!validation.isValid) {
@@ -113,35 +123,114 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
       return;
     }
 
-    // Check if user already has an account (simulate API call)
-    const existingUser = checkExistingUser(phoneNumber);
-    if (existingUser) {
+    try {
+      if (mode === 'signup') {
+        // Create a new sign up with email
+        await signUp.create({
+          emailAddress: phoneNumber,
+        });
+
+        // Send email verification code
+        await signUp.prepareEmailAddressVerification({
+          strategy: 'email_code',
+        });
+
+        // Clear errors and proceed to OTP
+        clearError('phoneNumber');
+        setCurrentStep('otp');
+        setCountdown(24);
+        setIsCountdownActive(true);
+      } else {
+        // For login mode, start sign in with email
+        await signIn.create({
+          identifier: phoneNumber,
+        });
+
+        // Prepare first factor verification (email code)
+        const { supportedFirstFactors } = signIn;
+        
+        // Check if email code is supported
+        const emailCodeFactor = supportedFirstFactors?.find(
+          (factor: any) => factor.strategy === 'email_code'
+        );
+
+        if (emailCodeFactor) {
+          await signIn.prepareFirstFactor({
+            strategy: 'email_code',
+            emailAddressId: (emailCodeFactor as any).emailAddressId,
+          });
+
+          clearError('phoneNumber');
+          setCurrentStep('otp');
+          setCountdown(24);
+          setIsCountdownActive(true);
+        } else {
+          // If email code is not available, go to password
+          clearError('phoneNumber');
+          setCurrentStep('password');
+        }
+      }
+    } catch (err: any) {
+      console.error('Error during continue:', err);
+      
+      // Handle Clerk errors
+      if (err.errors && err.errors.length > 0) {
+        const clerkError = err.errors[0];
+        
+        if (clerkError.code === 'form_identifier_exists' || clerkError.message.includes('already exists')) {
+          setErrors(prev => ({ 
+            ...prev, 
+            phoneNumber: 'Looks like you already have an account. Try logging in.' 
+          }));
+        } else if (clerkError.code === 'form_identifier_not_found') {
+          setErrors(prev => ({ 
+            ...prev, 
+            phoneNumber: 'No account found with this email. Please sign up first.' 
+          }));
+        } else {
+          setErrors(prev => ({ 
+            ...prev, 
+            phoneNumber: clerkError.message || 'An error occurred. Please try again.' 
+          }));
+        }
+      } else {
+        setErrors(prev => ({ 
+          ...prev, 
+          phoneNumber: 'An error occurred. Please try again.' 
+        }));
+      }
+    }
+  };
+
+  const handleResendOTP = async () => {
+    try {
+      if (mode === 'signup' && signUp) {
+        await signUp.prepareEmailAddressVerification({
+          strategy: 'email_code',
+        });
+      } else if (signIn) {
+        const { supportedFirstFactors } = signIn;
+        const emailCodeFactor = supportedFirstFactors?.find(
+          (factor: any) => factor.strategy === 'email_code'
+        );
+
+        if (emailCodeFactor) {
+          await signIn.prepareFirstFactor({
+            strategy: 'email_code',
+            emailAddressId: (emailCodeFactor as any).emailAddressId,
+          });
+        }
+      }
+      
+      setCountdown(24);
+      setIsCountdownActive(true);
+    } catch (err: any) {
+      console.error('Error resending OTP:', err);
       setErrors(prev => ({ 
         ...prev, 
-        phoneNumber: 'Looks like you already have an account. Try logging in.' 
+        otp: 'Failed to resend OTP. Please try again.' 
       }));
-      return;
     }
-
-    // Clear errors and proceed
-    clearError('phoneNumber');
-    setCurrentStep('otp');
-    setCountdown(24);
-    setIsCountdownActive(true);
-  };
-
-  // Simulate checking for existing user
-  const checkExistingUser = (input: string): boolean => {
-    // This would normally be an API call
-    // For demo purposes, let's say these users already exist
-    const existingUsers = ['test@example.com', 'user@test.com', '9876543210'];
-    return existingUsers.includes(input);
-  };
-
-  const handleResendOTP = () => {
-    setCountdown(24);
-    setIsCountdownActive(true);
-    // Here you would typically call your API to resend OTP
   };
 
   const handleChangePhone = () => {
@@ -150,7 +239,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
     setIsCountdownActive(false);
   };
 
-  const handleOTPSubmit = () => {
+  const handleOTPSubmit = async () => {
     const validation = validateOTP(otp);
     
     if (!validation.isValid) {
@@ -158,24 +247,58 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
       return;
     }
 
-    // Simulate OTP verification (normally an API call)
-    const isValidOTP = verifyOTP(otp);
-    if (!isValidOTP) {
-      setErrors(prev => ({ ...prev, otp: 'Invalid OTP. Please try again.' }));
-      return;
+    try {
+      if (mode === 'signup' && signUp) {
+        // Verify email with OTP for signup
+        const result = await signUp.attemptEmailAddressVerification({
+          code: otp,
+        });
+
+        if (result.status === 'complete') {
+          // Set the session as active
+          await setActiveSignUp({ session: result.createdSessionId });
+          
+          // Clear errors and show success
+          clearError('otp');
+          setCurrentStep('success');
+        }
+      } else if (signIn) {
+        // Verify email with OTP for login
+        const result = await signIn.attemptFirstFactor({
+          strategy: 'email_code',
+          code: otp,
+        });
+
+        if (result.status === 'complete') {
+          // Set the session as active
+          await setActiveSignIn({ session: result.createdSessionId });
+          
+          // Clear errors and show success
+          clearError('otp');
+          setCurrentStep('success');
+        }
+      }
+    } catch (err: any) {
+      console.error('Error verifying OTP:', err);
+      
+      // Handle Clerk errors
+      if (err.errors && err.errors.length > 0) {
+        const clerkError = err.errors[0];
+        
+        if (clerkError.code === 'form_code_incorrect' || clerkError.message.includes('incorrect')) {
+          setErrors(prev => ({ ...prev, otp: 'Invalid OTP. Please try again.' }));
+        } else if (clerkError.code === 'verification_expired') {
+          setErrors(prev => ({ ...prev, otp: 'OTP has expired. Please request a new one.' }));
+        } else {
+          setErrors(prev => ({ 
+            ...prev, 
+            otp: clerkError.message || 'Invalid OTP. Please try again.' 
+          }));
+        }
+      } else {
+        setErrors(prev => ({ ...prev, otp: 'Invalid OTP. Please try again.' }));
+      }
     }
-
-    // Clear errors and proceed
-    clearError('otp');
-    console.log('Verifying OTP:', otp);
-    setCurrentStep('success');
-  };
-
-  // Simulate OTP verification
-  const verifyOTP = (otpValue: string): boolean => {
-    // For demo purposes, let's say '123456' is always valid
-    // In real implementation, this would be an API call
-    return otpValue === '123456' || Math.random() > 0.3; // 70% success rate for demo
   };
 
   const handleUsePassword = () => {
@@ -186,7 +309,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
     setCurrentStep('otp');
   };
 
-  const handlePasswordSubmit = () => {
+  const handlePasswordSubmit = async () => {
     const validation = validatePassword(password);
     
     if (!validation.isValid) {
@@ -194,24 +317,42 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
       return;
     }
 
-    // Simulate password verification (normally an API call)
-    const isValidPassword = verifyPassword(phoneNumber, password);
-    if (!isValidPassword) {
-      setErrors(prev => ({ ...prev, password: 'Incorrect password. Please try again.' }));
-      return;
+    if (!signInLoaded || !signIn) return;
+
+    try {
+      // Attempt to sign in with password
+      const result = await signIn.attemptFirstFactor({
+        strategy: 'password',
+        password: password,
+      });
+
+      if (result.status === 'complete') {
+        // Set the session as active
+        await setActiveSignIn({ session: result.createdSessionId });
+        
+        // Clear errors and show success
+        clearError('password');
+        setCurrentStep('success');
+      }
+    } catch (err: any) {
+      console.error('Error signing in with password:', err);
+      
+      // Handle Clerk errors
+      if (err.errors && err.errors.length > 0) {
+        const clerkError = err.errors[0];
+        
+        if (clerkError.code === 'form_password_incorrect' || clerkError.message.includes('password')) {
+          setErrors(prev => ({ ...prev, password: 'Incorrect password. Please try again.' }));
+        } else {
+          setErrors(prev => ({ 
+            ...prev, 
+            password: clerkError.message || 'An error occurred. Please try again.' 
+          }));
+        }
+      } else {
+        setErrors(prev => ({ ...prev, password: 'Incorrect password. Please try again.' }));
+      }
     }
-
-    // Clear errors and proceed
-    clearError('password');
-    console.log('Logging in with password:', password);
-    setCurrentStep('success');
-  };
-
-  // Simulate password verification
-  const verifyPassword = (_user: string, passwordValue: string): boolean => {
-    // For demo purposes, let's say 'password123' is always valid
-    // In real implementation, this would be an API call
-    return passwordValue === 'password123' || Math.random() > 0.4; // 60% success rate for demo
   };
 
   const handleForgotPassword = () => {
@@ -234,7 +375,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
     return { text: "Strong! Perfect! 🔒", color: "text-green-500" };
   };
 
-  const handleCreatePasswordSubmit = () => {
+  const handleCreatePasswordSubmit = async () => {
     // Validate new password
     const newPasswordValidation = validatePassword(newPassword);
     if (!newPasswordValidation.isValid) {
@@ -260,11 +401,44 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
       return;
     }
 
-    // Clear errors and proceed
-    clearError('newPassword');
-    clearError('confirmPassword');
-    console.log('Creating new password:', newPassword);
-    setCurrentStep('success');
+    if (!signUpLoaded || !signUp) return;
+
+    try {
+      // Update sign up with password
+      await signUp.update({
+        password: newPassword,
+      });
+
+      // Complete the sign up and set session
+      const result = await signUp.attemptEmailAddressVerification({
+        code: otp, // Use the OTP that was already verified
+      });
+
+      if (result.status === 'complete') {
+        await setActiveSignUp({ session: result.createdSessionId });
+        
+        // Clear errors and proceed
+        clearError('newPassword');
+        clearError('confirmPassword');
+        setCurrentStep('success');
+      }
+    } catch (err: any) {
+      console.error('Error creating password:', err);
+      
+      // Handle Clerk errors
+      if (err.errors && err.errors.length > 0) {
+        const clerkError = err.errors[0];
+        setErrors(prev => ({ 
+          ...prev, 
+          newPassword: clerkError.message || 'Failed to create password. Please try again.' 
+        }));
+      } else {
+        setErrors(prev => ({ 
+          ...prev, 
+          newPassword: 'Failed to create password. Please try again.' 
+        }));
+      }
+    }
   };
 
   // Error display component
@@ -281,7 +455,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
   };
 
   return (
-    <div className="w-full max-w-sm">
+    <div className="w-full">
       {currentStep === 'phone' ? (
         <>
           {/* Phone Input Step */}
@@ -295,7 +469,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
                 <>
                   New here?{' '}
                   <button 
-                    onClick={onBackToLogin}
+                    onClick={() => onSwitchMode ? onSwitchMode('signup') : onBackToLogin()}
                     className="text-[#170630] underline font-medium"
                   >
                     Create Account
@@ -305,7 +479,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
                 <>
                   Already have an account?{' '}
                   <button 
-                    onClick={onBackToLogin}
+                    onClick={() => onSwitchMode ? onSwitchMode('login') : onBackToLogin()}
                     className="text-[#170630] underline font-medium"
                   >
                     Log In
@@ -315,14 +489,14 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
             </p>
           </div>
 
-          {/* Email/Phone Input */}
+          {/* Email Input */}
           <div className="mb-4">
             <label className="block text-[#4B5563] font-outfit font-medium text-sm mb-2">
-              Email / Phone
+              Email
             </label>
             <Input
-              type="text"
-              placeholder="Enter your email/phone"
+              type="email"
+              placeholder="Enter your email"
               value={phoneNumber}
               onChange={(e) => {
                 setPhoneNumber(e.target.value);
@@ -362,6 +536,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
             color="purple" 
             size="md" 
             fullWidth
+            onClick={handleGoogleSignIn}
             className="py-3 text-base font-medium border-[#E2E8F0] text-navy hover:bg-transparent hover:text-navy"
             leftIcon={
               <svg className="w-5" viewBox="0 0 24 24">
@@ -440,7 +615,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, mode = 'signup' 
               onClick={handleChangePhone}
               className="font-outfit font-medium text-[#170630] hover:underline"
             >
-              Change Email / Phone
+              Change Email
             </button>
           </div>
 

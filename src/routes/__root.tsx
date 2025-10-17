@@ -1,5 +1,5 @@
-import * as React from 'react'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { LoginModalProvider } from '../pages/getStarted/LoginModal'
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -7,8 +7,8 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
-    <React.Fragment>
+    <LoginModalProvider>
       <Outlet />
-    </React.Fragment>
+    </LoginModalProvider>
   )
 }

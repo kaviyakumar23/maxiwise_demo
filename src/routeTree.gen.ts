@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SsoCallbackRouteImport } from './routes/sso-callback'
 import { Route as FundRouteImport } from './routes/fund'
 import { Route as BlogsRouteImport } from './routes/blogs'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogsIndexRouteImport } from './routes/blogs.index'
 import { Route as BlogsContentRouteImport } from './routes/blogs.content'
 
+const SsoCallbackRoute = SsoCallbackRouteImport.update({
+  id: '/sso-callback',
+  path: '/sso-callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FundRoute = FundRouteImport.update({
   id: '/fund',
   path: '/fund',
@@ -45,12 +51,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/blogs': typeof BlogsRouteWithChildren
   '/fund': typeof FundRoute
+  '/sso-callback': typeof SsoCallbackRoute
   '/blogs/content': typeof BlogsContentRoute
   '/blogs/': typeof BlogsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/fund': typeof FundRoute
+  '/sso-callback': typeof SsoCallbackRoute
   '/blogs/content': typeof BlogsContentRoute
   '/blogs': typeof BlogsIndexRoute
 }
@@ -59,25 +67,47 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/blogs': typeof BlogsRouteWithChildren
   '/fund': typeof FundRoute
+  '/sso-callback': typeof SsoCallbackRoute
   '/blogs/content': typeof BlogsContentRoute
   '/blogs/': typeof BlogsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/blogs' | '/fund' | '/blogs/content' | '/blogs/'
+  fullPaths:
+    | '/'
+    | '/blogs'
+    | '/fund'
+    | '/sso-callback'
+    | '/blogs/content'
+    | '/blogs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/fund' | '/blogs/content' | '/blogs'
-  id: '__root__' | '/' | '/blogs' | '/fund' | '/blogs/content' | '/blogs/'
+  to: '/' | '/fund' | '/sso-callback' | '/blogs/content' | '/blogs'
+  id:
+    | '__root__'
+    | '/'
+    | '/blogs'
+    | '/fund'
+    | '/sso-callback'
+    | '/blogs/content'
+    | '/blogs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BlogsRoute: typeof BlogsRouteWithChildren
   FundRoute: typeof FundRoute
+  SsoCallbackRoute: typeof SsoCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sso-callback': {
+      id: '/sso-callback'
+      path: '/sso-callback'
+      fullPath: '/sso-callback'
+      preLoaderRoute: typeof SsoCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/fund': {
       id: '/fund'
       path: '/fund'
@@ -132,6 +162,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BlogsRoute: BlogsRouteWithChildren,
   FundRoute: FundRoute,
+  SsoCallbackRoute: SsoCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

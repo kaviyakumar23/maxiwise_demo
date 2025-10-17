@@ -6,7 +6,7 @@ import Footer from "../landing/components/Footer"
 export const BlogMain = () => {
     return (
         <>
-            <Header />
+            <Header fixedStyle="light" />
             <LatestNews />
             <Join_Now />
             <Footer />

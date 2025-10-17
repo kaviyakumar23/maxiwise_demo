@@ -1,3 +1,5 @@
+import { useNavigate, useLocation } from "@tanstack/react-router"
+import { useUser } from "@clerk/clerk-react"
 import LogoBlack from "../../../assets/images/LogoBlack.png"
 import Button from "../../../components/ui/Button"
 import Facebook from "../../../assets/images/Facebook.png"
@@ -5,12 +7,11 @@ import Instagram from "../../../assets/images/Instagram.png"
 import LinkedIn from "../../../assets/images/LinkedIn.png"
 import Twitter from "../../../assets/images/Twitter.png"
 
-// Social Media Icons Component
-
-
-    
-
 const Footer = () => {
+    const navigate = useNavigate()
+    const location = useLocation()
+    const { isSignedIn } = useUser()
+
     const scrollToSection = (sectionId: string) => {
         const element = document.getElementById(sectionId)
         if (element) {
@@ -18,6 +19,16 @@ const Footer = () => {
                 behavior: 'smooth',
                 block: 'start'
             })
+        }
+    }
+
+    const navigateToSection = (sectionId: string) => {
+        // If we're already on the landing page, just scroll
+        if (location.pathname === '/') {
+            scrollToSection(sectionId)
+        } else {
+            // Navigate to landing page with hash
+            navigate({ to: '/', hash: sectionId })
         }
     }
 
@@ -38,8 +49,8 @@ const Footer = () => {
                     </div>
                 </div>
 
-                {/* Desktop Layout (lg and above) - 6 column grid layout */}
-                <div className="hidden lg:grid lg:grid-cols-6 lg:gap-8 lg:items-start">
+                {/* Desktop Layout (lg and above) - Dynamic grid layout */}
+                <div className={`hidden lg:grid lg:gap-8 lg:items-start ${isSignedIn ? 'lg:grid-cols-5' : 'lg:grid-cols-6'}`}>
                     {/* Be the first to know section - spans first 3 columns */}
                     <div className="lg:col-span-3">
                         <h3 className="font-outfit font-normal text-base text-black mb-2 leading-tight">
@@ -69,29 +80,32 @@ const Footer = () => {
                         </h3>
                         <ul className="space-y-2">
                             <li>
-                                <a href="/" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
+                                <button 
+                                    onClick={() => navigateToSection('hero')}
+                                    className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
+                                >
                                     Home
-                                </a>
-                            </li>
-                            <li>
-                                <button 
-                                    onClick={() => scrollToSection('about')} 
-                                    className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
-                                >
-                                    About
                                 </button>
                             </li>
                             <li>
                                 <button 
-                                    onClick={() => scrollToSection('features')} 
+                                    onClick={() => navigateToSection('funds')} 
                                     className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                 >
-                                    Features
+                                    Funds
                                 </button>
                             </li>
                             <li>
                                 <button 
-                                    onClick={() => scrollToSection('articles')} 
+                                    onClick={() => navigateToSection('engine')} 
+                                    className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
+                                >
+                                    Engine
+                                </button>
+                            </li>
+                            <li>
+                                <button 
+                                    onClick={() => navigateToSection('articles')} 
                                     className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                 >
                                     Blog
@@ -100,26 +114,28 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Account section - column 5 */}
-                    <div className="lg:col-span-1">
-                        <h3 className="font-outfit font-normal text-sm text-navy mb-3 leading-tight">
-                            Account
-                        </h3>
-                        <ul className="space-y-2">
-                            <li>
-                                <a href="/signup" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
-                                    Create Account
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/login" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
-                                    Log In
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                    {/* Account section - column 5 - Only show when not signed in */}
+                    {!isSignedIn && (
+                        <div className="lg:col-span-1">
+                            <h3 className="font-outfit font-normal text-sm text-navy mb-3 leading-tight">
+                                Account
+                            </h3>
+                            <ul className="space-y-2">
+                                <li>
+                                    <a href="/signup" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
+                                        Create Account
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/login" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
+                                        Log In
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    )}
 
-                    {/* Contact us section - column 6 */}
+                    {/* Contact us section - column 6 (or 5 when signed in) */}
                     <div className="lg:col-span-1">
                         <h3 className="font-outfit font-normal text-sm text-navy mb-3 leading-tight">
                             Contact us
@@ -162,10 +178,10 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Navigation sections - 2 column layout for mobile/tablet */}
+                    {/* Navigation sections - Dynamic layout for mobile/tablet */}
                     <div className="space-y-6 sm:space-y-8">
-                        {/* Top row: Navigation and Account side by side */}
-                        <div className="grid grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+                        {/* Top row: Navigation and Account side by side (or just Navigation when signed in) */}
+                        <div className={`grid gap-6 sm:gap-8 lg:gap-12 ${isSignedIn ? 'grid-cols-1' : 'grid-cols-2'}`}>
                             {/* Navigation section */}
                             <div>
                                 <h3 className="font-outfit font-normal text-sm text-navy mb-3 sm:mb-4 leading-tight">
@@ -173,13 +189,16 @@ const Footer = () => {
                                 </h3>
                                 <ul className="space-y-2 sm:space-y-3">
                                     <li>
-                                        <a href="/" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
+                                        <button 
+                                            onClick={() => navigate({ to: '/' })}
+                                            className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
+                                        >
                                             Home
-                                        </a>
+                                        </button>
                                     </li>
                                     <li>
                                         <button 
-                                            onClick={() => scrollToSection('about')} 
+                                            onClick={() => navigateToSection('about')} 
                                             className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                         >
                                             About
@@ -187,7 +206,7 @@ const Footer = () => {
                                     </li>
                                     <li>
                                         <button 
-                                            onClick={() => scrollToSection('features')} 
+                                            onClick={() => navigateToSection('features')} 
                                             className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                         >
                                             Features
@@ -195,7 +214,7 @@ const Footer = () => {
                                     </li>
                                     <li>
                                         <button 
-                                            onClick={() => scrollToSection('articles')} 
+                                            onClick={() => navigateToSection('articles')} 
                                             className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                         >
                                             Blog
@@ -204,24 +223,26 @@ const Footer = () => {
                                 </ul>
                             </div>
 
-                            {/* Account section */}
-                            <div>
-                                <h3 className="font-outfit font-normal text-sm text-navy mb-3 sm:mb-4 leading-tight">
-                                    Account
-                                </h3>
-                                <ul className="space-y-2 sm:space-y-3">
-                                    <li>
-                                        <a href="/signup" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
-                                            Create Account
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="/login" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
-                                            Log In
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
+                            {/* Account section - Only show when not signed in */}
+                            {!isSignedIn && (
+                                <div>
+                                    <h3 className="font-outfit font-normal text-sm text-navy mb-3 sm:mb-4 leading-tight">
+                                        Account
+                                    </h3>
+                                    <ul className="space-y-2 sm:space-y-3">
+                                        <li>
+                                            <a href="/signup" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
+                                                Create Account
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="/login" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
+                                                Log In
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            )}
                         </div>
 
                         {/* Bottom row: Contact us section */}

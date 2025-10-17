@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cn } from "../../utils/cn";
 
 interface SearchModalProps {
@@ -42,6 +42,23 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
         : [...prev, typeId]
     );
   };
+
+  // Close modal on Escape key press
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscapeKey);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -104,7 +121,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                       key={type.id}
                       onClick={() => toggleFundType(type.id)}
                       className={cn(
-                        "px-6 py-3 rounded-xl font-outfit font-medium",
+                        "px-6 py-3 rounded-xl font-outfit font-medium cursor-pointer",
                         "transition-all duration-200",
                         "text-sm",
                         isSelected
