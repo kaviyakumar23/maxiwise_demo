@@ -120,7 +120,7 @@ const FundPicks: React.FC<FundPicksProps> = ({ fundDetails, onCategorySelect }) 
 
       {/* Cards Container */}
       <div ref={fundCardsRef}>
-        <FundCards fundDetails={fundDetails} onCategorySelect={onCategorySelect} />
+        <FundCards enableAutoScroll={false} fundDetails={fundDetails} onCategorySelect={onCategorySelect} />
       </div>
 
       {/* Information Modal - Bottom Sheet */}

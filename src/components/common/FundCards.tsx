@@ -248,13 +248,13 @@ const FundCards: React.FC<FundCardsProps> = ({
     reorderedPicks.splice(2, 0, allParamsCard); // Insert at index 2 (middle of 5 cards)
   }
 
-  // Duplicate cards multiple times to ensure scrollable content
-  const duplicatedPicks = [
+  // Duplicate cards multiple times to ensure scrollable content (only when auto-scroll is enabled)
+  const duplicatedPicks = enableAutoScroll ? [
     ...reorderedPicks,
     ...reorderedPicks.map(pick => ({ ...pick, id: `${pick.id}-dup1` })),
     ...reorderedPicks.map(pick => ({ ...pick, id: `${pick.id}-dup2` })),
     ...reorderedPicks.map(pick => ({ ...pick, id: `${pick.id}-dup3` })),
-  ];
+  ] : reorderedPicks;
 
   // Detect which card is in focus based on scroll position
   const detectFocusedCard = () => {
@@ -548,7 +548,7 @@ const FundCards: React.FC<FundCardsProps> = ({
           return (
             <div 
               key={pick.id}
-              className="flex-shrink-0 w-[300px]"
+              className="flex-shrink-0 w-[280px]"
             >
               <FundCard
                 id={pick.id}
