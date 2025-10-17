@@ -93,7 +93,6 @@ const FundCard: React.FC<FundCardProps> = ({
       style={{
         background: bgGradient,
         transform: window.innerWidth < 1280 ? `scale(${enableEnlargementEffect ? (isFocused ? focusedScale : unfocusedScale) : 1})` : undefined,
-        touchAction: 'pan-x',
         userSelect: 'none',
       }}
     >
@@ -324,8 +323,11 @@ const FundCards: React.FC<FundCardsProps> = ({
   }, [focusedCardId]);
 
   // Auto-scroll effect - smooth 60fps scrolling using requestAnimationFrame
+  // Only enable on desktop to avoid conflicts with touch scrolling
   useEffect(() => {
-    if (!enableAutoScroll) return;
+    // Disable auto-scroll on mobile/tablet to prevent interference with touch
+    const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (!enableAutoScroll || isMobile) return;
 
     let animationFrameId: number | undefined;
     let resetIntervalId: number | undefined;
@@ -334,9 +336,10 @@ const FundCards: React.FC<FundCardsProps> = ({
     // Wait for component to fully mount and render
     const initTimer = setTimeout(() => {
       const animate = (timestamp: number) => {
+        // Only run on desktop (xl and above)
         const container = window.innerWidth >= 1280 
           ? desktopScrollContainerRef.current 
-          : mobileScrollContainerRef.current;
+          : null;
         
         if (!container) {
           animationFrameId = requestAnimationFrame(animate);
@@ -407,10 +410,8 @@ const FundCards: React.FC<FundCardsProps> = ({
         style={{ 
           scrollPaddingLeft: '50%', 
           scrollPaddingRight: '50%', 
-          scrollBehavior: 'auto',
-          touchAction: 'pan-x',
+          scrollBehavior: 'smooth',
           WebkitOverflowScrolling: 'touch',
-          overscrollBehaviorX: 'contain',
         }}
         onMouseEnter={() => {
           isHoveringRef.current = true;
@@ -426,7 +427,7 @@ const FundCards: React.FC<FundCardsProps> = ({
         onTouchEnd={() => {
           setTimeout(() => {
             isHoveringRef.current = false;
-          }, 1500);
+          }, 500);
         }}
         onMouseDown={() => {
           userInteractedRef.current = true;
@@ -470,9 +471,6 @@ const FundCards: React.FC<FundCardsProps> = ({
         className="hidden xl:flex items-center justify-start gap-4 overflow-x-auto scrollbar-hide px-8 py-4"
         style={{ 
           scrollBehavior: 'auto',
-          touchAction: 'pan-x',
-          WebkitOverflowScrolling: 'touch',
-          overscrollBehaviorX: 'contain',
         }}
         onMouseEnter={() => {
           isHoveringRef.current = true;

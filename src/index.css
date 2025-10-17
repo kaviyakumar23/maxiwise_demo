@@ -74,9 +74,6 @@
 body, html {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
-  /* Improve mobile scroll performance */
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: none;
 }
 
 body::-webkit-scrollbar, html::-webkit-scrollbar {
@@ -86,11 +83,4 @@ body::-webkit-scrollbar, html::-webkit-scrollbar {
 /* Improve touch scrolling on mobile devices */
 * {
   -webkit-tap-highlight-color: transparent;
-}
-
-/* Ensure proper touch handling for scroll containers */
-.scroll-container {
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
-  overscroll-behavior-y: contain;
 }

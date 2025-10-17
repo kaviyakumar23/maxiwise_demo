@@ -19,18 +19,8 @@ export default function CurtainScroller({ sections, children }: Props) {
   useEffect(() => {
     // Configure ScrollTrigger for better mobile performance
     ScrollTrigger.config({
-      // Normalize scroll for better touch device support
       autoRefreshEvents: "visibilitychange,DOMContentLoaded,load",
-    });
-
-    // Enable normalizeScroll for touch devices
-    ScrollTrigger.normalizeScroll({
-      allowNestedScroll: true,
-      lockAxis: false,
-      momentum: (self: { velocityY: number }) => {
-        // Reduce momentum on mobile for more controlled scrolling
-        return Math.min(3, self.velocityY / 1000);
-      },
+      limitCallbacks: true, // Optimize performance on mobile
     });
 
     // Small delay to ensure DOM is ready
@@ -45,6 +35,7 @@ export default function CurtainScroller({ sections, children }: Props) {
       });
 
       // Animate all panels except the last one
+      // Use scrub: 1 instead of true for smoother mobile scrolling
       gsap.to(panels.slice(0, 3), {
         yPercent: -100,
         ease: "none",
@@ -53,17 +44,20 @@ export default function CurtainScroller({ sections, children }: Props) {
           trigger: containerRef.current,
           start: "top top",
           end: "+=300%",
-          scrub: true,
+          scrub: 1, // Smoother than true, adds slight delay for smoothness
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           refreshPriority: 1,
+          fastScrollEnd: true, // Better performance on fast scrolls
         },
       });
 
       // Refresh ScrollTrigger on orientation change (mobile)
       const handleOrientationChange = () => {
-        ScrollTrigger.refresh();
+        setTimeout(() => {
+          ScrollTrigger.refresh();
+        }, 100);
       };
 
       window.addEventListener("orientationchange", handleOrientationChange);
@@ -84,7 +78,7 @@ export default function CurtainScroller({ sections, children }: Props) {
         window.removeEventListener("resize", handleResize);
         if (resizeTimer) clearTimeout(resizeTimer);
       };
-    }, 100);
+    }, 200); // Increased delay for mobile
 
     return () => {
       clearTimeout(timer);
@@ -99,7 +93,6 @@ export default function CurtainScroller({ sections, children }: Props) {
         style={{ 
           position: "relative", 
           height: "400vh",
-          touchAction: "pan-y",
         }}
       >
         {/* Container - pins at viewport */}
@@ -110,8 +103,6 @@ export default function CurtainScroller({ sections, children }: Props) {
             width: "100%",
             height: "100vh",
             overflow: "hidden",
-            touchAction: "pan-y",
-            WebkitOverflowScrolling: "touch",
           }}
         >
           {/* Panels - all absolutely positioned */}
@@ -130,8 +121,6 @@ export default function CurtainScroller({ sections, children }: Props) {
                 left: 0,
                 width: "100%",
                 height: "100%",
-                willChange: "transform",
-                touchAction: "pan-y",
               }}
             >
               {node}
