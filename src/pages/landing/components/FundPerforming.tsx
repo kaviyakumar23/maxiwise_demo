@@ -17,7 +17,7 @@ const FundPerforming = () => {
 
       {/* Fund Cards Section */}
       <div className="mt-8 mb-12">
-        <FundCards />
+        <FundCards enableEnlargementEffect={false} />
       </div>
     </div>
   );

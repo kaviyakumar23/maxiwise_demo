@@ -55,13 +55,13 @@ const Engine = () => {
 
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
-      <p className="text-sm md:text-lg font-normal lg:text-2xl font-outfit text-purple p-8">
+      <p className="text-sm md:text-lg font-normal lg:text-2xl font-outfit text-purple p-4 md:p-8">
         From Data to Decisions
       </p>
       <h1 className="text-3xl md:text-5xl lg:text-6xl font-medium text-navy font-outfit leading-7 p-6">
         The Engine
       </h1>
-      <div className="mt-4 p-4">
+      <div className="md:mt-4 p-4">
         <GetStarted />
       </div>
 
