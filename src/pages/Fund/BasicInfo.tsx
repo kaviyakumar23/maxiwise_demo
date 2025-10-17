@@ -1,8 +1,7 @@
 import React, { useState, useMemo } from "react";
-import { fundData } from "./DummyData";
+import { fundData, type FundDetails } from "./DummyData";
 import CaretUpDown from "../../assets/images/CaretUpDown.svg";
-import NipponLogo from "../../assets/images/Nippon India Mutual Fund.png"
-import type { FundDetails } from "../../utils/fundData";
+import NipponLogo from "../../assets/images/Nippon India Mutual Fund.png";
 
 interface BasicInfoProps {
   fundDetails?: FundDetails;

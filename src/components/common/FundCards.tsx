@@ -37,6 +37,9 @@ interface FundCardProps {
   textColor: string;
   onClick: () => void;
   isFocused?: boolean;
+  enableEnlargementEffect?: boolean;
+  focusedScale?: number;
+  unfocusedScale?: number;
 }
 
 const FundCard: React.FC<FundCardProps> = ({
@@ -47,17 +50,27 @@ const FundCard: React.FC<FundCardProps> = ({
   textColor,
   onClick,
   isFocused = false,
+  enableEnlargementEffect = true,
+  focusedScale = 1.0,
+  unfocusedScale = 0.9,
 }) => {
+  // Calculate height classes based on enlargement effect
+  const getHeightClass = () => {
+    if (!enableEnlargementEffect) return 'h-[300px] md:h-[320px]';
+    return isFocused ? 'h-[320px] md:h-[340px]' : 'h-[280px] md:h-[300px]';
+  };
+
   return (
     <div
       onClick={onClick}
       className={`relative rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-6 xl:p-6 2xl:p-7 cursor-pointer overflow-hidden transition-all duration-500 ease-out
-        ${isFocused ? 'h-[320px] md:h-[340px] scale-100 shadow-2xl' : 'h-[280px] md:h-[300px] scale-90'}
+        ${getHeightClass()} ${enableEnlargementEffect && isFocused ? 'shadow-2xl' : ''}
         lg:h-[300px] lg:scale-100 lg:shadow-none lg:hover:scale-105 lg:hover:shadow-2xl
         xl:h-[350px] 2xl:h-[400px]
       `}
       style={{
         background: bgGradient,
+        transform: window.innerWidth < 1280 ? `scale(${enableEnlargementEffect ? (isFocused ? focusedScale : unfocusedScale) : 1})` : undefined,
       }}
     >
       {/* Spiral background with reduced opacity */}
@@ -131,16 +144,31 @@ const FundCard: React.FC<FundCardProps> = ({
 
 interface FundCardsProps {
   onCategorySelect?: (categoryId: string) => void;
+  // Enlargement effect configuration
+  enableEnlargementEffect?: boolean;
+  focusedScale?: number;
+  unfocusedScale?: number;
+  // Auto-scroll configuration
+  enableAutoScroll?: boolean;
+  scrollSpeed?: number; // pixels per second
+  autoScrollResetDelay?: number; // milliseconds before auto-scroll resumes after user interaction
 }
 
-const FundCards: React.FC<FundCardsProps> = ({ onCategorySelect }) => {
+const FundCards: React.FC<FundCardsProps> = ({ 
+  onCategorySelect,
+  enableEnlargementEffect = true,
+  focusedScale = 1.0,
+  unfocusedScale = 0.9,
+  enableAutoScroll = true,
+  scrollSpeed = 40,
+  autoScrollResetDelay = 5000,
+}) => {
   const { smartFundPicks } = fundData;
   const mobileScrollContainerRef = useRef<HTMLDivElement>(null);
   const desktopScrollContainerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const [focusedCardId, setFocusedCardId] = useState<string>("all-parameters");
   const isInitialMount = useRef(true);
-  const [isHovering, setIsHovering] = useState(false);
   const isHoveringRef = useRef(false); // Ref to track hover state for intervals
   const userInteractedRef = useRef(false);
 
@@ -251,12 +279,11 @@ const FundCards: React.FC<FundCardsProps> = ({ onCategorySelect }) => {
 
   // Auto-scroll effect - smooth 60fps scrolling using requestAnimationFrame
   useEffect(() => {
+    if (!enableAutoScroll) return;
+
     let animationFrameId: number | undefined;
     let resetIntervalId: number | undefined;
     let lastTimestamp = 0;
-    
-    // Scroll speed: pixels per second
-    const scrollSpeed = 40; // 40 pixels per second = slow smooth scroll
     
     // Wait for component to fully mount and render
     const initTimer = setTimeout(() => {
@@ -304,7 +331,7 @@ const FundCards: React.FC<FundCardsProps> = ({ onCategorySelect }) => {
         if (!isHoveringRef.current) {
           userInteractedRef.current = false;
         }
-      }, 5000);
+      }, autoScrollResetDelay);
       
     }, 500);
     
@@ -317,7 +344,7 @@ const FundCards: React.FC<FundCardsProps> = ({ onCategorySelect }) => {
         clearInterval(resetIntervalId);
       }
     };
-  }, []); // Run only once on mount
+  }, [enableAutoScroll, scrollSpeed, autoScrollResetDelay]); // Re-run if props change
 
   const handleCardClick = (categoryId: string) => {
     if (onCategorySelect) {
@@ -334,22 +361,18 @@ const FundCards: React.FC<FundCardsProps> = ({ onCategorySelect }) => {
         style={{ scrollPaddingLeft: '50%', scrollPaddingRight: '50%', scrollBehavior: 'auto' }}
         onMouseEnter={() => {
           isHoveringRef.current = true;
-          setIsHovering(true);
         }}
         onMouseLeave={() => {
           isHoveringRef.current = false;
-          setIsHovering(false);
           userInteractedRef.current = false;
         }}
         onTouchStart={() => {
           isHoveringRef.current = true;
-          setIsHovering(true);
           userInteractedRef.current = true;
         }}
         onTouchEnd={() => {
           setTimeout(() => {
             isHoveringRef.current = false;
-            setIsHovering(false);
           }, 3000);
         }}
         onMouseDown={() => {
@@ -379,6 +402,9 @@ const FundCards: React.FC<FundCardsProps> = ({ onCategorySelect }) => {
                 textColor={styles.textColor}
                 onClick={() => handleCardClick(baseId)}
                 isFocused={isFocused}
+                enableEnlargementEffect={enableEnlargementEffect}
+                focusedScale={focusedScale}
+                unfocusedScale={unfocusedScale}
               />
             </div>
           );
@@ -392,11 +418,9 @@ const FundCards: React.FC<FundCardsProps> = ({ onCategorySelect }) => {
         style={{ scrollBehavior: 'auto' }}
         onMouseEnter={() => {
           isHoveringRef.current = true;
-          setIsHovering(true);
         }}
         onMouseLeave={() => {
           isHoveringRef.current = false;
-          setIsHovering(false);
           userInteractedRef.current = false;
         }}
         onMouseDown={() => {
@@ -424,6 +448,9 @@ const FundCards: React.FC<FundCardsProps> = ({ onCategorySelect }) => {
                 textColor={styles.textColor}
                 onClick={() => handleCardClick(baseId)}
                 isFocused={false}
+                enableEnlargementEffect={false}
+                focusedScale={1.0}
+                unfocusedScale={1.0}
               />
             </div>
           );

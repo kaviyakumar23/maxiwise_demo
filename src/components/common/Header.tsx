@@ -164,7 +164,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
 
         {/* Centered Logo - Absolutely positioned to center of screen */}
         <div className="absolute left-1/2 transform -translate-x-1/2 justify-center">
-          <img src={LogoWhite} alt="Logo" className="h-8 transition-opacity duration-300" />
+          <img src={LogoWhite} alt="Logo" className="h-5 transition-opacity duration-300" />
         </div>
 
         {/* Right Side - Search Icon and Profile Icon */}

@@ -40,9 +40,9 @@ const WhyMaxiwiseCard = ({
     
     if (layoutType === 'absolute') {
         return (
-            <div className={`${backgroundColor} min-h-screen relative overflow-hidden`}>
+            <div className={`${backgroundColor} w-full h-full relative overflow-hidden`}>
                 {/* Main content container */}
-                <div className="h-screen flex flex-col lg:flex-row">
+                <div className="w-full h-full flex flex-col lg:flex-row">
                     {/* Left content section - responsive layout */}
                     <div className="w-full lg:w-1/2 h-1/2 lg:h-full px-4 sm:px-8 lg:pl-16 z-20 flex flex-col justify-center">
                         <div className={`font-outfit font-medium text-4xl sm:text-5xl lg:text-6xl xl:text-7xl ${titleColor} leading-tight mb-6 lg:mb-8`}>
@@ -84,8 +84,8 @@ const WhyMaxiwiseCard = ({
         : "container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center justify-between";
     
     const outerContainerClass = containerVariant === 'centered'
-        ? `${backgroundColor} min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 ${layoutType === 'flex' ? 'relative overflow-hidden' : ''}`
-        : `${backgroundColor} min-h-screen flex items-center ${layoutType === 'flex' ? 'relative overflow-hidden' : ''}`;
+        ? `${backgroundColor} w-full h-full flex items-center justify-center px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 ${layoutType === 'flex' ? 'relative overflow-hidden' : ''}`
+        : `${backgroundColor} w-full h-full flex items-center ${layoutType === 'flex' ? 'relative overflow-hidden' : ''}`;
     
     return (
         <div className={outerContainerClass}>

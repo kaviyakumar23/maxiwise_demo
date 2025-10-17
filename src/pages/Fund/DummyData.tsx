@@ -208,6 +208,17 @@ export interface Watchlist {
   illustrationText: string;
 }
 
+// Type for API fund details response
+export interface FundDetails {
+  fund_name: string;
+  fund_type: string;
+  morningstar_category: string;
+  purchase_mode: string;
+  fund_size: string;
+  fund_size_date: string;
+  [key: string]: any; // Allow additional properties from API
+}
+
 // Main Fund Data Object
 export const fundData: FundData = {
   fundHeader: {
