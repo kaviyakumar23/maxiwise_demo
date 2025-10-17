@@ -61,7 +61,7 @@ const Ratios: React.FC = () => {
   const activeSection = getActiveSection();
 
   return (
-    <>
+    <div className='py-4'>
       {/* Fixed Tooltip */}
       {hoveredMetric !== null && tooltipPosition && (
         <div 
@@ -456,7 +456,7 @@ const Ratios: React.FC = () => {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 };
 

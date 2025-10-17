@@ -11,7 +11,7 @@ type ViewType = 'consistency' | 'trend';
 
 const Carrva: React.FC = () => {
   const { caarva } = fundData;
-  
+
   const [activeMetric, setActiveMetric] = useState<MetricType>(caarva.activeMetric as MetricType);
   const [activeView, setActiveView] = useState<ViewType>('consistency');
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
@@ -28,7 +28,7 @@ const Carrva: React.FC = () => {
     } else {
       document.body.style.overflow = 'unset';
     }
-    
+
     return () => {
       document.body.style.overflow = 'unset';
     };
@@ -88,13 +88,13 @@ const Carrva: React.FC = () => {
                 key={level.label}
                 className={`h-[20%] ${level.color} border-b border-white/20 relative flex items-center px-4 md:px-6`}
               >
-                <span 
+                <span
                   className="text-xs md:text-sm lg:text-base font-medium z-10"
                   style={{
-                    color: index === 0 ? '#047857' : 
-                           index === 1 ? '#10B981' : 
-                           index === 2 ? '#D97706' : 
-                           index === 3 ? '#FB7185' : '#E11D48'
+                    color: index === 0 ? '#047857' :
+                      index === 1 ? '#10B981' :
+                        index === 2 ? '#D97706' :
+                          index === 3 ? '#FB7185' : '#E11D48'
                   }}
                 >
                   {level.label}
@@ -150,7 +150,7 @@ const Carrva: React.FC = () => {
                 vectorEffect="non-scaling-stroke"
               />
             </svg>
-              
+
             {/* Data points - preserves aspect ratio for perfect circles */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="xMidYMid meet">
               {trendData.map((point, index) => {
@@ -178,7 +178,7 @@ const Carrva: React.FC = () => {
           {trendData.map((point, index) => {
             const xPosition = (index / (trendData.length - 1)) * 100;
             return (
-              <span 
+              <span
                 key={point.period}
                 className="absolute -translate-x-1/2"
                 style={{ left: `${xPosition}%` }}
@@ -193,90 +193,92 @@ const Carrva: React.FC = () => {
   };
 
   return (
-    <div className="p-4 md:p-2 lg:p-4 xl:p-0">
-      {/* Title */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-sm md:text-base lg:text-lg font-semibold font-outfit text-navy leading-[145%] tracking-[0.15%] py-4">
-          CARRVA
-        </h1>
-        <button 
-          onClick={() => setIsInfoModalOpen(true)}
-          className="w-4 h-4 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:border-gray-400 transition-colors lg:hidden"
-        >
-          <span><img src={Qustion} alt="Question" /></span>
-        </button>
-      </div>
-
-      {/* Metrics Chips */}
-      <div className="flex gap-3 md:gap-4 mb-6 md:mb-8 overflow-x-auto scrollbar-hide">
-        {metrics.map((metric) => (
-          <Chip
-            key={metric}
-            label={metric}
-            isActive={activeMetric === metric}
-            onClick={() => setActiveMetric(metric)}
-          />
-        ))}
-      </div>
-
-      {/* View Toggle */}
-      <div className="transition-all duration-300 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3">
-      <div className="flex justify-center mb-8 md:mb-10">
-        <Toggle
-          options={[
-            { value: 'consistency', label: 'Consistency' },
-            { value: 'trend', label: 'Trend' },
-          ]}
-          activeValue={activeView}
-          onChange={(value) => setActiveView(value as ViewType)}
-          variant="light"
-        />
-      </div>
-
-      {/* Chart Display */}
-      <div className="rounded-2xl md:rounded-3xl">
-        {activeView === 'consistency' ? <ConsistencyChart /> : <TrendChart />}
-      </div>
-    </div>
-
-      {/* Information Modal - Bottom Sheet */}
-      {isInfoModalOpen && (
-        <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-black/40 z-50 lg:hidden animate-[fadeIn_0.3s_ease-out]"
-            onClick={() => setIsInfoModalOpen(false)}
-          />
-          
-          {/* Modal Content */}
-          <div 
-            className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 lg:hidden animate-[slideUp_0.3s_ease-out]"
+    <div className="py-4">
+      <div className="p-4 md:p-2 lg:p-4 xl:p-0">
+        {/* Title */}
+        <div className="flex items-center justify-between">
+          <h1 className="text-sm md:text-base lg:text-lg font-semibold font-outfit text-navy leading-[145%] tracking-[0.15%] py-4">
+            CARRVA
+          </h1>
+          <button
+            onClick={() => setIsInfoModalOpen(true)}
+            className="w-4 h-4 md:w-10 md:h-10 rounded-full flex items-center justify-center hover:border-gray-400 transition-colors lg:hidden"
           >
-            <div className="p-6">
-              {/* Handle Bar */}
-              <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6" />
-              
-              {/* Header */}
-              <h1 className="text-navy font-bold text-lg font-outfit mb-4">
-                CARRVA Insights
-              </h1>
-              
-              {/* Description */}
-              <p className="text-[#4B5563] font-normal text-sm font-outfit mb-6">
-                CARRVA (Cycles, Alpha, Return, Risk, Volatility, Analysis) helps you evaluate a fund's performance from multiple perspectives. These charts highlight both how consistently a fund delivers returns and the trend of its performance across different time periods, giving you a clearer view of stability and reliability.
-              </p>
-              
-              {/* Close Button */}
-              <button
-                onClick={() => setIsInfoModalOpen(false)}
-                className="w-full bg-purple text-white font-semibold text-base font-outfit py-4 rounded-full hover:bg-[#7E22CE] transition-colors"
-              >
-                Close
-              </button>
-            </div>
+            <span><img src={Qustion} alt="Question" /></span>
+          </button>
+        </div>
+
+        {/* Metrics Chips */}
+        <div className="flex gap-3 md:gap-4 mb-6 md:mb-8 overflow-x-auto scrollbar-hide">
+          {metrics.map((metric) => (
+            <Chip
+              key={metric}
+              label={metric}
+              isActive={activeMetric === metric}
+              onClick={() => setActiveMetric(metric)}
+            />
+          ))}
+        </div>
+
+        {/* View Toggle */}
+        <div className="transition-all duration-300 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3">
+          <div className="flex justify-center mb-8 md:mb-10">
+            <Toggle
+              options={[
+                { value: 'consistency', label: 'Consistency' },
+                { value: 'trend', label: 'Trend' },
+              ]}
+              activeValue={activeView}
+              onChange={(value) => setActiveView(value as ViewType)}
+              variant="light"
+            />
           </div>
-        </>
-      )}
+
+          {/* Chart Display */}
+          <div className="rounded-2xl md:rounded-3xl">
+            {activeView === 'consistency' ? <ConsistencyChart /> : <TrendChart />}
+          </div>
+        </div>
+
+        {/* Information Modal - Bottom Sheet */}
+        {isInfoModalOpen && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/40 z-50 lg:hidden animate-[fadeIn_0.3s_ease-out]"
+              onClick={() => setIsInfoModalOpen(false)}
+            />
+
+            {/* Modal Content */}
+            <div
+              className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 lg:hidden animate-[slideUp_0.3s_ease-out]"
+            >
+              <div className="p-6">
+                {/* Handle Bar */}
+                <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6" />
+
+                {/* Header */}
+                <h1 className="text-navy font-bold text-lg font-outfit mb-4">
+                  CARRVA Insights
+                </h1>
+
+                {/* Description */}
+                <p className="text-[#4B5563] font-normal text-sm font-outfit mb-6">
+                  CARRVA (Cycles, Alpha, Return, Risk, Volatility, Analysis) helps you evaluate a fund's performance from multiple perspectives. These charts highlight both how consistently a fund delivers returns and the trend of its performance across different time periods, giving you a clearer view of stability and reliability.
+                </p>
+
+                {/* Close Button */}
+                <button
+                  onClick={() => setIsInfoModalOpen(false)}
+                  className="w-full bg-purple text-white font-semibold text-base font-outfit py-4 rounded-full hover:bg-[#7E22CE] transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

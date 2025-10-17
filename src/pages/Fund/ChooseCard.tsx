@@ -209,7 +209,7 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, se
         {totalFundsCount > 3 && (
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="w-full mt-4 md:mt-6 bg-lime text-navy font-semibold text-base md:text-lg py-3 md:py-4 rounded-xl md:rounded-2xl hover:bg-lime-dark transition-colors font-outfit"
+            className="w-full mt-4 md:mt-6 bg-lime text-navy font-semibold text-base md:text-lg py-3 md:py-4 rounded-xl md:rounded-2xl hover:bg-lime-dark transition-colors font-outfit cursor-pointer"
           >
             View All ({totalFundsCount})
           </button>

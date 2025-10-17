@@ -141,7 +141,7 @@ const InvestmentReturns: React.FC = () => {
   }, [isInfoModalOpen]);
 
   return (
-    <div>
+    <div className='py-4'>
       <div className="p-4 md:p-6 lg:p-4 xl:p-0">
       <div className="flex items-center justify-between mb-4 md:mb-6">
         <h2 className="text-base md:text-lg font-semibold text-navy leading-[145%] tracking-[0.15%]">Investment Returns</h2>

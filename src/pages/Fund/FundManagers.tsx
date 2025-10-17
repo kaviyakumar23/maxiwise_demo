@@ -28,7 +28,7 @@ const FundManagers: React.FC<FundManagersProps> = ({ fundDetails }) => {
 
   return (
     // <div className="p-4 md:p-2 lg:p-4 xl:p-0">
-    <div className="bg-white rounded-2xl p-4 md:p-6 lg:p-8 w-full lg:w-2/3 mt-4">
+    <div className="bg-white rounded-2xl p-4 md:p-6 lg:p-8 w-full lg:w-2/3 mt-4 py-4">
       {/* Title */}
       <h1 className="text-sm md:text-base lg:text-lg font-semibold font-outfit text-navy leading-[145%] tracking-[0.15%] py-4">
         Fund Managers

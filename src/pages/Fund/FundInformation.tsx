@@ -43,7 +43,7 @@ const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
   ];
 
   return (
-    <div className="p-4 md:p-2 lg:p-4 xl:p-0 w-full lg:w-2/3">
+    <div className="p-4 md:p-2 lg:p-4 xl:p-0 w-full lg:w-2/3 py-4">
       {/* Title */}
       <div className="flex items-center justify-between">
         <h1 className="text-sm md:text-base lg:text-lg font-semibold font-outfit text-navy leading-[145%] tracking-[0.15%] py-4">
@@ -55,7 +55,7 @@ const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
       </div>
 
       {/* Information List */}
-      <div className="bg-white rounded-2xl p-4 md:p-6 lg:p-8">
+      <div className="bg-white rounded-2xl p-4 md:p-6 lg:p-10">
         <div>
           {informationItems.map((item, index) => (
             <div
