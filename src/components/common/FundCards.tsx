@@ -371,9 +371,12 @@ const FundCards: React.FC<FundCardsProps> = ({
           userInteractedRef.current = true;
         }}
         onTouchEnd={() => {
+          // Reset hovering immediately since touch ended
+          isHoveringRef.current = false;
+          // Reset interaction after a short delay to allow scroll momentum to finish
           setTimeout(() => {
-            isHoveringRef.current = false;
-          }, 3000);
+            userInteractedRef.current = false;
+          }, 2000);
         }}
         onMouseDown={() => {
           userInteractedRef.current = true;
