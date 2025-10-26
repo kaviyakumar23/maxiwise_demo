@@ -61,7 +61,7 @@ export const Hero = () => {
               <p>India's Decision Layer for Investing</p>
             </div>
             <div className="mb-12">
-              <h1 className="text-7xl font-medium font-outfit text-white py-2">
+              <h1 className="text-6xl font-medium font-outfit text-white py-2">
                 The most objective <br /> report card of every <br /> mutual fund.
               </h1>
               <p className="text-3xl font-light italic font-outfit text-white p-4">

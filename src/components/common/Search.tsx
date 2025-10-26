@@ -31,7 +31,7 @@ const SearchIcon = ({ className }: { className?: string }) => (
 
 const Search: React.FC<SearchProps> = ({
   placeholder = "Search mutual funds...",
-  size = 'lg',
+  size = 'md',
   keyboardShortcut = ['⌘', 'K'],
   className,
   containerClassName,
