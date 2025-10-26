@@ -93,12 +93,13 @@ export const Hero = () => {
               <h1 className="text-5xl lg:text-6xl font-medium leading-tight py-2 font-outfit text-white">
               The most objective <br /> report card of every <br /> mutual fund.
               </h1>
-              <p className="text-3xl lg:text-6xl font-light italic leading-tight mb-4 font-outfit text-white">
+              <p className="text-3xl lg:text-3xl font-light italic leading-tight p-4 font-outfit text-white">
                 No bias, only facts
               </p>
             </div>
             <div>
               {/* <GetStarted>Start Maxiwising</GetStarted> */}
+              <Search />
             </div>
           </div>
 
@@ -127,7 +128,7 @@ export const Hero = () => {
               <h1 className="text-4xl sm:text-5xl font-medium leading-tight mb-2 font-outfit text-white">
                 mutual fund.
               </h1>
-              <p className="text-base lg:text-6xl font-light italic leading-tight mb-4 font-outfit text-white">
+              <p className="text-base lg:text-6xl font-light italic leading-tight p-4 font-outfit text-white">
                 No bias, only facts
               </p>
             </div>
