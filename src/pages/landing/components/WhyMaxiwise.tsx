@@ -20,6 +20,8 @@ const WhyMaxiwise = () => {
             backgroundColor: "bg-navy",
             titleColor: "text-purple",
             descriptionColor: "text-white",
+            buttonText: "Why Maxiwise",
+            buttonClassName: "font-medium rounded-full",
             layoutType: "absolute" as const,
             images: [
                 {
@@ -49,6 +51,7 @@ const WhyMaxiwise = () => {
             descriptionColor: "text-navy",
             buttonColor: "indigo" as const,
             buttonClassName: "font-medium rounded-full",
+            buttonText: "The Engine",
             layoutType: "flex" as const,
             images: [
                 {
@@ -61,15 +64,16 @@ const WhyMaxiwise = () => {
         },
         {
             // Section 3: Guided by Experts (Purple - Flex layout with absolute image)
-            title: ["Guided by", "Experts"],
+            title: ["The Power of Pros"],
             description: [
-                "Our proprietary CARRVA framework (<span class=\"font-bold\">Consistency, Alpha, Returns, Risk, Volatility, Analysis</span>) is battle-tested with India's top family offices."
+"Proprietary methodologies refined over decades and battle-tested with India's top family offices."
             ],
             backgroundColor: "bg-purple",
             titleColor: "text-navy",
             descriptionColor: "text-navy",
             buttonColor: "indigo" as const,
             buttonClassName: "font-medium rounded-full text-purple",
+            buttonText: "The Pedigree",
             layoutType: "flex" as const,
             images: [
                 {
@@ -83,7 +87,7 @@ const WhyMaxiwise = () => {
         },
         {
             // Section 4: Decisions You Can Trust (Navy - Flex layout - Centered variant)
-            title: ["Decisions You", "Can Trust"],
+            title: ["Insights You", "Can Trust"],
             description: [
                 "No noise, no hype—just transparency, integrity, and insights you can act on."
             ],
@@ -91,6 +95,7 @@ const WhyMaxiwise = () => {
             titleColor: "text-purple",
             descriptionColor: "text-white",
             buttonClassName: "text-black rounded-full",
+            buttonText: "Get Started",
             layoutType: "flex" as const,
             containerVariant: "centered" as const,
             textContainerClass: "flex-1 max-w-2xl lg:mt-32",
@@ -119,6 +124,7 @@ const WhyMaxiwise = () => {
                         descriptionColor={sectionData.descriptionColor}
                         buttonColor={sectionData.buttonColor}
                         buttonClassName={sectionData.buttonClassName}
+                        buttonText={sectionData.buttonText}
                         images={sectionData.images}
                         layoutType={sectionData.layoutType}
                         containerVariant={sectionData.containerVariant}

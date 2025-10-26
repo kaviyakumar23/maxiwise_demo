@@ -6,17 +6,17 @@ const Articles = () => {
             {/* Responsive heading */}
             <div className="font-outfit font-medium text-navy text-center pt-12 sm:pt-20 lg:pt-30">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[56px] leading-tight sm:leading-[1.2] lg:leading-[61.6px] tracking-[-0.5px] lg:tracking-[-1px]">
-                    Gain valuable insights
+                    Decisions that matter
                 </h1>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[56px] leading-tight sm:leading-[1.2] lg:leading-[61.6px] tracking-[-0.5px] lg:tracking-[-1px]">
+                {/* <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[56px] leading-tight sm:leading-[1.2] lg:leading-[61.6px] tracking-[-0.5px] lg:tracking-[-1px]">
                     from our latest news
-                </h1>
+                </h1> */}
             </div>
             
             {/* Responsive description */}
             <div className="font-outfit font-normal text-sm sm:text-base lg:text-lg text-[#4B5563] text-center py-4 sm:py-6 leading-relaxed sm:leading-[26.4px] tracking-[0.35px] max-w-2xl mx-auto">
-                <p>Dive into our curated feed for the freshest insights</p>
-                <p>and essential industry developments.</p>
+                <p>Simplifying everything that</p>
+                <p>makes investing intimidating</p>
             </div>
             
             {/* Read All Articles link */}
@@ -27,47 +27,30 @@ const Articles = () => {
                 </Link>
             </div>
             <div className="w-full mt-8">
-                <div className="w-full bg-white py-8">
-                    <div className="flex gap-4 overflow-x-auto pb-4">
+                <div className="w-full bg-white py-8 ml-4">
+                    <div className="flex gap-10 overflow-x-auto pb-4">
                         {/* Article Card 1 */}
-                        <div className="bg-gradient-to-b from-[#797979] to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                                <span className="text-white text-sm">Insight</span>
-                            </div>
-                            <h3 className="text-white font-light text-base leading-tight">The Role of User Feedback in SaaS Product</h3>
+                        <div className="min-w-[350px] flex-shrink-0">
+                            <h3 className="text-black font-light text-base leading-tight mb-2">Perspective</h3>
+                            <h1 className="text-black font-medium text-xl leading-tight">How Rich Really Get<br/>Richer?</h1>
                         </div>
 
                         {/* Article Card 2 */}
-                        <div className="bg-gradient-to-b from-[#797979] to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                                <span className="text-white text-sm">Technology</span>
-                            </div>
-                            <h3 className="text-white font-light text-base leading-tight">The Future of Application Design and Development</h3>
+                        <div className="min-w-[350px] flex-shrink-0">
+                            <h3 className="text-black font-light text-base leading-tight mb-2">Selection</h3>
+                            <h1 className="text-black font-medium text-xl leading-tight">Does Expense Ratio Matter?</h1>
                         </div>
 
                         {/* Article Card 3 */}
-                        <div className="bg-gradient-to-b from-[#797979] to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                                <span className="text-white text-sm">News</span>
-                            </div>
-                            <h3 className="text-white font-light text-base leading-tight">Effective Marketing Strategies for Apps in 2025</h3>
+                        <div className="min-w-[350px] flex-shrink-0">
+                            <h3 className="text-black font-light text-base leading-tight mb-2">Portfolio Management</h3>
+                            <h1 className="text-black font-medium text-xl leading-tight">Stay Invested or Exit – How to<br/>Decide?</h1>
                         </div>
-                        <div className="bg-gradient-to-b from-[#797979] to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                                <span className="text-white text-sm">News</span>
-                            </div>
-                            <h3 className="text-white font-light text-base leading-tight">Effective Marketing Strategies for Apps in 2025</h3>
-                        </div>
-                        <div className="bg-gradient-to-b from-[#797979] to-black rounded-lg p-8 min-w-[400px] flex-shrink-0 h-[280px] flex flex-col justify-end">
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                                <span className="text-white text-sm">News</span>
-                            </div>
-                            <h3 className="text-white font-light text-base leading-tight">Effective Marketing Strategies for Apps in 2025</h3>
+
+                        {/* Article Card 4 */}
+                        <div className="min-w-[350px] flex-shrink-0">
+                            <h3 className="text-black font-light text-base leading-tight mb-2">Perspective</h3>
+                            <h1 className="text-black font-medium text-xl leading-tight">Red Flags in Funds You Should Never<br/>Ignore</h1>
                         </div>
                     </div>
                 </div>

@@ -54,10 +54,10 @@ const Footer = () => {
                     {/* Be the first to know section - spans first 3 columns */}
                     <div className="lg:col-span-3">
                         <h3 className="font-outfit font-normal text-base text-black mb-2 leading-tight">
-                            Be the first to know
+                            Insights built for better decisions
                         </h3>
                         <p className="font-outfit text-sm text-[#4B5563] mb-4 leading-relaxed">
-                            We'll send you only what matters — no noise, no spam.
+                            No spam. no noise. Unsubscribe anytime.
                         </p>
                         <div className="relative flex max-w-md">
                             <input
@@ -92,7 +92,7 @@ const Footer = () => {
                                     onClick={() => navigateToSection('funds')} 
                                     className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                 >
-                                    Funds
+                                    Our Story
                                 </button>
                             </li>
                             <li>
@@ -100,7 +100,7 @@ const Footer = () => {
                                     onClick={() => navigateToSection('engine')} 
                                     className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                 >
-                                    Engine
+                                    The Engine
                                 </button>
                             </li>
                             <li>
@@ -108,7 +108,7 @@ const Footer = () => {
                                     onClick={() => navigateToSection('articles')} 
                                     className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                 >
-                                    Blog
+                                    Insights
                                 </button>
                             </li>
                         </ul>
@@ -159,10 +159,10 @@ const Footer = () => {
                     {/* Be the first to know section - Always at top */}
                     <div className="mb-8 lg:mb-12">
                         <h3 className="font-outfit font-normal text-base sm:text-lg text-black mb-2 leading-tight">
-                            Be the first to know
+                            Insights built for better decisions
                         </h3>
                         <p className="font-outfit text-sm text-[#4B5563] mb-4 leading-relaxed">
-                            We'll send you only what matters — no noise, no spam.
+                            No spam. No noise. Unsubscribe anytime.
                         </p>
                         <div className="relative flex max-w-md">
                             <input
@@ -201,7 +201,7 @@ const Footer = () => {
                                             onClick={() => navigateToSection('about')} 
                                             className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                         >
-                                            About
+                                            Our Story
                                         </button>
                                     </li>
                                     <li>
@@ -209,7 +209,7 @@ const Footer = () => {
                                             onClick={() => navigateToSection('features')} 
                                             className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                         >
-                                            Features
+                                            The Engine
                                         </button>
                                     </li>
                                     <li>
@@ -217,7 +217,7 @@ const Footer = () => {
                                             onClick={() => navigateToSection('articles')} 
                                             className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                         >
-                                            Blog
+                                            Insights
                                         </button>
                                     </li>
                                 </ul>
@@ -252,7 +252,7 @@ const Footer = () => {
                             </h3>
                             <div className="space-y-2 sm:space-y-3">
                                 <p className="font-outfit font-normal text-sm text-[#4B5563] leading-relaxed">
-                                    <span className="block">info@maxiwise.com</span>
+                                    <span className="block">support@maxiwise.in</span>
                                 </p>
                                 <p className="font-outfit font-normal text-sm text-[#4B5563] leading-relaxed">
                                     <span className="block">+91 (813) 095-8849</span>

@@ -38,24 +38,22 @@ const GetStarted: React.FC<ButtonProps & { children?: React.ReactNode }> = ({
   };
 
   return (
-    <div className={cn('w-full', className)}>
-      <Button 
-        variant={variant} 
-        color={color} 
-        size={size} 
-        className={cn(
-          'font-outfit',
-          'transition-all duration-200',
-          'focus:outline-none',
-          'text-base',
-          className
-        )} 
-        onClick={handleClick}
-        {...props}
-      >
-        {children || 'Get Started'}
-      </Button>
-    </div>
+    <Button 
+      variant={variant} 
+      color={color} 
+      size={size} 
+      className={cn(
+        'font-outfit',
+        'transition-all duration-200',
+        'focus:outline-none',
+        'text-base',
+        className
+      )} 
+      onClick={handleClick}
+      {...props}
+    >
+      {children || 'Get Started'}
+    </Button>
   )
 }
 

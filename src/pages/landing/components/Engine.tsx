@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import GetStarted from "../../../components/common/GetStarted";
 
 interface CardData {
-  id: number;
-  topText: string;
+  id: number; 
   middleText: string;
   mainText: string;
 }
@@ -11,15 +9,13 @@ interface CardData {
 const cardsData: CardData[] = [
   {
     id: 1,
-    topText: "Start Selecting Right",
-    middleText: "To select right:",
-    mainText: "Carrva",
+    middleText: "Select Right with",
+    mainText: "CARRVA",
   },
   {
     id: 2,
-    topText: "Be a part of the 1%",
-    middleText: "To navigate right:",
-    mainText: "Alpha",
+    middleText: "Manage Portfolio with",
+    mainText: "The Alpha Methodology",
   },
 ];
 
@@ -55,32 +51,26 @@ const Engine = () => {
 
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4">
-      <p className="text-sm md:text-lg font-normal lg:text-2xl font-outfit text-purple p-4 md:p-8">
-        From Data to Decisions
+      <p className="text-base md:text-lg font-normal lg:text-2xl font-outfit text-purple p-2 md:p-4">
+       The Engine
       </p>
-      <h1 className="text-3xl md:text-5xl lg:text-6xl font-medium text-navy font-outfit leading-7 p-6">
-        The Engine
-      </h1>
-      <div className="md:mt-4 p-4">
-        <GetStarted />
+      <div className="text-xl md:text-3xl lg:text-4xl font-medium text-navy font-outfit leading-8 sm:leading-9 p-4 text-center max-w-4xl">
+        <p>We do the complex analysis and crunch the numbers so that you get the clarity for every investment decision.</p>
       </div>
+      
 
       {/* Desktop and Tablet View */}
       <div className="hidden md:grid md:grid-cols-2 gap-6 lg:gap-8 mt-12 max-w-7xl w-full px-4">
         {cardsData.map((card) => (
           <div
             key={card.id}
-            className="bg-navy rounded-3xl p-12 lg:p-16 flex flex-col justify-end h-[500px] lg:h-[600px]"
-          >
-            <p className="text-purple text-xs lg:text-base md:text-sm font-medium font-outfit py-2 leading-4">
-              {card.topText}
-            </p>
-            <h2 className="text-white text-xl md:text-2xl lg:text-4xl font-normal font-outfit leading-6 tracking-tight py-4 mb-2">
+            className="bg-navy rounded-3xl p-12 lg:p-16 flex flex-col justify-end h-[500px] lg:h-[600px]">
+            <p className="text-white text-sm md:text-base lg:text-lg font-medium font-outfit leading-4 py-4 mb-2">
               {card.middleText}
-            </h2>
-            <h3 className="text-white text-xl md:text-2xl lg:text-4xl font-normal font-outfit leading-6 tracking-tight">
+            </p>
+            <h1 className="text-white text-xl md:text-2xl lg:text-4xl font-normal font-outfit leading-6 tracking-tight">
               {card.mainText}
-            </h3>
+            </h1>
           </div>
         ))}
       </div>
@@ -102,15 +92,12 @@ const Engine = () => {
                 className="w-full flex-shrink-0 snap-center"
               >
                 <div className="bg-navy rounded-3xl p-10 flex flex-col justify-end h-[400px]">
-                  <p className="text-purple text-xs lg:text-base md:text-sm font-medium font-outfit py-2 leading-4 mb-2">
-                    {card.topText}
-                  </p>
-                  <h2 className="text-white text-xl font-normal font-outfit leading-6 tracking-tight mb-2">
+                  <p className="text-white text-xs md:text-sm lg:text-base font-medium font-outfit leading-4 mb-2">
                     {card.middleText}
-                  </h2>
-                  <h3 className="text-white text-xl font-normal font-outfit leading-6 tracking-tight">
+                  </p>
+                  <h1 className="text-white text-xl font-normal font-outfit leading-6 tracking-tight">
                     {card.mainText}
-                  </h3>
+                  </h1>
                 </div>
               </div>
             ))}

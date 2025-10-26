@@ -1,98 +1,131 @@
 import React, { useState, useEffect } from 'react';
-import { fundData } from './DummyData';
 import { Chip } from '../../components/ui/Chip';
 import { Toggle } from '../../components/ui/Toggle';
 import { TimeButton } from '../../components/ui/TimeButton';
 import { BarChart } from '../../components/ui/BarChart';
 import type { BarData } from '../../components/ui/BarChart';
+import type { RollingReturns, PointToPoint } from '../../types/fundTypes';
 import Qustion from "../../assets/images/Question.svg";
 import ChartBar from "../../assets/images/ChartBar.svg";
 import Percent from "../../assets/images/Percent.svg";
 
-const InvestmentReturns: React.FC = () => {
-  const { investmentReturns } = fundData;
+interface InvestmentReturnsProps {
+  rollingReturns?: RollingReturns;
+  pointToPoint?: PointToPoint;
+}
+
+const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({ 
+  rollingReturns, 
+  pointToPoint 
+}) => {
+  // Convert category format from API (e.g., "12m", "24m") to UI format (e.g., "1Y", "2Y")
+  const convertCategory = (category: string): string => {
+    if (category.toLowerCase() === 'ytd') return 'YTD';
+    const match = category.match(/(\d+)m/i);
+    if (match) {
+      const months = parseInt(match[1]);
+      const years = months / 12;
+      return `${years}Y`;
+    }
+    return category;
+  };
+
+  // Get time periods based on the active sub-tab
+  const getTimePeriods = (subTab: string): string[] => {
+    const dataSource = subTab === 'Rolling Returns' ? rollingReturns : pointToPoint;
+    if (!dataSource?.data?.categories) return ['1Y', '2Y', '3Y', '4Y', '5Y'];
+    return dataSource.data.categories.map(convertCategory);
+  };
+
+  const tabs = ['Returns', 'Performance'];
+  const subTabs = ['Rolling Returns', 'Point to Point'];
   
-  const [activeTab, setActiveTab] = useState(investmentReturns.tabs[0]);
-  const [activeSubTab, setActiveSubTab] = useState(investmentReturns.subTabs[0]);
-  const [activeTimePeriod, setActiveTimePeriod] = useState(investmentReturns.activeTimePeriod);
+  const [activeTab, setActiveTab] = useState(tabs[0]);
+  const [activeSubTab, setActiveSubTab] = useState(subTabs[0]);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
+  
+  // Get current time periods based on active sub-tab
+  const timePeriods = getTimePeriods(activeSubTab);
+  
+  const [activeTimePeriod, setActiveTimePeriod] = useState(timePeriods[0]);
+
+  // Update active time period when switching sub-tabs if the current period is not available
+  useEffect(() => {
+    const currentTimePeriods = getTimePeriods(activeSubTab);
+    if (!currentTimePeriods.includes(activeTimePeriod)) {
+      setActiveTimePeriod(currentTimePeriods[0]);
+    }
+  }, [activeSubTab]);
 
   // Get chart data based on active tab, subtab, and time period
   const getReturnsChartData = (): BarData[] => {
-    const dataSource = activeSubTab === 'Rolling Returns' 
-      ? investmentReturns.rollingReturnsData 
-      : investmentReturns.pointToPointData;
+    const dataSource = activeSubTab === 'Rolling Returns' ? rollingReturns : pointToPoint;
     
-    const data = dataSource[activeTimePeriod];
+    if (!dataSource?.data?.series || !dataSource?.data?.categories) {
+      return [];
+    }
     
-    return [
-      {
-        label: 'Category',
-        value: data.category,
-        color: 'linear-gradient(155.25deg, #CBD5E1 2.06%, #6E7782 97.94%)',
-        valueColor: '#4B5563',
-      },
-      {
-        label: 'Benchmark',
-        value: data.benchmark,
-        color: 'linear-gradient(149.86deg, #94A3B8 0.9%, #000000 99.1%)',
-        valueColor: '#4B5563',
-      },
-      {
-        label: 'Fund',
-        value: data.fund,
-        color: 'linear-gradient(149.86deg, #AC72FF 0.9%, #723FBC 99.1%)',
-        valueColor: '#9346FD',
-      },
-    ];
+    // Find the index of the active time period
+    const periodIndex = timePeriods.indexOf(activeTimePeriod);
+    if (periodIndex === -1) return [];
+    
+    // Build bar data from series
+    const barData: BarData[] = [];
+    
+    dataSource.data.series.forEach((series) => {
+      const value = series.data[periodIndex];
+      
+      // Determine color and valueColor based on series name
+      let color: string;
+      let valueColor: string;
+      
+      if (series.name.toLowerCase() === 'category') {
+        color = 'linear-gradient(155.25deg, #CBD5E1 2.06%, #6E7782 97.94%)';
+        valueColor = '#4B5563';
+      } else if (series.name.toLowerCase() === 'benchmark') {
+        color = 'linear-gradient(149.86deg, #94A3B8 0.9%, #000000 99.1%)';
+        valueColor = '#4B5563';
+      } else if (series.name.toLowerCase() === 'fund') {
+        color = 'linear-gradient(149.86deg, #AC72FF 0.9%, #723FBC 99.1%)';
+        valueColor = '#9346FD';
+      } else {
+        color = 'linear-gradient(155.25deg, #CBD5E1 2.06%, #6E7782 97.94%)';
+        valueColor = '#4B5563';
+      }
+      
+      barData.push({
+        label: series.name,
+        value: value ?? 0,
+        color,
+        valueColor,
+      });
+    });
+    
+    return barData;
   };
 
   const getPerformanceChartData = (): BarData[] => {
-    const data = investmentReturns.performanceData[activeTimePeriod];
-    
-    const investment = 1000000; // 10 lakhs
-    const calculateValue = (percentage: number) => {
-      return Math.round((investment * (1 + percentage / 100)) / 100000);
-    };
-    
-    // Helper to create stacked segments (investment + profit)
-    const createStackedBar = (percentage: number, label: string, valueColor: string) => {
-      const totalValue = investment * (1 + percentage / 100);
-      const profitValue = Math.max(0, totalValue - investment); // Ensure non-negative
-      
-      return {
-        label,
-        value: totalValue, // Total value used for calculating bar height
-        displayValue: `₹${calculateValue(percentage)}L`,
-        valueColor,
-        segments: [
-          {
-            value: investment, // Grey segment at bottom
-            color: 'linear-gradient(180deg, #64748B 0%, #475569 100%)',
-          },
-          {
-            value: profitValue, // Purple segment on top (can be 0)
-            color: 'linear-gradient(180deg, #A78BFA 0%, #7C3AED 100%)',
-          },
-        ],
-      };
-    };
-    
-    return [
-      createStackedBar(data.bankAccount, 'Bank Account', '#4B5563'),
-      createStackedBar(data.gold, 'Gold', '#4B5563'),
-      createStackedBar(data.category, 'Category', '#4B5563'),
-      createStackedBar(data.fund, 'Fund', '#9346FD'),
-    ];
+    // Performance data not yet available from API
+    // Returning empty array for now
+    return [];
   };
 
   const getReturnPercentage = () => {
-    const dataSource = activeSubTab === 'Rolling Returns' 
-      ? investmentReturns.rollingReturnsData 
-      : investmentReturns.pointToPointData;
+    const dataSource = activeSubTab === 'Rolling Returns' ? rollingReturns : pointToPoint;
     
-    const data = dataSource[activeTimePeriod];
-    return `${data.fund}%`;
+    if (!dataSource?.data?.series || !dataSource?.data?.categories) {
+      return '0%';
+    }
+    
+    const periodIndex = timePeriods.indexOf(activeTimePeriod);
+    if (periodIndex === -1) return '0%';
+    
+    // Find the Fund series
+    const fundSeries = dataSource.data.series.find(s => s.name.toLowerCase() === 'fund');
+    if (!fundSeries) return '0%';
+    
+    const value = fundSeries.data[periodIndex];
+    return `${value ?? 0}%`;
   };
 
   const getPeriodText = () => {
@@ -108,24 +141,25 @@ const InvestmentReturns: React.FC = () => {
   };
 
   const getPerformanceStats = () => {
-    const data = investmentReturns.performanceData[activeTimePeriod];
-    const baseInvestment = 10; // 10 Lacs base
-    
-    // Calculate based on the fund performance percentage
-    const totalInvestment = baseInvestment + (data.fund / 110);
-    const totalCorpus = totalInvestment + (data.fund / 10.68);
-    const profit = totalCorpus - totalInvestment;
-    const rollingReturn = (profit / totalInvestment) * 100;
-    
+    // Performance data not yet available from API
+    // Returning default values for now
     return {
-      totalInvestment: totalInvestment.toFixed(0),
-      profit: profit.toFixed(1),
-      totalCorpus: totalCorpus.toFixed(1),
-      rollingReturn: rollingReturn.toFixed(2),
+      totalInvestment: '10',
+      profit: '0.0',
+      totalCorpus: '10.0',
+      rollingReturn: '0.00',
     };
   };
 
-  const performanceTimePeriods = [...investmentReturns.timePeriods, 'YTD'];
+  // Get performance time periods (includes YTD if present in pointToPoint)
+  const getPerformanceTimePeriods = (): string[] => {
+    if (!pointToPoint?.data?.categories) {
+      return getTimePeriods('Rolling Returns');
+    }
+    return pointToPoint.data.categories.map(convertCategory);
+  };
+
+  const performanceTimePeriods = getPerformanceTimePeriods();
 
   // Handle body scroll lock when modal is open
   useEffect(() => {
@@ -156,7 +190,7 @@ const InvestmentReturns: React.FC = () => {
       {/* Main Tabs - Returns / Performance */}
       
       <div className="flex gap-3 md:gap-4 mb-6 md:mb-8 overflow-x-auto scrollbar-hide">
-        {investmentReturns.tabs.map((tab) => (
+        {tabs.map((tab) => (
           <Chip
             key={tab}
             label={tab}
@@ -176,7 +210,7 @@ const InvestmentReturns: React.FC = () => {
           {/* Toggle for Rolling Returns / Point to Point */}
           <div className="flex justify-center text-sm md:text-base mb-6 md:mb-8">
             <Toggle
-              options={investmentReturns.subTabs.map(subTab => ({
+              options={subTabs.map(subTab => ({
                 value: subTab,
                 label: subTab,
               }))}
@@ -205,7 +239,7 @@ const InvestmentReturns: React.FC = () => {
 
           {/* Time Period Buttons */}
           <div className="flex justify-between gap-1.5 md:gap-3 lg:gap-4 overflow-x-auto scrollbar-hide">
-            {investmentReturns.timePeriods.map((period) => (
+            {timePeriods.map((period) => (
               <TimeButton
                 key={period}
                 label={period}
@@ -379,4 +413,5 @@ const InvestmentReturns: React.FC = () => {
 };
 
 export default InvestmentReturns;
+
 

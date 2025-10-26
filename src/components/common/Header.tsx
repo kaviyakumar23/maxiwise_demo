@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "@tanstack/react-router"
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
-import Search from "./Search"
 import SearchModal from "./SearchModal"
 import GetStarted from "./GetStarted"
 import { useLoginModal } from "../../pages/getStarted/LoginModal"
@@ -100,6 +99,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
         case 'section-2':
         case 'articles':
         case 'footer':
+        case 'blog-content':
         case 'start-now':
           return 'light'
         case 'why-maxiwise-1': // Navy background
@@ -107,7 +107,6 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
           return 'hero'
         case 'why-maxiwise-2': // Lime background
         case 'why-maxiwise-3': // Purple background
-        case 'blog-content':
           return 'light'
         default:
           return 'hero'
@@ -180,10 +179,10 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
       {/* Desktop Layout */}
       <div className="hidden xl:grid grid-cols-3 items-center px-8 py-4">
         <div className={`p-2 flex flex-row gap-12 cursor-pointer transition-colors duration-300 ${styles.textColor}`}>
-          <div onClick={() => navigateToSection('funds')} className="hover:opacity-80 transition-opacity">Funds</div>
-          <div onClick={() => navigateToSection('engine')} className="hover:opacity-80 transition-opacity">Engine</div>
-          <Link to="/blogs" className="hover:opacity-80 transition-opacity">Blog</Link>
-          <div onClick={() => navigateToSection('footer')} className="hover:opacity-80 transition-opacity">Contact</div>
+          <div onClick={() => navigateToSection('funds')} className="hover:opacity-80 transition-opacity">Our Story</div>
+          <div onClick={() => navigateToSection('engine')} className="hover:opacity-80 transition-opacity">The Engine</div>
+          <Link to="/blogs" className="hover:opacity-80 transition-opacity">Insights</Link>
+          <div onClick={() => navigateToSection('footer')} className="hover:opacity-80 transition-opacity">Informed</div>
         </div>
         <div className="flex justify-center">
           <Link to="/">
@@ -191,9 +190,9 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
           </Link>
         </div>
         <div className="flex flex-row gap-8 justify-end items-center">
-          <div><Search /></div>
+          {/* <div><Search /></div> */}
           <SignedOut>
-            <div><GetStarted /></div>
+            <div><GetStarted> Start Maxiwising</GetStarted></div>
           </SignedOut>
           <SignedIn>
             <UserButton 

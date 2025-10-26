@@ -251,7 +251,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                     key={index}
                     className={cn(
                       'font-mono text-slate-400',
-                      key === '⌘' ? 'text-lg' : 'text-sm'
+                      key === '⌘' ? 'text-2xl' : 'text-lg'
                     )}
                   >
                     {key}

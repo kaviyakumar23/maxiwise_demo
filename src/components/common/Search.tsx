@@ -31,7 +31,7 @@ const SearchIcon = ({ className }: { className?: string }) => (
 
 const Search: React.FC<SearchProps> = ({
   placeholder = "Search mutual funds...",
-  size = 'md',
+  size = 'lg',
   keyboardShortcut = ['⌘', 'K'],
   className,
   containerClassName,
@@ -59,7 +59,7 @@ const Search: React.FC<SearchProps> = ({
           size={size}
           fullWidth={fullWidth}
           rounded={rounded}
-          leftIcon={<SearchIcon className="w-5 h-5 text-gray-500" />}
+          leftIcon={<SearchIcon className="w-6 h-6 text-gray-500" />}
           keyboardShortcut={showShortcut ? keyboardShortcut : undefined}
           placeholder={placeholder}
           className={cn(
@@ -67,7 +67,7 @@ const Search: React.FC<SearchProps> = ({
             'placeholder:text-gray-500',
             'focus:outline-none',
             'transition-all duration-200',
-            'text-xs',
+            'text-lg',
             'min-w-32 md:min-w-60',
             'cursor-pointer',
             className

@@ -16,6 +16,7 @@ interface WhyMaxiwiseCardProps {
     descriptionColor: string;
     buttonColor?: 'purple' | 'lime' | 'indigo' | 'light-purple';
     buttonClassName?: string;
+    buttonText?: string; // Dynamic button text for each card
     images: ImageConfig[];
     layoutType: 'absolute' | 'flex';
     containerVariant?: 'standard' | 'centered'; // For different flex layouts
@@ -31,6 +32,7 @@ const WhyMaxiwiseCard = ({
     descriptionColor,
     buttonColor,
     buttonClassName,
+    buttonText = 'Learn More',
     images,
     layoutType,
     containerVariant = 'standard',
@@ -44,7 +46,7 @@ const WhyMaxiwiseCard = ({
                 {/* Main content container */}
                 <div className="w-full h-full flex flex-col lg:flex-row">
                     {/* Left content section - responsive layout */}
-                    <div className="w-full lg:w-1/2 h-1/2 lg:h-full px-4 sm:px-8 lg:pl-16 z-20 flex flex-col justify-center">
+                    <div className="h-1/2 lg:h-full px-4 sm:px-8 lg:pl-16 z-20 flex flex-col justify-center">
                         <div className={`font-outfit font-medium text-4xl sm:text-5xl lg:text-6xl xl:text-7xl ${titleColor} leading-tight mb-6 lg:mb-8`}>
                             {title.map((line, index) => (
                                 <h1 key={index} className={index > 0 ? "mb-0" : "mb-2"}>{line}</h1>
@@ -53,10 +55,14 @@ const WhyMaxiwiseCard = ({
                         <div className={`font-outfit font-normal text-sm sm:text-lg lg:text-xl ${descriptionColor} mb-6 lg:mb-8 leading-relaxed max-w-lg`}>
                             <p dangerouslySetInnerHTML={{ __html: description.join(' ') }} />
                         </div>
+                        <div>
                         <GetStarted 
                             color={buttonColor}
                             className={buttonClassName}
-                        />
+                        >
+                            {buttonText}
+                        </GetStarted>
+                        </div>
                     </div>
                     
                     {/* Right side - empty for absolute positioning on desktop, graphics container on mobile */}
@@ -104,7 +110,9 @@ const WhyMaxiwiseCard = ({
                         <GetStarted 
                             color={buttonColor}
                             className={buttonClassName}
-                        />
+                        >
+                            {buttonText}
+                        </GetStarted>
                     </div>
                 </div>
                 

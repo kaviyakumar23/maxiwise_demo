@@ -8,7 +8,7 @@ import AssetAllocation from './AssetAllocation';
 import FundInformation from './FundInformation';
 import AboutTheFund from './AboutTheFund';
 import FundManagers from './FundManagers';
-import type { BetterFunds, FundDetails } from '../../types/fundTypes';
+import type { BetterFunds, FundDetails, FundData } from '../../types/fundTypes';
 
 interface FundScheme {
   id: number;
@@ -27,11 +27,12 @@ interface FundTabsProps {
   allFundSchemes: FundScheme[];
   selectedCategory: string | null;
   onCategorySelect: (categoryId: string) => void;
+  completeData?: FundData | null;
 }
 
 type TabType = 'Insights' | 'Returns' | 'Ratios' | 'Details';
 
-const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFundSchemes, selectedCategory, onCategorySelect }) => {
+const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFundSchemes, selectedCategory, onCategorySelect, completeData }) => {
   const [activeTab, setActiveTab] = useState<TabType>('Insights');
 
   const tabs: TabType[] = ['Insights', 'Returns', 'Ratios', 'Details'];
@@ -46,7 +47,12 @@ const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFu
           </>
         );
       case 'Returns':
-        return <InvestmentReturns />;
+        return (
+          <InvestmentReturns 
+            rollingReturns={completeData?.rollingReturns}
+            pointToPoint={completeData?.pointToPoint}
+          />
+        );
       case 'Ratios':
         return (
           <>

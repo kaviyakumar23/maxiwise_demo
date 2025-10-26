@@ -31,6 +31,7 @@ export const BarChart: React.FC<BarChartProps> = ({
   showLabels = true,
   showValues = true,
 }) => {
+  console.log(data);
   const max = maxValue || Math.max(...data.map(d => d.value));
   
   return (

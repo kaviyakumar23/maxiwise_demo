@@ -254,14 +254,14 @@ const Section_2 = () => {
                 className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8"
             >
                 <div className="max-w-4xl mx-auto text-center">
-                    <p className="text-base sm:text-lg lg:text-xl xl:text-2xl font-normal font-outfit text-center text-purple tracking-normal mb-3 sm:mb-4">We make complex investing simple</p>
+                    <p className="text-base sm:text-lg lg:text-xl xl:text-2xl font-normal font-outfit text-center text-purple tracking-normal mb-3 sm:mb-4">We are changing how India invests</p>
                     <div className="text-center font-outfit font-semibold text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-navy leading-tight">
-                        <h1 className="mb-1 sm:mb-2">Bring clarity to every</h1>
-                        <h1 className="mb-1 sm:mb-2">investment decision through</h1>
-                        <h1>insights that truly matter</h1>
+                        <h1 className="mb-1">Clarity in fund selection</h1>
+                        <h1 className="mb-1">is here. Clarity in portfolio</h1>
+                        <h1>management coming soon.</h1>
                     </div>
                     <div className="text-center py-6 sm:py-8 lg:py-10">
-                        <GetStarted />
+                        <GetStarted> Get Early Access</GetStarted>
                     </div>
                 </div>
             </div>

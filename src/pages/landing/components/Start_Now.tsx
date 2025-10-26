@@ -8,29 +8,29 @@ const Start_Now = () => {
                 {/* Main heading - Mobile (3 lines) */}
                 <div className="block sm:hidden">
                     <h1 className="font-outfit font-medium text-white text-center text-[28px] leading-[140%] tracking-[-1px]">
-                        Investing right
+                        Bias free, 
                     </h1>
                     <h1 className="font-outfit font-medium text-white text-center text-[28px] leading-[140%] tracking-[-1px]">
-                        doesn't have to wait
+                    informed investing
                     </h1>
                     <h1 className="font-outfit font-medium text-white text-center text-[28px] leading-[140%] tracking-[-1px] mb-4">
-                        till tomorrow
+                        starts here.
                     </h1>
                 </div>
                 
                 {/* Main heading - Tablet & Desktop (2 lines) */}
                 <div className="hidden sm:block">
                     <h1 className="font-outfit font-medium text-white text-center text-[40px] lg:text-[56px] leading-[140%] tracking-[-1px]">
-                        Investing right doesn't have
+                        Bias free, informed investing
                     </h1>
                     <h1 className="font-outfit font-medium text-white text-center text-[40px] lg:text-[56px] leading-[140%] tracking-[-1px] mb-4">
-                        to wait till tomorrow
+                        starts here.
                     </h1>
                 </div>
                 
                 {/* Get Started button */}
                 <div className="flex justify-center w-full sm:w-auto py-4">
-                    <GetStarted className="w-auto px-8 sm:min-w-[240px]">Start Now</GetStarted>
+                    <GetStarted className="w-auto px-8 sm:min-w-[240px]">Start Maxiwising</GetStarted>
                 </div>
             </div>
         </div>

@@ -111,7 +111,10 @@ const FundMain = () => {
                   allFundSchemes={allFundSchemes}
                   selectedCategory={selectedCategory} 
                 />
-                <InvestmentReturns />
+                <InvestmentReturns 
+                  rollingReturns={fundDetails?.rollingReturns}
+                  pointToPoint={fundDetails?.pointToPoint}
+                />
                 <Ratios />
                 <Carrva />
                 <AssetAllocation />
@@ -129,6 +132,7 @@ const FundMain = () => {
                 allFundSchemes={allFundSchemes}
                 selectedCategory={selectedCategory}
                 onCategorySelect={setSelectedCategory}
+                completeData={fundDetails}
               />
             </div>
           </>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import GetStarted from "../../../components/common/GetStarted"
+import Search from "../../../components/common/Search"
 import BackgroundHero from "../../../assets/images/BackgroundHero.png"
 
 const AnimatedKeyword = ({ word, position, isActive }: { word: string, position: { top: string, left?: string, right?: string }, isActive: boolean }) => {
@@ -57,25 +58,26 @@ export const Hero = () => {
           {/* Main content - centered in the middle of the page */}
           <div className="flex flex-col items-center justify-center text-center">
             <div className="text-2xl font-normal leading-[35px] font-outfit text-purple mb-8">
-              <p>Get the clarity to choose right</p>
+              <p>India's Decision Layer for Investing</p>
             </div>
             <div className="mb-12">
               <h1 className="text-7xl font-medium font-outfit text-white py-2">
-                India's decision layer
+                The most objective <br /> report card of every <br /> mutual fund.
               </h1>
-              <h1 className="text-7xl font-medium font-outfit text-white mb-4">
-                for investing
-              </h1>
+              <p className="text-3xl font-light italic font-outfit text-white p-4">
+                No bias, only facts.
+              </p>
             </div>
-            <div>
-              <GetStarted>Start Maxiwising</GetStarted>
+            <div className='w-full max-w-xl mx-auto'>
+              <Search />
+              {/* <GetStarted>Start Maxiwising</GetStarted> */}
             </div>
           </div>
 
           {/* Bottom section - CTA and footer - positioned at bottom */}
           <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-6">
             <div className="text-white text-sm font-normal text-center">
-              Want to talk or need help? <span className="font-bold hover"> <a href="#"> Get in touch →</a></span>
+              1400+ mutual funds analysed | 1.2 lakh data points decoded
             </div>
           </div>
         </div>
@@ -85,25 +87,25 @@ export const Hero = () => {
           {/* Main content - centered in the middle of the page */}
           <div className="flex flex-col items-center justify-center text-center">
             <div className="text-2xl font-normal leading-[35px] font-outfit text-purple mb-8">
-              <p>Get the clarity to choose right</p>
+              <p>India's Decision Layer for Investing </p>
             </div>
             <div className="mb-12">
               <h1 className="text-5xl lg:text-6xl font-medium leading-tight py-2 font-outfit text-white">
-                India's decision layer
+              The most objective <br /> report card of every <br /> mutual fund.
               </h1>
-              <h1 className="text-5xl lg:text-6xl font-medium leading-tight mb-4 font-outfit text-white">
-                for investing
-              </h1>
+              <p className="text-3xl lg:text-6xl font-light italic leading-tight mb-4 font-outfit text-white">
+                No bias, only facts
+              </p>
             </div>
             <div>
-              <GetStarted>Start Maxiwising</GetStarted>
+              {/* <GetStarted>Start Maxiwising</GetStarted> */}
             </div>
           </div>
 
           {/* Bottom section - CTA and footer - positioned at bottom */}
           <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-6">
             <div className="text-white text-sm font-normal text-center">
-              Want to talk or need help? <span className="font-bold hover"> <a href="#"> Get in touch →</a></span>
+            1400+ mutual funds analysed | 1.2 lakh data points decoded
             </div>
           </div>
         </div>
@@ -111,27 +113,34 @@ export const Hero = () => {
         {/* Mobile Layout (below 768px) */}
         <div className="relative z-10 flex md:hidden flex-col justify-center items-start min-h-screen px-2 tracking-normal">
           {/* Main content - centered vertically, left-aligned horizontally */}
-          <div className="flex flex-col items-start justify-center text-left pl-4">
+          <div className="flex flex-col items-start justify-center text-left pl-8">
             <div className="text-base font-normal leading-[35px] font-outfit text-purple mb-8">
-              <p>Get the clarity to choose right</p>
-            </div>
-            <div className="mb-12">
-              <h1 className="text-4xl sm:text-5xl font-medium leading-tight py-2 font-outfit text-white">
-                India's decision
-              </h1>
-              <h1 className="text-4xl sm:text-5xl font-medium leading-tight mb-4 font-outfit text-white">
-                layer for investing
-              </h1>
+              <p>India's Decision Layer for Investing</p>
             </div>
             <div>
+              <h1 className="text-4xl sm:text-5xl font-medium leading-tight font-outfit text-white">
+                The most objective 
+              </h1>
+              <h1 className="text-4xl sm:text-5xl font-medium leading-tight font-outfit text-white">
+                report card of every
+              </h1>
+              <h1 className="text-4xl sm:text-5xl font-medium leading-tight mb-2 font-outfit text-white">
+                mutual fund.
+              </h1>
+              <p className="text-base lg:text-6xl font-light italic leading-tight mb-4 font-outfit text-white">
+                No bias, only facts
+              </p>
+            </div>
+            <div className='py-6'>
               <GetStarted>Start Maxiwising</GetStarted>
+
             </div>
           </div>
 
           {/* Bottom section - CTA and footer - positioned at bottom */}
           <div className="absolute bottom-16 left-6 flex flex-col items-start justify-start gap-6 pl-4">
             <div className="text-white text-sm font-normal text-left">
-              Want to talk or need help? <span className="font-bold"> <a href="#"> Get in touch →</a></span>
+            1400+ mutual funds analysed | 1.2 lakh data points decoded
             </div>
           </div>
         </div>
