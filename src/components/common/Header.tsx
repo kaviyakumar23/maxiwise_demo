@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "@tanstack/react-router"
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
 import SearchModal from "./SearchModal"
-import GetStarted from "./GetStarted"
+import Button from "../ui/Button"
 import { useLoginModal } from "../../pages/getStarted/LoginModal"
 import Logo from "../../assets/images/Logo.png"
 import LogoBlack from "../../assets/images/LogoBlack.png"
@@ -190,10 +190,16 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
           </Link>
         </div>
         <div className="flex flex-row gap-8 justify-end items-center">
-          {/* <div><Search /></div> */}
-          <SignedOut>
-            <div><GetStarted> Start Maxiwising</GetStarted></div>
-          </SignedOut>
+          {/* Search Button - Opens SearchModal */}
+          <Button
+            variant="primary"
+            color="purple"
+            size="lg"
+            onClick={() => setIsSearchModalOpen(true)}
+            className="font-outfit"
+          >
+            Start Maxiwising
+          </Button>
           <SignedIn>
             <UserButton 
               appearance={{

@@ -1,27 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useUser } from '@clerk/clerk-react';
 import Button, { type ButtonProps } from "../ui/Button"
 import { cn } from '../../utils/cn';
 import { useLoginModal } from '../../pages/getStarted/LoginModal';
+import SearchModal from './SearchModal';
 
-const GetStarted: React.FC<ButtonProps & { children?: React.ReactNode }> = ({
+const GetStarted: React.FC<ButtonProps & { 
+  children?: React.ReactNode;
+  openSearchOnClick?: boolean;
+}> = ({
   variant = 'primary',
   color = 'purple',
   size = 'lg',
   className,
   onClick,
   children,
+  openSearchOnClick = false,
   ...props
 }) => {
   const { openModal } = useLoginModal();
   const navigate = useNavigate();
   const { isSignedIn } = useUser();
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     // Call the original onClick if provided
     if (onClick) {
       onClick(e);
+    }
+    
+    // If openSearchOnClick is true, open search modal instead
+    if (openSearchOnClick) {
+      setIsSearchModalOpen(true);
+      return;
     }
     
     // If user is signed in, navigate to funds page
@@ -38,22 +50,32 @@ const GetStarted: React.FC<ButtonProps & { children?: React.ReactNode }> = ({
   };
 
   return (
-    <Button 
-      variant={variant} 
-      color={color} 
-      size={size} 
-      className={cn(
-        'font-outfit',
-        'transition-all duration-200',
-        'focus:outline-none',
-        'text-base',
-        className
-      )} 
-      onClick={handleClick}
-      {...props}
-    >
-      {children || 'Get Started'}
-    </Button>
+    <>
+      <Button 
+        variant={variant} 
+        color={color} 
+        size={size} 
+        className={cn(
+          'font-outfit',
+          'transition-all duration-200',
+          'focus:outline-none',
+          'text-base',
+          className
+        )} 
+        onClick={handleClick}
+        {...props}
+      >
+        {children || 'Get Started'}
+      </Button>
+      
+      {/* Search Modal - only rendered when openSearchOnClick is true */}
+      {openSearchOnClick && (
+        <SearchModal
+          isOpen={isSearchModalOpen}
+          onClose={() => setIsSearchModalOpen(false)}
+        />
+      )}
+    </>
   )
 }
 

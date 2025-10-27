@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from "react";
+import { useUser } from "@clerk/clerk-react";
+import { useLoginModal } from "../getStarted/LoginModal";
 import { fundData, type FundDetails } from "./DummyData";
 import CaretUpDown from "../../assets/images/CaretUpDown.svg";
 import NipponLogo from "../../assets/images/Nippon India Mutual Fund.png";
@@ -10,6 +12,48 @@ interface BasicInfoProps {
 const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
   const { fundHeader } = fundData;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isSignedIn } = useUser();
+  const { openModal } = useLoginModal();
+
+  // Handler for bookmark/save button click
+  const handleSaveToWatchlist = () => {
+    if (!isSignedIn) {
+      // Open login modal if user is not signed in
+      openModal();
+    } else {
+      // TODO: Implement save to watchlist functionality
+      console.log('Save to watchlist');
+    }
+  };
+
+  // Handler for share button click
+  const handleShare = () => {
+    if (!isSignedIn) {
+      // Open login modal if user is not signed in
+      openModal();
+    } else {
+      // TODO: Implement share functionality
+      console.log('Share fund');
+      // Future implementation could include:
+      // - Copy link to clipboard
+      // - Share via social media
+      // - Share via email
+    }
+  };
+
+  // Handler for download button click
+  const handleDownload = () => {
+    if (!isSignedIn) {
+      // Open login modal if user is not signed in
+      openModal();
+    } else {
+      // TODO: Implement download functionality
+      console.log('Download fund information');
+      // Future implementation could include:
+      // - Generate PDF report
+      // - Download fund fact sheet
+    }
+  };
 
   // Helper function to format fund size
   const formatFundSize = (size: string): string => {
@@ -95,6 +139,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
           <div className="flex items-start flex-shrink-0 ml-2">
             {/* Save/Bookmark Icon */}
             <button
+              onClick={handleSaveToWatchlist}
               className="p-1 hover:bg-white/50 rounded-lg transition-colors"
               aria-label="Save to watchlist"
             >
@@ -132,10 +177,13 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
 
               {/* Dropdown Menu */}
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-40 rounded-lg shadow-lg py-2 z-10">
+                <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2 z-10">
                   <button
                     className="w-full px-4 py-2 text-left text-navy hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      handleShare();
+                    }}
                   >
                     <svg
                       className="w-4 h-4"
@@ -153,7 +201,10 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
                   </button>
                   <button
                     className="w-full px-4 py-2 text-left text-navy hover:bg-gray-100 flex items-center gap-2"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      handleDownload();
+                    }}
                   >
                     <svg
                       className="w-4 h-4"
@@ -237,6 +288,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
           {/* Right: Action Icons */}
           <div className="flex items-center gap-2">
             <button
+              onClick={handleShare}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="Share"
             >
@@ -256,6 +308,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
             </button>
             {/* Save/Bookmark Icon */}
             <button
+              onClick={handleSaveToWatchlist}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="Save to watchlist"
             >
@@ -277,6 +330,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
 
             {/* Download Icon */}
             <button
+              onClick={handleDownload}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               aria-label="Download"
             >

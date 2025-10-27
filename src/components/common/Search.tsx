@@ -32,7 +32,7 @@ const SearchIcon = ({ className }: { className?: string }) => (
 const Search: React.FC<SearchProps> = ({
   placeholder = "Search mutual funds...",
   size = 'md',
-  keyboardShortcut = ['⌘', 'K'],
+  keyboardShortcut,
   className,
   containerClassName,
   style,
@@ -45,6 +45,11 @@ const Search: React.FC<SearchProps> = ({
   ...props
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Detect platform and set appropriate keyboard shortcut
+  const isMac = typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const defaultShortcut = isMac ? ['⌘', 'K'] : ['Ctrl', 'K'];
+  const effectiveShortcut = keyboardShortcut || defaultShortcut;
 
   const handleInputClick = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -60,7 +65,7 @@ const Search: React.FC<SearchProps> = ({
           fullWidth={fullWidth}
           rounded={rounded}
           leftIcon={<SearchIcon className="w-6 h-6 text-gray-500" />}
-          keyboardShortcut={showShortcut ? keyboardShortcut : undefined}
+          keyboardShortcut={showShortcut ? effectiveShortcut : undefined}
           placeholder={placeholder}
           className={cn(
             'font-outfit',

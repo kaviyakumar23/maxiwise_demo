@@ -115,7 +115,7 @@ const FundMain = () => {
                   rollingReturns={fundDetails?.rollingReturns}
                   pointToPoint={fundDetails?.pointToPoint}
                 />
-                <Ratios />
+                <Ratios ratiosData={fundDetails?.ratios} />
                 <Carrva />
                 <AssetAllocation />
                 <FundInformation fundDetails={fundDetails?.fundDetails} />

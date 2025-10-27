@@ -297,7 +297,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
 
                           {/* Fund Details */}
                           <div className="flex-1">
-                            <h4 className="text-navy font-outfit font-semibold text-base mb-2">
+                            <h4 className="text-navy font-outfit font-semibold text-base mb-2 text-left">
                               {fund.fund_name}
                             </h4>
                             <div className="flex items-center gap-2 text-xs text-gray-600 font-outfit">

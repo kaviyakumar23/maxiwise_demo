@@ -32,7 +32,7 @@ const WhyMaxiwiseCard = ({
     descriptionColor,
     buttonColor,
     buttonClassName,
-    buttonText = 'Learn More',
+    buttonText,
     images,
     layoutType,
     containerVariant = 'standard',
@@ -55,14 +55,16 @@ const WhyMaxiwiseCard = ({
                         <div className={`font-outfit font-normal text-sm sm:text-lg lg:text-xl ${descriptionColor} mb-6 lg:mb-8 leading-relaxed max-w-lg`}>
                             <p dangerouslySetInnerHTML={{ __html: description.join(' ') }} />
                         </div>
-                        <div>
-                        <GetStarted 
-                            color={buttonColor}
-                            className={buttonClassName}
-                        >
-                            {buttonText}
-                        </GetStarted>
-                        </div>
+                        {buttonText && (
+                            <div>
+                                <GetStarted 
+                                    color={buttonColor}
+                                    className={buttonClassName}
+                                >
+                                    {buttonText}
+                                </GetStarted>
+                            </div>
+                        )}
                     </div>
                     
                     {/* Right side - empty for absolute positioning on desktop, graphics container on mobile */}
@@ -106,14 +108,16 @@ const WhyMaxiwiseCard = ({
                     <div className={`${descriptionColor} font-outfit font-normal text-sm sm:text-lg lg:text-xl mb-6 sm:mb-8 ${containerVariant === 'centered' ? 'leading-relaxed' : ''} max-w-md`}>
                         <p dangerouslySetInnerHTML={{ __html: description.join(' ') }} />
                     </div>
-                    <div>
-                        <GetStarted 
-                            color={buttonColor}
-                            className={buttonClassName}
-                        >
-                            {buttonText}
-                        </GetStarted>
-                    </div>
+                    {buttonText && (
+                        <div>
+                            <GetStarted 
+                                color={buttonColor}
+                                className={buttonClassName}
+                            >
+                                {buttonText}
+                            </GetStarted>
+                        </div>
+                    )}
                 </div>
                 
                 {/* Right Content - Image */}

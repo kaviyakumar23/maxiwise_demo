@@ -35,10 +35,10 @@ export const BarChart: React.FC<BarChartProps> = ({
   const max = maxValue || Math.max(...data.map(d => d.value));
   
   return (
-    <div className="w-full">
+    <div className="w-full px-16 py-16">
       {/* Chart container with bars */}
-      <div className="relative">
-        <div className="flex items-end justify-center gap-8 px-8 relative" style={{ height: `${height}px` }}>
+      <div className="relative ">
+        <div className="flex items-end justify-between gap-8 px-8 relative" style={{ height: `${height}px` }}>
           {data.map((item, index) => {
             // Calculate actual pixel height based on value proportion
             const barHeightPx = (item.value / max) * height;
@@ -166,7 +166,7 @@ export const BarChart: React.FC<BarChartProps> = ({
       
       {/* Labels below baseline */}
       {showLabels && (
-        <div className="flex justify-around gap-8 px-8 mt-4">
+        <div className="flex justify-between gap-8 px-8 mt-4">
           {data.map((item, index) => (
             <div key={index} className="flex-1 max-w-[150px] text-center">
               <div className="text-sm font-normal font-outfit text-[#4B5563]">

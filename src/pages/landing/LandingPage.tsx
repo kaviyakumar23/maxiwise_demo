@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { useLocation } from "@tanstack/react-router"
 import Header from "../../components/common/Header"
 import Hero from "./components/Hero"
-import FundPerforming from "./components/FundPerforming"
+// import FundPerforming from "./components/FundPerforming"
 import Section_2 from "./components/Section_2"
 import WhyMaxiwise from "./components/WhyMaxiwise"
 // import About from "./components/About"
@@ -42,9 +42,9 @@ const LandingPageContent = () => {
       <div id="hero" data-header-section>
         <Hero />
       </div>
-      <div id="funds" data-header-section>
+      {/* <div id="funds" data-header-section>
         <FundPerforming />
-      </div>
+      </div> */}
       <div id="engine" data-header-section>
         <Engine />
       </div>

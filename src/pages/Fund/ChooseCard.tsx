@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from '@tanstack/react-router';
+import { useUser } from "@clerk/clerk-react";
+import { useLoginModal } from "../getStarted/LoginModal";
 import ChooseCardImg from "../../assets/images/ChooseCard.png"
+import Watchlist from "../../assets/images/Watchlist.png"
 import Button from "../../components/ui/Button"
 import Card from "../../components/ui/Card"
 import type { BetterFunds, FundListItem } from "../../types/fundTypes";
@@ -24,6 +27,8 @@ interface ChooseCardProps {
 
 const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, selectedCategory }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isSignedIn } = useUser();
+  const { openModal } = useLoginModal();
 
   // Handle body scroll lock when modal is open
   useEffect(() => {
@@ -37,6 +42,21 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, se
       document.body.style.overflow = 'unset';
     };
   }, [isModalOpen]);
+
+  // Handler for add to watchlist button
+  const handleAddToWatchlist = () => {
+    if (!isSignedIn) {
+      // Open login modal if user is not signed in
+      openModal();
+    } else {
+      // TODO: Implement add to watchlist functionality
+      console.log('Add to watchlist');
+      // Future implementation could include:
+      // - Navigate to watchlist page
+      // - Show toast notification
+      // - Update watchlist state
+    }
+  };
 
   // Helper function to get highest cap
   const getHighestCap = (fund: FundScheme): string | null => {
@@ -73,20 +93,47 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, se
   if (!selectedCategory) {
     return (
       <div className="py-6 md:py-8 lg:py-10">
-        {/* Card container - 3/4 width on desktop, full on mobile */}
-        <Card variant="flat" size="md" className="w-full lg:w-2/3">
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="w-full max-w-sm">
-              <img src={ChooseCardImg} alt="Choose Card" className="h-50px" />
+        {/* Two column grid on desktop, stack on mobile - Choose a Card is 2/3, Watchlist is 1/3 */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* Choose a Card Section - Takes 2 columns */}
+          <Card variant="flat" size="md" className="w-full lg:col-span-2">
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="w-full max-w-sm">
+                <img src={ChooseCardImg} alt="Choose Card" className="h-50px" />
+              </div>
+              <div className="text-center font-outfit font-normal text-sm md:text-base text-indigo leading-relaxed">
+                <p>The funds are hiding. Pick a Smart Fund<br />card to uncover them.</p>
+              </div>
+              <Button variant="primary" color="lime" size="lg" className="w-full">
+                Choose a Card
+              </Button>
             </div>
-            <div className="text-center font-outfit font-normal text-sm md:text-base text-indigo leading-relaxed">
-              <p>The funds are hiding. Pick a Smart Fund<br />card to uncover them.</p>
+          </Card>
+
+          {/* Add to Watchlist Section - Takes 1 column */}
+          <Card variant="flat" size="md" className="w-full lg:col-span-1">
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="text-center font-outfit font-semibold text-lg md:text-xl text-navy mb-2">
+                Your Watchlist
+              </div>
+              <div className="w-full max-w-sm">
+                <img src={Watchlist} alt="Watchlist" className="h-50px" />
+              </div>
+              <div className="text-center font-outfit font-normal text-sm md:text-base text-indigo leading-relaxed">
+                <p>Add funds to your watchlist to<br />track them all in one place.</p>
+              </div>
+              <Button 
+                variant="primary" 
+                color="lime" 
+                size="lg" 
+                className="w-full"
+                onClick={handleAddToWatchlist}
+              >
+                Add to Watchlist
+              </Button>
             </div>
-            <Button variant="primary" color="lime" size="lg" className="w-full">
-              Choose a Card
-            </Button>
-          </div>
-        </Card>
+          </Card>
+        </div>
       </div>
     );
   }

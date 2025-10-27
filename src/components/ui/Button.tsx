@@ -83,8 +83,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       xs: 'px-4 py-1 text-xs',
       sm: 'px-6 py-1.5 text-sm',
       md: 'px-8 py-2 text-base',
-      lg: 'px-12 py-3 text-lg',
-      xl: 'px-16 py-4 text-xl'
+      lg: 'px-10 py-3 text-md',
+      xl: 'px-12 py-4 text-lg'
     };
 
     const iconSizes = {

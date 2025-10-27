@@ -30,7 +30,7 @@ const Start_Now = () => {
                 
                 {/* Get Started button */}
                 <div className="flex justify-center w-full sm:w-auto py-4">
-                    <GetStarted className="w-auto px-8 sm:min-w-[240px]">Start Maxiwising</GetStarted>
+                    <GetStarted className="w-auto px-8 sm:min-w-[240px]" openSearchOnClick={true}>Start Maxiwising</GetStarted>
                 </div>
             </div>
         </div>

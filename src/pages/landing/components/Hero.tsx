@@ -1,42 +1,8 @@
-import { useState, useEffect } from 'react';
 import GetStarted from "../../../components/common/GetStarted"
 import Search from "../../../components/common/Search"
 import BackgroundHero from "../../../assets/images/BackgroundHero.png"
 
-const AnimatedKeyword = ({ word, position, isActive }: { word: string, position: { top: string, left?: string, right?: string }, isActive: boolean }) => {
-  return (
-    <div
-      className={`absolute font-inter text-2xl font-normal text-purple transition-all duration-1000 ease-in-out ${
-        isActive 
-          ? 'opacity-100 blur-0 scale-100' 
-          : 'opacity-0 blur-md scale-95'
-      }`}
-      style={position}
-    >
-      {word}
-    </div>
-  );
-};
-
 export const Hero = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  
-  const keywords = [
-    { word: 'Equity', position: { top: '15%', left: '15%' } },
-    { word: 'Portfolio', position: { top: '40%', left: '10%' } },
-    { word: 'Funds', position: { top: '65%', left: '15%' } },
-    { word: 'Assets', position: { top: '15%', right: '15%' } },
-    { word: 'Returns', position: { top: '40%', right: '10%' } },
-    { word: 'Expense Ratio', position: { top: '65%', right: '15%' } }
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % keywords.length);
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [keywords.length]);
 
   return (
     <>
@@ -45,16 +11,6 @@ export const Hero = () => {
         
         {/* Desktop Layout (1025px and above) */}
         <div className="relative z-10 hidden xl:flex flex-col justify-center items-center min-h-screen px-8 tracking-normal">
-          {/* Animated Keywords - Only on desktop */}
-          {keywords.map((keyword, index) => (
-            <AnimatedKeyword
-              key={keyword.word}
-              word={keyword.word}
-              position={keyword.position}
-              isActive={activeIndex === index}
-            />
-          ))}
-
           {/* Main content - centered in the middle of the page */}
           <div className="flex flex-col items-center justify-center text-center">
             <div className="text-2xl font-normal leading-[35px] font-outfit text-purple mb-8">
@@ -62,10 +18,10 @@ export const Hero = () => {
             </div>
             <div className="mb-12">
               <h1 className="text-6xl font-medium font-outfit text-white py-2">
-                The most objective <br /> report card of every <br /> mutual fund.
+                The most objective report card <br /> of every mutual fund.
               </h1>
               <p className="text-3xl font-light italic font-outfit text-white p-4">
-                No bias, only facts.
+                No bias, <br /> Only facts.
               </p>
             </div>
             <div className='w-full max-w-xl mx-auto'>
@@ -94,7 +50,7 @@ export const Hero = () => {
               The most objective <br /> report card of every <br /> mutual fund.
               </h1>
               <p className="text-3xl lg:text-3xl font-light italic leading-tight p-4 font-outfit text-white">
-                No bias, only facts
+                No bias, <br /> Only facts.
               </p>
             </div>
             <div>
@@ -129,11 +85,11 @@ export const Hero = () => {
                 mutual fund.
               </h1>
               <p className="text-base lg:text-6xl font-light italic leading-tight p-4 font-outfit text-white">
-                No bias, only facts
+                No bias, <br /> Only facts.
               </p>
             </div>
             <div className='py-6'>
-              <GetStarted>Start Maxiwising</GetStarted>
+              <GetStarted openSearchOnClick={true}>Start Maxiwising</GetStarted>
 
             </div>
           </div>

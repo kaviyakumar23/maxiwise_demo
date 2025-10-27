@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Chip } from '../../components/ui/Chip';
+// import { Chip } from '../../components/ui/Chip'; // Not needed when Performance tab is hidden
 import { Toggle } from '../../components/ui/Toggle';
 import { TimeButton } from '../../components/ui/TimeButton';
 import { BarChart } from '../../components/ui/BarChart';
@@ -7,7 +7,7 @@ import type { BarData } from '../../components/ui/BarChart';
 import type { RollingReturns, PointToPoint } from '../../types/fundTypes';
 import Qustion from "../../assets/images/Question.svg";
 import ChartBar from "../../assets/images/ChartBar.svg";
-import Percent from "../../assets/images/Percent.svg";
+// import Percent from "../../assets/images/Percent.svg"; // Not needed when Performance section is hidden
 
 interface InvestmentReturnsProps {
   rollingReturns?: RollingReturns;
@@ -37,10 +37,10 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
     return dataSource.data.categories.map(convertCategory);
   };
 
-  const tabs = ['Returns', 'Performance'];
+  // const tabs = ['Returns']; // Not needed when Performance tab is hidden
   const subTabs = ['Rolling Returns', 'Point to Point'];
   
-  const [activeTab, setActiveTab] = useState(tabs[0]);
+  // const [activeTab, setActiveTab] = useState(tabs[0]); // Not needed when Performance tab is hidden
   const [activeSubTab, setActiveSubTab] = useState(subTabs[0]);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
   
@@ -104,11 +104,11 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
     return barData;
   };
 
-  const getPerformanceChartData = (): BarData[] => {
-    // Performance data not yet available from API
-    // Returning empty array for now
-    return [];
-  };
+  // const getPerformanceChartData = (): BarData[] => {
+  //   // Performance data not yet available from API
+  //   // Returning empty array for now
+  //   return [];
+  // };
 
   const getReturnPercentage = () => {
     const dataSource = activeSubTab === 'Rolling Returns' ? rollingReturns : pointToPoint;
@@ -140,39 +140,39 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
     return periodMap[activeTimePeriod] || activeTimePeriod;
   };
 
-  const getPerformanceStats = () => {
-    // Performance data not yet available from API
-    // Returning default values for now
-    return {
-      totalInvestment: '10',
-      profit: '0.0',
-      totalCorpus: '10.0',
-      rollingReturn: '0.00',
-    };
-  };
+  // const getPerformanceStats = () => {
+  //   // Performance data not yet available from API
+  //   // Returning default values for now
+  //   return {
+  //     totalInvestment: '10',
+  //     profit: '0.0',
+  //     totalCorpus: '10.0',
+  //     rollingReturn: '0.00',
+  //   };
+  // };
 
   // Get performance time periods (includes YTD if present in pointToPoint)
-  const getPerformanceTimePeriods = (): string[] => {
-    if (!pointToPoint?.data?.categories) {
-      return getTimePeriods('Rolling Returns');
-    }
-    return pointToPoint.data.categories.map(convertCategory);
-  };
+  // const getPerformanceTimePeriods = (): string[] => {
+  //   if (!pointToPoint?.data?.categories) {
+  //     return getTimePeriods('Rolling Returns');
+  //   }
+  //   return pointToPoint.data.categories.map(convertCategory);
+  // };
 
-  const performanceTimePeriods = getPerformanceTimePeriods();
+  // const performanceTimePeriods = getPerformanceTimePeriods();
 
-  // Handle body scroll lock when modal is open
-  useEffect(() => {
-    if (isInfoModalOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
+  // // Handle body scroll lock when modal is open
+  // useEffect(() => {
+  //   if (isInfoModalOpen) {
+  //     document.body.style.overflow = 'hidden';
+  //   } else {
+  //     document.body.style.overflow = 'unset';
+  //   }
     
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isInfoModalOpen]);
+  //   return () => {
+  //     document.body.style.overflow = 'unset';
+  //   };
+  // }, [isInfoModalOpen]);
 
   return (
     <div className='py-4'>
@@ -187,9 +187,9 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
         </button>
       </div>
 
-      {/* Main Tabs - Returns / Performance */}
-      
-      <div className="flex gap-3 md:gap-4 mb-6 md:mb-8 overflow-x-auto scrollbar-hide">
+      {/* Main Tabs - Returns */}
+      {/* Hiding Performance tab for now */}
+      {/* <div className="flex gap-3 md:gap-4 mb-6 md:mb-8 overflow-x-auto scrollbar-hide">
         {tabs.map((tab) => (
           <Chip
             key={tab}
@@ -198,14 +198,14 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
             onClick={() => setActiveTab(tab)}
           />
         ))}
-      </div>
+      </div> */}
       </div>
     <div className="transition-all duration-300 bg-white p-4 md:p-6 rounded-2xl w-full lg:w-2/3">
       {/* Section Title */}
       
 
       {/* Returns Tab Content */}
-      {activeTab === 'Returns' && (
+      {/* {activeTab === 'Returns' && ( */}
         <div>
           {/* Toggle for Rolling Returns / Point to Point */}
           <div className="flex justify-center text-sm md:text-base mb-6 md:mb-8">
@@ -250,18 +250,16 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
             ))}
           </div>
         </div>
-      )}
+      {/* )} */}
 
-      {/* Performance Tab Content */}
-      {activeTab === 'Performance' && (
+      {/* Performance Tab Content - Hidden for now */}
+      {/* {activeTab === 'Performance' && (
         <div className="w-full lg:w-2/3 bg-white font-outfit rounded-2xl md:rounded-3xl p-4 md:p-6 lg:p-8 text-[#4B5563]">
-          {/* Investment Amount Display */}
           <div className="text-center mb-6 md:mb-8">
             <p className="text-gray-400 text-base md:text-lg mb-2">Investment of</p>
             <p className="text-3xl md:text-5xl font-bold text-navy">₹ 10,00,000</p>
           </div>
 
-          {/* Time Period Buttons */}
           <div className="flex justify-between gap-1.5 md:gap-3 lg:gap-4 mb-8 md:mb-12 overflow-x-auto scrollbar-hide">
             {performanceTimePeriods.map((period) => (
               <TimeButton
@@ -274,14 +272,12 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
             ))}
           </div>
 
-          {/* Bar Chart */}
           <div className="mb-6 md:mb-8 bg-white rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 overflow-x-auto scrollbar-hide">
             <div className="min-w-[400px]">
               <BarChart data={getPerformanceChartData()} height={200} />
             </div>
           </div>
 
-          {/* Performance Stats */}
           <div className="space-y-3 md:space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 md:gap-3">
@@ -325,7 +321,7 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
 
       {/* Information Modal - Bottom Sheet */}
@@ -386,7 +382,7 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
                 <div className="border-t border-gray-200"></div>
                 
                 {/* Performance Section */}
-                <div className="flex items-start gap-3">
+                {/* <div className="flex items-start gap-3">
                   <div className="w-6 h-6 flex-shrink-0 mt-0.5">
                     <img src={Percent} alt="Performance Percent" />
                   </div>
@@ -394,7 +390,7 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
                     <h3 className="text-navy font-semibold text-base font-outfit mb-1">Performance</h3>
                     <p className="text-[#4B5563] font-normal text-sm font-outfit">Performance shows how your investment would have grown over time compared to other options. It helps you see how this fund stacks up against alternatives like Bank Accounts, Gold, and the overall category average.</p>
                   </div>
-                </div>
+                </div> */}
               </div>
               
               {/* Close Button */}

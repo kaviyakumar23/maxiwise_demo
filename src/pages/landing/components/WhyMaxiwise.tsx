@@ -8,9 +8,33 @@ import Puzzle from "../../../assets/images/Puzzle.png"
 import Upscale from "../../../assets/images/Upscale.png"
 import Trust from "../../../assets/images/Trust.png"
 
+interface ImageConfig {
+    src: string;
+    alt: string;
+    className?: string;
+    containerClassName?: string;
+    position?: 'absolute' | 'flex';
+}
+
+interface SectionData {
+    title: string[];
+    description: string[];
+    backgroundColor: string;
+    titleColor: string;
+    descriptionColor: string;
+    buttonColor?: 'purple' | 'lime' | 'indigo' | 'light-purple';
+    buttonClassName?: string;
+    buttonText?: string;
+    images: ImageConfig[];
+    layoutType: 'absolute' | 'flex';
+    containerVariant?: 'standard' | 'centered';
+    textContainerClass?: string;
+    imageContainerClass?: string;
+}
+
 const WhyMaxiwise = () => {
     // Configuration for all 4 sections
-    const sectionsData = [
+    const sectionsData: SectionData[] = [
         {
             // Section 1: Built for Everyone (Navy - Absolute layout)
             title: ["Built for", "Everyone"],
@@ -49,9 +73,6 @@ const WhyMaxiwise = () => {
             backgroundColor: "bg-lime",
             titleColor: "text-navy",
             descriptionColor: "text-navy",
-            buttonColor: "indigo" as const,
-            buttonClassName: "font-medium rounded-full",
-            buttonText: "The Engine",
             layoutType: "flex" as const,
             images: [
                 {
@@ -71,9 +92,6 @@ const WhyMaxiwise = () => {
             backgroundColor: "bg-purple",
             titleColor: "text-navy",
             descriptionColor: "text-navy",
-            buttonColor: "indigo" as const,
-            buttonClassName: "font-medium rounded-full text-purple",
-            buttonText: "The Pedigree",
             layoutType: "flex" as const,
             images: [
                 {
@@ -94,8 +112,6 @@ const WhyMaxiwise = () => {
             backgroundColor: "bg-navy",
             titleColor: "text-purple",
             descriptionColor: "text-white",
-            buttonClassName: "text-black rounded-full",
-            buttonText: "Get Started",
             layoutType: "flex" as const,
             containerVariant: "centered" as const,
             textContainerClass: "flex-1 max-w-2xl lg:mt-32",
