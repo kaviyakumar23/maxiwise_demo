@@ -62,10 +62,18 @@ const CloseIcon = ({ className }: { className?: string }) => (
 );
 
 const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedType, setSelectedType] = useState<string>(''); // Changed to single selection
+  const [selectedMarketCap, setSelectedMarketCap] = useState<string>(''); // Single market cap selection
   const [searchQuery, setSearchQuery] = useState('');
   const [allFunds, setAllFunds] = useState<FundScheme[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const marketCapOptions = [
+    { id: 'largecap', label: 'Large Cap' },
+    { id: 'midcap', label: 'Mid Cap' },
+    { id: 'smallcap', label: 'Small Cap' },
+    { id: 'others', label: 'Others' }
+  ];
 
   // Fetch funds data
   useEffect(() => {
@@ -89,16 +97,26 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  const toggleFundType = (typeId: string) => {
-    setSelectedTypes(prev => 
-      prev.includes(typeId) 
-        ? prev.filter(id => id !== typeId)
-        : [...prev, typeId]
-    );
+  const selectFundType = (typeId: string) => {
+    setSelectedType(typeId);
+    // Clear market cap when changing fund type to non-equity
+    if (typeId !== 'equity') {
+      setSelectedMarketCap('');
+    }
   };
 
-  const removeFundType = (typeId: string) => {
-    setSelectedTypes(prev => prev.filter(id => id !== typeId));
+  const removeFundType = () => {
+    setSelectedType('');
+    // Clear market cap when removing fund type
+    setSelectedMarketCap('');
+  };
+
+  const selectMarketCap = (capId: string) => {
+    setSelectedMarketCap(capId);
+  };
+
+  const removeMarketCap = () => {
+    setSelectedMarketCap('');
   };
 
   // Helper function to determine the highest cap
@@ -127,16 +145,45 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     return 'others';
   };
 
+  // Helper function to match market cap with fund data
+  const matchesMarketCap = (fund: FundScheme, capId: string): boolean => {
+    const smallCap = parseFloat(fund.small_cap) || 0;
+    const midCap = parseFloat(fund.mid_cap) || 0;
+    const largeCap = parseFloat(fund.large_cap) || 0;
+    
+    const highestCap = getHighestCap(fund);
+    
+    switch (capId) {
+      case 'largecap':
+        return highestCap === 'Large Cap';
+      case 'midcap':
+        return highestCap === 'Mid Cap';
+      case 'smallcap':
+        return highestCap === 'Small Cap';
+      case 'others':
+        return highestCap === null || (smallCap === 0 && midCap === 0 && largeCap === 0);
+      default:
+        return false;
+    }
+  };
+
   // Filter and search funds
   const getFilteredFunds = (): FundScheme[] => {
     let filtered = allFunds;
 
     // Filter by fund type
-    if (selectedTypes.length > 0) {
+    if (selectedType) {
       filtered = filtered.filter(fund => {
         const category = mapFundTypeToCategory(fund.fund_type);
-        return selectedTypes.includes(category);
+        return category === selectedType;
       });
+    }
+
+    // Filter by market cap (only if equity is selected)
+    if (selectedType === 'equity' && selectedMarketCap) {
+      filtered = filtered.filter(fund => 
+        matchesMarketCap(fund, selectedMarketCap)
+      );
     }
 
     // Filter by search query
@@ -174,7 +221,8 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (!isOpen) {
       setSearchQuery('');
-      setSelectedTypes([]);
+      setSelectedType('');
+      setSelectedMarketCap('');
     }
   }, [isOpen]);
 
@@ -219,27 +267,40 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
               />
             </div>
 
-            {/* Selected Fund Types as Chips */}
-            {selectedTypes.length > 0 && (
+            {/* Selected Fund Type and Market Cap as Chips */}
+            {(selectedType || selectedMarketCap) && (
               <div className="flex flex-wrap gap-2 mt-4">
-                {selectedTypes.map((typeId) => {
-                  const type = fundTypes.find(t => t.id === typeId);
-                  return (
-                    <div
-                      key={typeId}
-                      className="flex items-center gap-2 px-4 py-2 text-navy rounded-xl font-outfit font-medium text-sm"
-                      style={{ backgroundColor: '#E8D8FF' }}
+                {/* Fund Type Chip */}
+                {selectedType && (
+                  <div
+                    className="flex items-center gap-2 px-4 py-2 text-navy rounded-xl font-outfit font-medium text-sm"
+                    style={{ backgroundColor: '#E8D8FF' }}
+                  >
+                    <span>{fundTypes.find(t => t.id === selectedType)?.label}</span>
+                    <button
+                      onClick={removeFundType}
+                      className="hover:opacity-70 rounded-full p-0.5 transition-opacity"
                     >
-                      <span>{type?.label}</span>
-                      <button
-                        onClick={() => removeFundType(typeId)}
-                        className="hover:opacity-70 rounded-full p-0.5 transition-opacity"
-                      >
-                        <CloseIcon className="w-4 h-4" />
-                      </button>
-                    </div>
-                  );
-                })}
+                      <CloseIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                
+                {/* Market Cap Chip */}
+                {selectedMarketCap && (
+                  <div
+                    className="flex items-center gap-2 px-4 py-2 text-navy rounded-xl font-outfit font-medium text-sm"
+                    style={{ backgroundColor: '#E8D8FF' }}
+                  >
+                    <span>{marketCapOptions.find(c => c.id === selectedMarketCap)?.label}</span>
+                    <button
+                      onClick={removeMarketCap}
+                      className="hover:opacity-70 rounded-full p-0.5 transition-opacity"
+                    >
+                      <CloseIcon className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -322,21 +383,21 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
               </div>
             )}
 
-            {/* Fund Type Selection */}
+            {/* Filter Selection */}
             {!searchQuery.trim() && (
               <div>
-                <h3 className="text-sm font-medium text-gray-500 mb-4">
-                  By Market Capitalization
-                </h3>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {fundTypes
-                    .filter(type => !selectedTypes.includes(type.id))
-                    .map((type) => {
-                      return (
+                {/* Show Fund Type Selection if no type is selected */}
+                {!selectedType && (
+                  <>
+                    <h3 className="text-sm font-medium text-gray-500 mb-4">
+                      Select Fund Type
+                    </h3>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {fundTypes.map((type) => (
                         <button
                           key={type.id}
-                          onClick={() => toggleFundType(type.id)}
+                          onClick={() => selectFundType(type.id)}
                           className={cn(
                             "px-6 py-3 rounded-xl font-outfit font-medium cursor-pointer",
                             "transition-all duration-200",
@@ -346,9 +407,36 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
                         >
                           {type.label}
                         </button>
-                      );
-                    })}
-                </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* Show Market Capitalization options only when Equity is selected and no cap is chosen */}
+                {selectedType === 'equity' && !selectedMarketCap && (
+                  <>
+                    <h3 className="text-sm font-medium text-gray-500 mb-4">
+                      By Market Capitalization
+                    </h3>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {marketCapOptions.map((cap) => (
+                        <button
+                          key={cap.id}
+                          onClick={() => selectMarketCap(cap.id)}
+                          className={cn(
+                            "px-6 py-3 rounded-xl font-outfit font-medium cursor-pointer",
+                            "transition-all duration-200",
+                            "text-sm",
+                            "bg-gray-100 text-navy hover:bg-gray-200"
+                          )}
+                        >
+                          {cap.label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>

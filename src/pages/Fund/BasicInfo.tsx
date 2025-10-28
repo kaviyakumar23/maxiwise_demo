@@ -140,7 +140,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
             {/* Save/Bookmark Icon */}
             <button
               onClick={handleSaveToWatchlist}
-              className="p-1 hover:bg-white/50 rounded-lg transition-colors"
+              className="p-1 hover:bg-white/50 rounded-lg transition-colors cursor-pointer"
               aria-label="Save to watchlist"
             >
               <svg
@@ -160,7 +160,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
             <div className="relative">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-1 hover:bg-white/50 rounded-lg transition-colors"
+                className="p-1 hover:bg-white/50 rounded-lg transition-colors cursor-pointer"
                 aria-label="More options"
               >
                 <svg
@@ -179,7 +179,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
               {isMenuOpen && (
                 <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg py-2 z-10">
                   <button
-                    className="w-full px-4 py-2 text-left text-navy hover:bg-gray-100 flex items-center gap-2"
+                    className="w-full px-4 py-2 text-left text-navy hover:bg-gray-100 flex items-center gap-2 cursor-pointer"
                     onClick={() => {
                       setIsMenuOpen(false);
                       handleShare();
@@ -289,7 +289,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
           <div className="flex items-center gap-2">
             <button
               onClick={handleShare}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
               aria-label="Share"
             >
               <svg
@@ -309,7 +309,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
             {/* Save/Bookmark Icon */}
             <button
               onClick={handleSaveToWatchlist}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
               aria-label="Save to watchlist"
             >
               <svg
@@ -331,7 +331,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
             {/* Download Icon */}
             <button
               onClick={handleDownload}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
               aria-label="Download"
             >
               <svg
