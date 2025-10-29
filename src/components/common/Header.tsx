@@ -12,9 +12,10 @@ type HeaderStyle = 'hero' | 'light' | 'dark'
 
 interface HeaderProps {
   fixedStyle?: HeaderStyle
+  noShadow?: boolean
 }
 
-const Header = ({ fixedStyle }: HeaderProps = {}) => {
+const Header = ({ fixedStyle, noShadow = false }: HeaderProps = {}) => {
   const [headerStyle, setHeaderStyle] = useState<HeaderStyle>(fixedStyle || 'hero')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
@@ -152,7 +153,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
     switch (headerStyle) {
       case 'light':
         return {
-          background: 'bg-white shadow-sm',
+          background: `bg-white ${noShadow ? '' : 'shadow-sm'}`,
           textColor: 'text-navy',
           logo: LogoBlack
         }
@@ -179,7 +180,7 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
       {/* Desktop Layout */}
       <div className="hidden xl:grid grid-cols-3 items-center px-8 py-4">
         <div className={`p-2 flex flex-row gap-12 cursor-pointer transition-colors duration-300 ${styles.textColor}`}>
-          <div onClick={() => navigateToSection('funds')} className="hover:opacity-80 transition-opacity">Our Story</div>
+          <Link to="/our-story" className="hover:opacity-80 transition-opacity">Our Story</Link>
           <div onClick={() => navigateToSection('engine')} className="hover:opacity-80 transition-opacity">The Engine</div>
           <Link to="/blogs" className="hover:opacity-80 transition-opacity">Insights</Link>
           <div onClick={() => navigateToSection('footer')} className="hover:opacity-80 transition-opacity">Informed</div>
@@ -280,12 +281,13 @@ const Header = ({ fixedStyle }: HeaderProps = {}) => {
       {isMobileMenuOpen && (
         <div className="xl:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 z-40 mobile-menu-container">
           <div className="flex flex-col py-4">
-            <button
-              onClick={() => navigateToSection('funds')}
+            <Link
+              to="/our-story"
+              onClick={() => setIsMobileMenuOpen(false)}
               className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"
             >
-              Funds
-            </button>
+              Our Story
+            </Link>
             <button
               onClick={() => navigateToSection('engine')}
               className="px-6 py-3 text-left text-navy hover:bg-gray-50 transition-colors duration-200"

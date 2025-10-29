@@ -5,7 +5,7 @@ import Piechart from "../../../assets/images/Piechart.png";
 import DownArrow from "../../../assets/images/down-arrow.png";
 import SpiralBg from "../../../assets/images/spiral-bg-card.png";
 
-const About = () => {
+const GuidedJourney = () => {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -184,4 +184,4 @@ const About = () => {
     )
 }
 
-export default About;
+export default GuidedJourney;
