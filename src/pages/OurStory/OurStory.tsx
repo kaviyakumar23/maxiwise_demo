@@ -1,9 +1,15 @@
+import { useEffect } from "react";
 import Header from "../../components/common/Header";
 import Footer from "../landing/components/Footer";
 import Start_Now from "../landing/components/Start_Now";
 import About from "./About";
 
 const OurStory = () => {
+    useEffect(() => {
+        // Scroll to top when component mounts
+        window.scrollTo(0, 0);
+    }, []);
+
     return (
         <div>
             <Header fixedStyle="light" noShadow />

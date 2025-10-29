@@ -89,7 +89,7 @@ const Footer = () => {
                             </li>
                             <li>
                                 <button 
-                                    onClick={() => navigateToSection('funds')} 
+                                    onClick={() => navigate({ to: '/our-story' })} 
                                     className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                 >
                                     Our Story
@@ -105,7 +105,7 @@ const Footer = () => {
                             </li>
                             <li>
                                 <button 
-                                    onClick={() => navigateToSection('articles')} 
+                                    onClick={() => navigate({ to: '/blogs' })} 
                                     className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                 >
                                     Insights
@@ -198,7 +198,7 @@ const Footer = () => {
                                     </li>
                                     <li>
                                         <button 
-                                            onClick={() => navigateToSection('about')} 
+                                            onClick={() => navigate({ to: '/our-story' })} 
                                             className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                         >
                                             Our Story
@@ -214,7 +214,7 @@ const Footer = () => {
                                     </li>
                                     <li>
                                         <button 
-                                            onClick={() => navigateToSection('articles')} 
+                                            onClick={() => navigate({ to: '/blogs' })} 
                                             className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors cursor-pointer text-left"
                                         >
                                             Insights

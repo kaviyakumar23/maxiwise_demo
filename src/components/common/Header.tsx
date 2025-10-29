@@ -180,10 +180,10 @@ const Header = ({ fixedStyle, noShadow = false }: HeaderProps = {}) => {
       {/* Desktop Layout */}
       <div className="hidden xl:grid grid-cols-3 items-center px-8 py-4">
         <div className={`p-2 flex flex-row gap-12 cursor-pointer transition-colors duration-300 ${styles.textColor}`}>
-          <Link to="/our-story" className="hover:opacity-80 transition-opacity">Our Story</Link>
-          <div onClick={() => navigateToSection('engine')} className="hover:opacity-80 transition-opacity">The Engine</div>
-          <Link to="/blogs" className="hover:opacity-80 transition-opacity">Insights</Link>
-          <div onClick={() => navigateToSection('footer')} className="hover:opacity-80 transition-opacity">Informed</div>
+          <Link to="/our-story" className="hover:opacity-80 transition-opacity cursor-pointer">Our Story</Link>
+          <div onClick={() => navigateToSection('engine')} className="hover:opacity-80 transition-opacity cursor-pointer">The Engine</div>
+          <Link to="/blogs" className="hover:opacity-80 transition-opacity cursor-pointer">Insights</Link>
+          <div onClick={() => navigateToSection('footer')} className="hover:opacity-80 transition-opacity cursor-pointer">Informed</div>
         </div>
         <div className="flex justify-center">
           <Link to="/">
