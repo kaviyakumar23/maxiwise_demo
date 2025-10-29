@@ -10,7 +10,7 @@ const About = () => {
     return (
         <div className="w-full overflow-hidden">
             {/* Hero Image Section */}
-            <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 pt-16 md:pt-20">
+            <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 pt-24 md:pt-28">
                 {/* Mobile Image - shown only on small screens */}
                 <img
                     src={AboutImgMobile}
@@ -95,7 +95,7 @@ const About = () => {
                     </div>
 
                     {/* CTA Buttons */}
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full px-4 justify-start self-start mx-auto">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full px-4 py-8 justify-start self-start mx-auto">
                         <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-navy text-white font-outfit text-sm sm:text-base md:text-lg hover:bg-opacity-90 transition-all whitespace-nowrap">
                             Watch how CARRVA works
                         </button>
@@ -149,13 +149,6 @@ const About = () => {
                                     filter: 'saturate(1.5) contrast(0.6)' 
                                 }}
                             />
-                            <div 
-        className="absolute inset-0 pointer-events-none"
-        style={{
-            background: 'radial-gradient(circle at 40% 60%, rgba(23, 6, 48, 0.15) 0%, rgba(23, 6, 48, 0.35) 100%)',
-            mixBlendMode: 'multiply'
-        }}
-    ></div>
                         </div>
                     </div>
                 </div>
