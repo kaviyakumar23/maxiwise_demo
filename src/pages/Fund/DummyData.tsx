@@ -216,6 +216,7 @@ export interface FundDetails {
   purchase_mode: string;
   fund_size: string;
   fund_size_date: string;
+  isin: string;
   [key: string]: any; // Allow additional properties from API
 }
 
