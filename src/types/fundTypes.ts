@@ -28,6 +28,7 @@ export interface FundDetails {
   fund_legal_name: string;
   fund_name: string;
   amc: string;
+  isin: string;
   morningstar_category: string;
   inception_date: string;
   fund_size: string;
