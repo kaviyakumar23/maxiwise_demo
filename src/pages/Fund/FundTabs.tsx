@@ -21,6 +21,11 @@ interface FundScheme {
   purchase_mode: string;
 }
 
+interface NavData {
+  value: string;
+  date: string;
+}
+
 interface FundTabsProps {
   fundDetails?: BetterFunds;
   fundDetailsData?: FundDetails;
@@ -28,11 +33,12 @@ interface FundTabsProps {
   selectedCategory: string | null;
   onCategorySelect: (categoryId: string) => void;
   completeData?: FundData | null;
+  navData?: NavData | null;
 }
 
 type TabType = 'Insights' | 'Returns' | 'Ratios' | 'Details';
 
-const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFundSchemes, selectedCategory, onCategorySelect, completeData }) => {
+const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFundSchemes, selectedCategory, onCategorySelect, completeData, navData }) => {
   const [activeTab, setActiveTab] = useState<TabType>('Insights');
 
   const tabs: TabType[] = ['Insights', 'Returns', 'Ratios', 'Details'];
@@ -64,7 +70,7 @@ const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFu
       case 'Details':
         return (
           <>
-            <FundInformation fundDetails={fundDetailsData} />
+            <FundInformation fundDetails={fundDetailsData} navData={navData} />
             <AboutTheFund fundDetails={fundDetailsData} />
             <FundManagers fundDetails={fundDetailsData} />
           </>

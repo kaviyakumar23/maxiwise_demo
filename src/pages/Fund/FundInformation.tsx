@@ -2,11 +2,17 @@ import React from 'react';
 import type { FundDetails } from '../../types/fundTypes';
 import Qustion from '../../assets/images/Question.svg';
 
-interface FundInformationProps {
-  fundDetails?: FundDetails;
+interface NavData {
+  value: string;
+  date: string;
 }
 
-const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
+interface FundInformationProps {
+  fundDetails?: FundDetails;
+  navData?: NavData | null;
+}
+
+const FundInformation: React.FC<FundInformationProps> = ({ fundDetails, navData }) => {
   const formatCurrency = (value: number | undefined) => {
     if (!value) return 'N/A';
     return `₹${value.toLocaleString('en-IN')}`;
@@ -28,7 +34,7 @@ const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
   };
 
   const informationItems = [
-    { label: 'Latest NAV', value: 'N/A' },
+    { label: 'Latest NAV', value: navData?.value || 'N/A' },
     { label: 'Expense Ratio', value: `${fundDetails?.net_expense_ratio}%` || 'N/A' },
     { label: 'Stamp Duty', value: 'N/A' },
     { label: 'Exit load', value: `${fundDetails?.exit_load}%` || 'N/A' },

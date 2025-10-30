@@ -32,10 +32,16 @@ interface FundSchemesResponse {
   data: FundScheme[];
 }
 
+interface NavData {
+  value: string;
+  date: string;
+}
+
 const FundMain = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [fundDetails, setFundDetails] = useState<FundData | null>(null);
   const [allFundSchemes, setAllFundSchemes] = useState<FundScheme[]>([]);
+  const [navData, setNavData] = useState<NavData | null>(null);
   const [loading, setLoading] = useState(false);
   const search = useSearch({ from: '/fund' });
 
@@ -85,6 +91,37 @@ const FundMain = () => {
     fetchFundData();
   }, [search.isin, allFundSchemes]);
 
+  // Fetch NAV data when fund details are available
+  useEffect(() => {
+    const fetchNavData = async () => {
+      if (!fundDetails?.fundDetails?.isin) return;
+
+      try {
+        const response = await fetch(
+          `https://d223ljjj0y7hd6.cloudfront.net/api/mf-data/nav/${fundDetails.fundDetails.isin}`
+        );
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          const formatDate = (dateStr: string): string => {
+            const date = new Date(dateStr);
+            const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+            return date.toLocaleDateString('en-IN', options);
+          };
+
+          setNavData({
+            value: `₹ ${parseFloat(result.data.net_asset_value).toFixed(2)}`,
+            date: `as on ${formatDate(result.data.date)}`
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching NAV data:', error);
+      }
+    };
+
+    fetchNavData();
+  }, [fundDetails?.fundDetails?.isin]);
+
   return (
     <div>
       <Header fixedStyle="light" />
@@ -100,7 +137,7 @@ const FundMain = () => {
         ) : (
           <>
             {/* Basic Info - Always visible */}
-            <BasicInfo fundDetails={fundDetails?.fundDetails} />
+            <BasicInfo fundDetails={fundDetails?.fundDetails} navData={navData} />
 
             {/* Desktop View - All components stacked (lg and above) */}
             <div className="hidden xl:block px-4 py-2 md:block lg:px-20 lg:py-10">
@@ -118,7 +155,7 @@ const FundMain = () => {
                 <Ratios ratiosData={fundDetails?.ratios} />
                 <Carrva />
                 <AssetAllocation />
-                <FundInformation fundDetails={fundDetails?.fundDetails} />
+                <FundInformation fundDetails={fundDetails?.fundDetails} navData={navData} />
                 <AboutTheFund fundDetails={fundDetails?.fundDetails} />
                 <FundManagers fundDetails={fundDetails?.fundDetails} />
               </div>
@@ -133,6 +170,7 @@ const FundMain = () => {
                 selectedCategory={selectedCategory}
                 onCategorySelect={setSelectedCategory}
                 completeData={fundDetails}
+                navData={navData}
               />
             </div>
           </>

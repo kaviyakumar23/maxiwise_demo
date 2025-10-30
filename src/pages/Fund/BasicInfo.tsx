@@ -1,23 +1,23 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useLoginModal } from "../getStarted/LoginModal";
 import { fundData, type FundDetails } from "./DummyData";
 import CaretUpDown from "../../assets/images/CaretUpDown.svg";
 import NipponLogo from "../../assets/images/Nippon India Mutual Fund.png";
 
-interface BasicInfoProps {
-  fundDetails?: FundDetails;
-}
-
 interface NavData {
   value: string;
   date: string;
 }
 
-const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
+interface BasicInfoProps {
+  fundDetails?: FundDetails;
+  navData?: NavData | null;
+}
+
+const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails, navData }) => {
   const { fundHeader } = fundData;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [navData, setNavData] = useState<NavData | null>(null);
   const { isSignedIn } = useUser();
   const { openModal } = useLoginModal();
 
@@ -81,31 +81,6 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails }) => {
     const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
     return date.toLocaleDateString('en-IN', options);
   };
-
-  // Fetch NAV data from API
-  useEffect(() => {
-    const fetchNavData = async () => {
-      if (!fundDetails?.isin) return;
-
-      try {
-        const response = await fetch(
-          `https://d223ljjj0y7hd6.cloudfront.net/api/mf-data/nav/${fundDetails.isin}`
-        );
-        const result = await response.json();
-
-        if (result.success && result.data) {
-          setNavData({
-            value: `₹ ${parseFloat(result.data.net_asset_value).toFixed(2)}`,
-            date: `as on ${formatDate(result.data.date)}`
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching NAV data:', error);
-      }
-    };
-
-    fetchNavData();
-  }, [fundDetails?.isin]);
 
   // Prepare fund header data from API or use dummy data
   const displayData = useMemo(() => {
