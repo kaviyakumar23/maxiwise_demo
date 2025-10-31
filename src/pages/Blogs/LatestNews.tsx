@@ -7,7 +7,7 @@ const LatestNews = () => {
             {/* Header Section */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12">
                 <h1 className="font-outfit text-navy text-center font-medium text-5xl sm:text-6xl leading-tight tracking-[-1.8px] mb-4">
-                    Latest news
+                    Decisions that matter
                 </h1>
                 <p className="font-outfit text-[#4B5563] text-center font-normal text-lg leading-[27px] tracking-[-0.54px]">
                     Lorem ipsum dolor sit amet consectetur fusce ut viverra

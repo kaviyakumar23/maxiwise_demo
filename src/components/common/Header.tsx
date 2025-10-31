@@ -71,21 +71,21 @@ const Header = ({ fixedStyle, noShadow = false }: HeaderProps = {}) => {
   }, [isMobileMenuOpen])
 
   // Keyboard shortcut to open search (Cmd+K on Mac, Ctrl+K on Windows)
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Check for Cmd+K (Mac) or Ctrl+K (Windows/Linux)
-      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
-        event.preventDefault()
-        setIsSearchModalOpen(true)
-      }
-    }
+  // useEffect(() => {
+  //   const handleKeyDown = (event: KeyboardEvent) => {
+  //     // Check for Cmd+K (Mac) or Ctrl+K (Windows/Linux)
+  //     if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+  //       event.preventDefault()
+  //       setIsSearchModalOpen(true)
+  //     }
+  //   }
 
-    document.addEventListener('keydown', handleKeyDown)
+  //   document.addEventListener('keydown', handleKeyDown)
 
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [])
+  //   return () => {
+  //     document.removeEventListener('keydown', handleKeyDown)
+  //   }
+  // }, [])
 
   useEffect(() => {
     // Skip intersection observer if a fixed style is provided
@@ -183,7 +183,6 @@ const Header = ({ fixedStyle, noShadow = false }: HeaderProps = {}) => {
           <Link to="/our-story" className="hover:opacity-80 transition-opacity cursor-pointer">Our Story</Link>
           <div onClick={() => navigateToSection('engine')} className="hover:opacity-80 transition-opacity cursor-pointer">The Engine</div>
           <Link to="/blogs" className="hover:opacity-80 transition-opacity cursor-pointer">Insights</Link>
-          <div onClick={() => navigateToSection('footer')} className="hover:opacity-80 transition-opacity cursor-pointer">Informed</div>
         </div>
         <div className="flex justify-center">
           <Link to="/">
@@ -196,7 +195,7 @@ const Header = ({ fixedStyle, noShadow = false }: HeaderProps = {}) => {
             variant="primary"
             color="purple"
             size="lg"
-            onClick={() => setIsSearchModalOpen(true)}
+            onClick={openModal}
             className="font-outfit"
           >
             Start Maxiwising

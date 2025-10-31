@@ -42,18 +42,18 @@ const LandingPageContent = () => {
       <div id="hero" data-header-section>
         <Hero />
       </div>
+      <div id="section-2" data-header-section>
+        <Section_2 />
+      </div>
+      <div id="why-maxiwise" data-header-section>
+        <WhyMaxiwise />
+      </div>
       {/* <div id="funds" data-header-section>
         <FundPerforming />
       </div> */}
       <div id="engine" data-header-section>
         <Engine />
-      </div>
-      <div id="why-maxiwise" data-header-section>
-        <WhyMaxiwise />
-      </div>
-      <div id="section-2" data-header-section>
-        <Section_2 />
-      </div>
+      </div> 
       <div id="articles" data-header-section>
         <Articles />
       </div>

@@ -114,27 +114,6 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Account section - column 5 - Only show when not signed in */}
-                    {!isSignedIn && (
-                        <div className="lg:col-span-1">
-                            <h3 className="font-outfit font-normal text-sm text-navy mb-3 leading-tight">
-                                Account
-                            </h3>
-                            <ul className="space-y-2">
-                                <li>
-                                    <a href="/signup" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
-                                        Create Account
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="/login" className="font-outfit font-normal text-sm text-[#4B5563] hover:text-gray-900 transition-colors">
-                                        Log In
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    )}
-
                     {/* Contact us section - column 6 (or 5 when signed in) */}
                     <div className="lg:col-span-1">
                         <h3 className="font-outfit font-normal text-sm text-navy mb-3 leading-tight">
@@ -142,13 +121,7 @@ const Footer = () => {
                         </h3>
                         <div className="space-y-2">
                             <p className="font-outfit font-normal text-sm text-[#4B5563] leading-relaxed">
-                                <span className="block">info@maxiwise.com</span>
-                            </p>
-                            <p className="font-outfit font-normal text-sm text-[#4B5563] leading-relaxed">
-                                <span className="block">+91 (813) 095-8849</span>
-                            </p>
-                            <p className="font-outfit font-normal text-sm text-[#4B5563] leading-relaxed">
-                                <span className="block">Bengaluru, Karnataka, India</span>
+                                <span className="block">support@maxiwise.in</span>
                             </p>
                         </div>
                     </div>

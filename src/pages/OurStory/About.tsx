@@ -1,8 +1,6 @@
 import AboutImg from "../../assets/images/AboutImg.png";
 import AboutImgMobile from "../../assets/images/AboutImgMobile.png";
-import PortfolioHealth from "../../assets/images/PortfolioHealth.png";
 // import BarChart from "../../assets/images/BarChart.png";
-import GetStarted from "../../components/common/GetStarted";
 import { useLoginModal } from "../getStarted/LoginModal";
 
 const About = () => {
@@ -127,32 +125,6 @@ const About = () => {
                 </div>
             </div>
 
-            {/* Portfolio Health Check Section */}
-            <div className="w-full px-4 sm:px-6 md:px-8 lg:px-12 mt-4 mb-16 sm:mb-20 md:mb-24">
-                <div className="max-w-7xl mx-auto bg-purple rounded-2xl sm:rounded-3xl overflow-hidden">
-                    <div className="flex flex-col lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
-                        {/* Content Section - Shows first on mobile */}
-                        <div className="flex flex-col items-start text-left p-8 sm:p-10 md:p-12 lg:p-16 lg:order-2">
-                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-navy font-outfit mb-6 sm:mb-8 leading-tight">
-                                Get your portfolio health check invite
-                            </h2>
-                            <GetStarted className="bg-navy text-white hover:bg-opacity-90">Get Started</GetStarted>
-                        </div>
-
-                        {/* Image Section - Shows below on mobile */}
-                        <div className="flex justify-center items-end lg:justify-start lg:items-center lg:order-1">
-                            <img
-                                src={PortfolioHealth}
-                                alt="Portfolio Health Check"
-                                className="w-full h-64 md:h-80 lg:h-96 object-cover lg:object-contain"
-                                style={{ 
-                                    filter: 'saturate(1.5) contrast(0.6)' 
-                                }}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     )
 }

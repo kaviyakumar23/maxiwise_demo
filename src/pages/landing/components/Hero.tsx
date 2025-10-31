@@ -20,8 +20,8 @@ export const Hero = () => {
               <h1 className="text-6xl font-medium font-outfit text-white py-2">
                 The most objective report card <br /> of every mutual fund.
               </h1>
-              <p className="text-3xl font-light italic font-outfit text-white p-4">
-                No bias, <br /> Only facts.
+              <p className="text-2xl font-light italic font-outfit text-white p-4">
+                No bias, Only facts.
               </p>
             </div>
             <div className='w-full max-w-xl mx-auto'>
@@ -33,7 +33,7 @@ export const Hero = () => {
           {/* Bottom section - CTA and footer - positioned at bottom */}
           <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-6">
             <div className="text-white text-sm font-normal text-center">
-              1400+ mutual funds analysed | 1.2 lakh data points decoded
+              Analysing 1400 funds across 5451 parameters, sifting through 240M data points across market cycle every month
             </div>
           </div>
         </div>
@@ -49,8 +49,8 @@ export const Hero = () => {
               <h1 className="text-5xl lg:text-6xl font-medium leading-tight py-2 font-outfit text-white">
               The most objective <br /> report card of every <br /> mutual fund.
               </h1>
-              <p className="text-3xl lg:text-3xl font-light italic leading-tight p-4 font-outfit text-white">
-                No bias, <br /> Only facts.
+              <p className="text-2xl lg:text-2xl font-light italic leading-tight p-4 font-outfit text-white">
+                No bias, Only facts.
               </p>
             </div>
             <div>
@@ -62,7 +62,7 @@ export const Hero = () => {
           {/* Bottom section - CTA and footer - positioned at bottom */}
           <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-6">
             <div className="text-white text-sm font-normal text-center">
-            1400+ mutual funds analysed | 1.2 lakh data points decoded
+            Analysing 1400 funds across 5451 parameters, sifting through 240M data points across market cycle every month
             </div>
           </div>
         </div>
@@ -84,8 +84,8 @@ export const Hero = () => {
               <h1 className="text-4xl sm:text-5xl font-medium leading-tight mb-2 font-outfit text-white">
                 mutual fund.
               </h1>
-              <p className="text-base lg:text-6xl font-light italic leading-tight p-4 font-outfit text-white">
-                No bias, <br /> Only facts.
+              <p className="text-base lg:text-4xl font-light italic leading-tight p-4 font-outfit text-white">
+                No bias, Only facts.
               </p>
             </div>
             <div className='py-6'>
@@ -97,7 +97,7 @@ export const Hero = () => {
           {/* Bottom section - CTA and footer - positioned at bottom */}
           <div className="absolute bottom-16 left-6 flex flex-col items-start justify-start gap-6 pl-4">
             <div className="text-white text-sm font-normal text-left">
-            1400+ mutual funds analysed | 1.2 lakh data points decoded
+            Analysing 1400 funds across 5451 parameters, sifting through 240M data points across market cycle every month
             </div>
           </div>
         </div>

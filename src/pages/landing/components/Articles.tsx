@@ -15,8 +15,7 @@ const Articles = () => {
             
             {/* Responsive description */}
             <div className="font-outfit font-normal text-sm sm:text-base lg:text-lg text-[#4B5563] text-center py-4 sm:py-6 leading-relaxed sm:leading-[26.4px] tracking-[0.35px] max-w-2xl mx-auto">
-                <p>Simplifying everything that</p>
-                <p>makes investing intimidating</p>
+                <p>Simplifying everything that makes investing intimidating</p>
             </div>
             
             {/* Read All Articles link */}
