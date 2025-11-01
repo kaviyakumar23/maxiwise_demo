@@ -1,5 +1,3 @@
-import GetStarted from "../../../components/common/GetStarted"
-
 interface ImageConfig {
     src: string;
     alt: string;
@@ -14,9 +12,6 @@ interface WhyMaxiwiseCardProps {
     backgroundColor: string;
     titleColor: string;
     descriptionColor: string;
-    buttonColor?: 'purple' | 'lime' | 'indigo' | 'light-purple';
-    buttonClassName?: string;
-    buttonText?: string; // Dynamic button text for each card
     images: ImageConfig[];
     layoutType: 'absolute' | 'flex';
     containerVariant?: 'standard' | 'centered'; // For different flex layouts
@@ -30,9 +25,6 @@ const WhyMaxiwiseCard = ({
     backgroundColor,
     titleColor,
     descriptionColor,
-    buttonColor,
-    buttonClassName,
-    buttonText,
     images,
     layoutType,
     containerVariant = 'standard',
@@ -43,32 +35,15 @@ const WhyMaxiwiseCard = ({
     if (layoutType === 'absolute') {
         return (
             <div className={`${backgroundColor} w-full h-full relative overflow-hidden`}>
-                {/* Main content container */}
-                <div className="w-full h-full flex flex-col lg:flex-row">
-                    {/* Left content section - responsive layout */}
-                    <div className="h-1/2 lg:h-full px-4 sm:px-8 lg:pl-16 z-20 flex flex-col justify-center">
-                        <div className={`font-outfit font-medium text-4xl sm:text-5xl lg:text-6xl xl:text-7xl ${titleColor} leading-tight mb-6 lg:mb-8`}>
-                            {title.map((line, index) => (
-                                <h1 key={index} className={index > 0 ? "mb-0" : "mb-2"}>{line}</h1>
-                            ))}
-                        </div>
-                        <div className={`font-outfit font-normal text-sm sm:text-lg lg:text-xl ${descriptionColor} mb-6 lg:mb-8 leading-relaxed max-w-lg`}>
-                            <p dangerouslySetInnerHTML={{ __html: description.join(' ') }} />
-                        </div>
-                        {buttonText && (
-                            <div>
-                                <GetStarted 
-                                    color={buttonColor}
-                                    className={buttonClassName}
-                                >
-                                    {buttonText}
-                                </GetStarted>
-                            </div>
-                        )}
+                {/* Main content container - positioned to start below center */}
+                <div className="absolute left-0 lg:top-[45%] top-[15%] px-6 sm:px-10 md:px-14 lg:px-20 xl:px-22 z-20 w-full lg:w-1/2 max-w-2xl">
+                    <div className={`font-outfit font-medium text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl ${titleColor} leading-tight mb-4 sm:mb-5 md:mb-6`}>
+                        {title.map((line, index) => (
+                            <h1 key={index} className="mb-0">{line}</h1>
+                        ))}
                     </div>
-                    
-                    {/* Right side - empty for absolute positioning on desktop, graphics container on mobile */}
-                    <div className="w-full lg:w-1/2 h-1/2 lg:h-full relative">
+                    <div className={`font-outfit font-normal text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl ${descriptionColor} mb-4 sm:mb-5 md:mb-6 leading-relaxed max-w-lg`}>
+                        <p dangerouslySetInnerHTML={{ __html: description.join(' ') }} />
                     </div>
                 </div>
                 
@@ -99,25 +74,15 @@ const WhyMaxiwiseCard = ({
         <div className={outerContainerClass}>
             <div className={containerClass}>
                 {/* Left Content */}
-                <div className={`lg:w-1/2 mb-8 lg:mb-0 ${layoutType === 'flex' && images.length > 0 ? 'relative z-10' : ''} ${textContainerClass}`}>
+                <div className={`lg:w-1/2 mb-8 lg:mb-0 xl:mt-12 ${layoutType === 'flex' && images.length > 0 ? 'relative z-10' : ''} ${textContainerClass}`}>
                     <div className={`${titleColor} font-outfit font-medium text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-tight mb-4 sm:mb-6`}>
                         {title.map((line, index) => (
                             <h1 key={index}>{line}</h1>
                         ))}
                     </div>
-                    <div className={`${descriptionColor} font-outfit font-normal text-sm sm:text-lg lg:text-xl mb-6 sm:mb-8 ${containerVariant === 'centered' ? 'leading-relaxed' : ''} max-w-md`}>
+                    <div className={`${descriptionColor} font-outfit font-normal text-sm sm:text-lg lg:text-xl mb-6 sm:mb-8 ${containerVariant === 'centered' ? 'leading-relaxed' : ''} max-w-lg`}>
                         <p dangerouslySetInnerHTML={{ __html: description.join(' ') }} />
                     </div>
-                    {buttonText && (
-                        <div>
-                            <GetStarted 
-                                color={buttonColor}
-                                className={buttonClassName}
-                            >
-                                {buttonText}
-                            </GetStarted>
-                        </div>
-                    )}
                 </div>
                 
                 {/* Right Content - Image */}

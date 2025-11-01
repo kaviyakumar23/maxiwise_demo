@@ -1,26 +1,12 @@
 import { Link } from "@tanstack/react-router";
+import { getRelatedArticles } from "../../data/blogData";
 
-const RelatedArticles = () => {
-    const articles = [
-        {
-            id: 1,
-            title: "Lorem ipsum dolor sit fusce ut viverra",
-            category: "Articles",
-            date: "Feb 5, 2025",
-        },
-        {
-            id: 2,
-            title: "Lorem ipsum dolor sit fusce ut viverra",
-            category: "News",
-            date: "Feb 5, 2025",
-        },
-        {
-            id: 3,
-            title: "Lorem ipsum dolor sit fusce ut viverra",
-            category: "News",
-            date: "Feb 5, 2025",
-        },
-    ];
+interface RelatedArticlesProps {
+    currentArticleId: string;
+}
+
+const RelatedArticles = ({ currentArticleId }: RelatedArticlesProps) => {
+    const articles = getRelatedArticles(currentArticleId, 3);
 
     return (
         <div className="bg-white py-16 sm:py-20">
@@ -42,7 +28,8 @@ const RelatedArticles = () => {
                     {articles.map((article) => (
                         <Link 
                             key={article.id} 
-                            to="/blogs/content" 
+                            to="/blogs/$blogId" 
+                            params={{ blogId: article.id }}
                             className="group block"
                         >
                             {/* Image Placeholder */}

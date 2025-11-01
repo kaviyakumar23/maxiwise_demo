@@ -1,5 +1,4 @@
 import GetStarted from "../../../components/common/GetStarted"
-import Search from "../../../components/common/Search"
 import BackgroundHero from "../../../assets/images/BackgroundHero.png"
 
 export const Hero = () => {
@@ -25,14 +24,14 @@ export const Hero = () => {
               </p>
             </div>
             <div className='w-full max-w-xl mx-auto'>
-              <Search />
+              {/* <Search /> */}
               {/* <GetStarted>Start Maxiwising</GetStarted> */}
             </div>
           </div>
 
           {/* Bottom section - CTA and footer - positioned at bottom */}
           <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-6">
-            <div className="text-white text-sm font-normal text-center">
+            <div className="text-white md:text-sm text-xs font-normal text-center">
               Analysing 1400 funds across 5451 parameters, sifting through 240M data points across market cycle every month
             </div>
           </div>
@@ -55,13 +54,13 @@ export const Hero = () => {
             </div>
             <div>
               {/* <GetStarted>Start Maxiwising</GetStarted> */}
-              <Search />
+              {/* <Search /> */}
             </div>
           </div>
 
           {/* Bottom section - CTA and footer - positioned at bottom */}
           <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-6">
-            <div className="text-white text-sm font-normal text-center">
+            <div className="text-white md:text-sm text-xs font-normal text-center">
             Analysing 1400 funds across 5451 parameters, sifting through 240M data points across market cycle every month
             </div>
           </div>
@@ -96,7 +95,7 @@ export const Hero = () => {
 
           {/* Bottom section - CTA and footer - positioned at bottom */}
           <div className="absolute bottom-16 left-6 flex flex-col items-start justify-start gap-6 pl-4">
-            <div className="text-white text-sm font-normal text-left">
+            <div className="text-white md:text-sm text-xs font-normal text-left">
             Analysing 1400 funds across 5451 parameters, sifting through 240M data points across market cycle every month
             </div>
           </div>

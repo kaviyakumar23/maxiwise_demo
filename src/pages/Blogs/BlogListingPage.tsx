@@ -1,10 +1,10 @@
 import { useEffect } from "react"
 import Header from "../../components/common/Header"
-import LatestNews from "./LatestNews"
+import BlogGrid from "./BlogGrid"
 import Join_Now from "./Join_Now"
 import Footer from "../landing/components/Footer"
 
-export const BlogMain = () => {
+export const BlogListingPage = () => {
     useEffect(() => {
         // Scroll to top when component mounts
         window.scrollTo(0, 0);
@@ -13,7 +13,7 @@ export const BlogMain = () => {
     return (
         <>
             <Header fixedStyle="light" />
-            <LatestNews />
+            <BlogGrid />
             <Join_Now />
             <Footer />
         </>

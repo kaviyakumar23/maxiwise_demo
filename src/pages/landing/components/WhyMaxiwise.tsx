@@ -2,11 +2,10 @@ import CurtainScroller from "../../../components/CurtainScroller";
 import WhyMaxiwiseCard from "./WhyMaxiwiseCard";
 
 // Import images
-import A_Element from "../../../assets/images/3D_A.png"
-import Blocks from "../../../assets/images/Blocks.png"
-import Puzzle from "../../../assets/images/Puzzle.png"
-import Upscale from "../../../assets/images/Upscale.png"
-import Trust from "../../../assets/images/Trust.png"
+import Noise from "../../../assets/images/noise.png"
+import Clarity from "../../../assets/images/clarity.png"
+import Battle from "../../../assets/images/btm.png"
+import BuiltForEveryone from "../../../assets/images/bfe.png";
 
 interface ImageConfig {
     src: string;
@@ -22,9 +21,6 @@ interface SectionData {
     backgroundColor: string;
     titleColor: string;
     descriptionColor: string;
-    buttonColor?: 'purple' | 'lime' | 'indigo' | 'light-purple';
-    buttonClassName?: string;
-    buttonText?: string;
     images: ImageConfig[];
     layoutType: 'absolute' | 'flex';
     containerVariant?: 'standard' | 'centered';
@@ -36,31 +32,22 @@ const WhyMaxiwise = () => {
     // Configuration for all 4 sections
     const sectionsData: SectionData[] = [
         {
-            // Section 1: Built for Everyone (Navy - Absolute layout)
-            title: ["Built for", "Everyone"],
+            // Section 1: The Noise Ends Here (Navy - Absolute layout)
+            title: ["The Noise Ends", "Here"],
             description: [
-                "Whether you're a first-time investor or an evolved one, Maxiwise makes complex decisions simple."
+                "Distilling millions of data points to deliver the insights that matter the most  and insights that you can act on instantly."
             ],
             backgroundColor: "bg-navy",
             titleColor: "text-purple",
             descriptionColor: "text-white",
-            buttonText: "Why Maxiwise",
-            buttonClassName: "font-medium rounded-full",
             layoutType: "absolute" as const,
             images: [
                 {
-                    src: Blocks,
-                    alt: "3D Blocks",
+                    src: Noise,
+                    alt: "Maxiwise mobile screenshot with insights",
                     position: "absolute" as const,
-                    containerClassName: "absolute bottom-0 right-0 z-5 w-[450px] sm:w-[550px] md:w-[650px] lg:w-3/4",
-                    className: "w-full h-full object-contain opacity-90"
-                },
-                {
-                    src: A_Element,
-                    alt: "3D A Element",
-                    position: "absolute" as const,
-                    containerClassName: "absolute bottom-[25%] left-[5%] sm:left-[10%] lg:top-[10%] lg:left-[35%] z-15",
-                    className: "w-auto h-[150px] sm:h-[200px] lg:h-[450px] object-contain"
+                    containerClassName: "absolute bottom-0 right-[5%] md:right-[8%] lg:right-[10%] xl:right-[12%] z-10",
+                    className: "h-[400px] sm:h-[450px] md:h-[550px] lg:h-[650px] xl:h-[750px] w-auto object-contain"
                 }
             ]
         },
@@ -68,60 +55,59 @@ const WhyMaxiwise = () => {
             // Section 2: Clarity over Chaos (Lime - Flex layout)
             title: ["Clarity over", "Chaos"],
             description: [
-                "We decode 1.2 lakh+ data points and 20+ financial metrics into insights that actually matter."
+                "We crunch 7.6Mn data points across market cycles every month so you get the full picture — the right picture — without the clutter of too much data"
             ],
             backgroundColor: "bg-lime",
             titleColor: "text-navy",
             descriptionColor: "text-navy",
             layoutType: "flex" as const,
+            imageContainerClass: "items-center",
             images: [
                 {
-                    src: Puzzle,
-                    alt: "Puzzle pieces fitting together representing clarity over chaos",
+                    src: Clarity,
+                    alt: "Consistency Trend Chart Sample",
                     position: "flex" as const,
-                    className: "max-w-full h-auto w-[450px] sm:w-[500px] md:w-[600px] lg:w-full"
+                    className: "h-[400px] sm:h-[450px] md:h-[550px] lg:h-[650px] xl:h-[750px] w-auto object-contain"
                 }
             ]
         },
         {
-            // Section 3: Guided by Experts (Purple - Flex layout with absolute image)
-            title: ["The Power of Pros"],
+            // Section 3: Battle-tested Methodology (Purple - Absolute layout)
+            title: ["Battle-tested", "Methodology"],
             description: [
-"Proprietary methodologies refined over decades and battle-tested with India's top family offices."
+                "Our proprietary selection & portfolio management system - CARRVA and The Alpha Methodolgy have been battle-tested with India's top family offices for last two decades."
             ],
             backgroundColor: "bg-purple",
             titleColor: "text-navy",
             descriptionColor: "text-navy",
-            layoutType: "flex" as const,
+            layoutType: "absolute" as const,
             images: [
                 {
-                    src: Upscale,
-                    alt: "Upscale",
+                    src: Battle,
+                    alt: "CARRVA chart sample",
                     position: "absolute" as const,
-                    containerClassName: "absolute bottom-0 -right-10 w-[85%] sm:w-[75%] md:w-[70%] lg:w-[55%] xl:w-[50%]",
-                    className: "w-full h-auto"
+                    containerClassName: "absolute bottom-0 right-[5%] md:right-[8%] lg:right-[10%] xl:right-[12%] z-10",
+                    className: "h-[400px] sm:h-[450px] md:h-[550px] lg:h-[650px] xl:h-[750px] w-auto object-contain"
                 }
             ]
         },
         {
-            // Section 4: Decisions You Can Trust (Navy - Flex layout - Centered variant)
-            title: ["Insights You", "Can Trust"],
+            // Section 4: Built For Everyone (Navy - Absolute layout)
+            title: ["Built For", "Everyone"],
             description: [
-                "No noise, no hype—just transparency, integrity, and insights you can act on."
+                "Whether you're investing for the first time or refining a seasoned strategy, Maxiwise makes investing clear, contextual, and unintimidating."
             ],
             backgroundColor: "bg-navy",
             titleColor: "text-purple",
             descriptionColor: "text-white",
-            layoutType: "flex" as const,
-            containerVariant: "centered" as const,
-            textContainerClass: "flex-1 max-w-2xl lg:mt-32",
-            imageContainerClass: "flex-1 lg:-mt-16",
+            layoutType: "absolute" as const,
             images: [
                 {
-                    src: Trust,
-                    alt: "Trust",
-                    position: "flex" as const,
-                    className: "w-[250px] h-[250px] sm:w-[350px] sm:h-[350px] lg:w-[500px] lg:h-[500px] xl:w-[652.55px] xl:h-[652.55px] object-contain"
+                    src: BuiltForEveryone,
+                    alt: "Maxiwise mobile app showing portfolio insights",
+                    position: "absolute" as const,
+                    containerClassName: "absolute bottom-0 right-[15%] md:right-[8%] lg:right-[10%] xl:right-[12%] z-10",
+                    className: "h-[400px] sm:h-[450px] md:h-[550px] lg:h-[650px] xl:h-[750px] w-auto object-contain"
                 }
             ]
         }
@@ -138,9 +124,6 @@ const WhyMaxiwise = () => {
                         backgroundColor={sectionData.backgroundColor}
                         titleColor={sectionData.titleColor}
                         descriptionColor={sectionData.descriptionColor}
-                        buttonColor={sectionData.buttonColor}
-                        buttonClassName={sectionData.buttonClassName}
-                        buttonText={sectionData.buttonText}
                         images={sectionData.images}
                         layoutType={sectionData.layoutType}
                         containerVariant={sectionData.containerVariant}

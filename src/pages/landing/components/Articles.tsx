@@ -1,6 +1,11 @@
 import { Link } from "@tanstack/react-router"
 import RightArrow from "../../../assets/images/RightArrow.png"
+import { blogArticles } from "../../../data/blogData"
+
 const Articles = () => {
+    // Get first 4 articles for the featured section
+    const featuredArticles = blogArticles.slice(0, 4)
+
     return (
         <div className="px-4 sm:px-6 lg:px-8" id="blog">
             {/* Responsive heading */}
@@ -8,9 +13,6 @@ const Articles = () => {
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[56px] leading-tight sm:leading-[1.2] lg:leading-[61.6px] tracking-[-0.5px] lg:tracking-[-1px]">
                     Decisions that matter
                 </h1>
-                {/* <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[56px] leading-tight sm:leading-[1.2] lg:leading-[61.6px] tracking-[-0.5px] lg:tracking-[-1px]">
-                    from our latest news
-                </h1> */}
             </div>
             
             {/* Responsive description */}
@@ -28,29 +30,21 @@ const Articles = () => {
             <div className="w-full mt-8">
                 <div className="w-full bg-white py-8 ml-4">
                     <div className="flex gap-10 overflow-x-auto pb-4">
-                        {/* Article Card 1 */}
-                        <div className="min-w-[350px] flex-shrink-0">
-                            <h3 className="text-black font-light text-base leading-tight mb-2">Perspective</h3>
-                            <h1 className="text-black font-medium text-xl leading-tight">How Rich Really Get<br/>Richer?</h1>
-                        </div>
-
-                        {/* Article Card 2 */}
-                        <div className="min-w-[350px] flex-shrink-0">
-                            <h3 className="text-black font-light text-base leading-tight mb-2">Selection</h3>
-                            <h1 className="text-black font-medium text-xl leading-tight">Does Expense Ratio Matter?</h1>
-                        </div>
-
-                        {/* Article Card 3 */}
-                        <div className="min-w-[350px] flex-shrink-0">
-                            <h3 className="text-black font-light text-base leading-tight mb-2">Portfolio Management</h3>
-                            <h1 className="text-black font-medium text-xl leading-tight">Stay Invested or Exit – How to<br/>Decide?</h1>
-                        </div>
-
-                        {/* Article Card 4 */}
-                        <div className="min-w-[350px] flex-shrink-0">
-                            <h3 className="text-black font-light text-base leading-tight mb-2">Perspective</h3>
-                            <h1 className="text-black font-medium text-xl leading-tight">Red Flags in Funds You Should Never<br/>Ignore</h1>
-                        </div>
+                        {featuredArticles.map((article) => (
+                            <Link 
+                                key={article.id} 
+                                to="/blogs/$blogId" 
+                                params={{ blogId: article.id }}
+                                className="min-w-[350px] flex-shrink-0 hover:opacity-80 transition-opacity"
+                            >
+                                <h3 className="text-black font-light text-base leading-tight mb-2">
+                                    {article.category}
+                                </h3>
+                                <h1 className="text-black font-medium text-xl leading-tight">
+                                    {article.title}
+                                </h1>
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </div>

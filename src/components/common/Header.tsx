@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "@tanstack/react-router"
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react"
-import SearchModal from "./SearchModal"
 import Button from "../ui/Button"
 import { useLoginModal } from "../../pages/getStarted/LoginModal"
 import Logo from "../../assets/images/Logo.png"
@@ -18,7 +17,6 @@ interface HeaderProps {
 const Header = ({ fixedStyle, noShadow = false }: HeaderProps = {}) => {
   const [headerStyle, setHeaderStyle] = useState<HeaderStyle>(fixedStyle || 'hero')
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
   const { openModal } = useLoginModal()
   const navigate = useNavigate()
   const location = useLocation()
@@ -236,14 +234,14 @@ const Header = ({ fixedStyle, noShadow = false }: HeaderProps = {}) => {
         {/* Right Side - Search Icon and Profile Icon */}
         <div className="flex items-center ml-auto justify-end gap-2">
           {/* Search Icon Only */}
-          <button
+          {/* <button
             onClick={() => setIsSearchModalOpen(true)}
             className={`transition-colors md:hidden duration-300 ${styles.textColor}`}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-          </button>
+          </button> */}
 
           {/* Profile/Account Icon */}
           <SignedOut>
@@ -271,10 +269,10 @@ const Header = ({ fixedStyle, noShadow = false }: HeaderProps = {}) => {
       </div>
 
       {/* Search Modal for Mobile */}
-      <SearchModal
+      {/* <SearchModal
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
-      />
+      /> */}
 
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (

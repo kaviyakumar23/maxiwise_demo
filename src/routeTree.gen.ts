@@ -15,7 +15,7 @@ import { Route as FundRouteImport } from './routes/fund'
 import { Route as BlogsRouteImport } from './routes/blogs'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogsIndexRouteImport } from './routes/blogs.index'
-import { Route as BlogsContentRouteImport } from './routes/blogs.content'
+import { Route as BlogsBlogIdRouteImport } from './routes/blogs.$blogId'
 
 const SsoCallbackRoute = SsoCallbackRouteImport.update({
   id: '/sso-callback',
@@ -47,9 +47,9 @@ const BlogsIndexRoute = BlogsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => BlogsRoute,
 } as any)
-const BlogsContentRoute = BlogsContentRouteImport.update({
-  id: '/content',
-  path: '/content',
+const BlogsBlogIdRoute = BlogsBlogIdRouteImport.update({
+  id: '/$blogId',
+  path: '/$blogId',
   getParentRoute: () => BlogsRoute,
 } as any)
 
@@ -59,7 +59,7 @@ export interface FileRoutesByFullPath {
   '/fund': typeof FundRoute
   '/our-story': typeof OurStoryRoute
   '/sso-callback': typeof SsoCallbackRoute
-  '/blogs/content': typeof BlogsContentRoute
+  '/blogs/$blogId': typeof BlogsBlogIdRoute
   '/blogs/': typeof BlogsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -67,7 +67,7 @@ export interface FileRoutesByTo {
   '/fund': typeof FundRoute
   '/our-story': typeof OurStoryRoute
   '/sso-callback': typeof SsoCallbackRoute
-  '/blogs/content': typeof BlogsContentRoute
+  '/blogs/$blogId': typeof BlogsBlogIdRoute
   '/blogs': typeof BlogsIndexRoute
 }
 export interface FileRoutesById {
@@ -77,7 +77,7 @@ export interface FileRoutesById {
   '/fund': typeof FundRoute
   '/our-story': typeof OurStoryRoute
   '/sso-callback': typeof SsoCallbackRoute
-  '/blogs/content': typeof BlogsContentRoute
+  '/blogs/$blogId': typeof BlogsBlogIdRoute
   '/blogs/': typeof BlogsIndexRoute
 }
 export interface FileRouteTypes {
@@ -88,7 +88,7 @@ export interface FileRouteTypes {
     | '/fund'
     | '/our-story'
     | '/sso-callback'
-    | '/blogs/content'
+    | '/blogs/$blogId'
     | '/blogs/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -96,7 +96,7 @@ export interface FileRouteTypes {
     | '/fund'
     | '/our-story'
     | '/sso-callback'
-    | '/blogs/content'
+    | '/blogs/$blogId'
     | '/blogs'
   id:
     | '__root__'
@@ -105,7 +105,7 @@ export interface FileRouteTypes {
     | '/fund'
     | '/our-story'
     | '/sso-callback'
-    | '/blogs/content'
+    | '/blogs/$blogId'
     | '/blogs/'
   fileRoutesById: FileRoutesById
 }
@@ -161,23 +161,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogsIndexRouteImport
       parentRoute: typeof BlogsRoute
     }
-    '/blogs/content': {
-      id: '/blogs/content'
-      path: '/content'
-      fullPath: '/blogs/content'
-      preLoaderRoute: typeof BlogsContentRouteImport
+    '/blogs/$blogId': {
+      id: '/blogs/$blogId'
+      path: '/$blogId'
+      fullPath: '/blogs/$blogId'
+      preLoaderRoute: typeof BlogsBlogIdRouteImport
       parentRoute: typeof BlogsRoute
     }
   }
 }
 
 interface BlogsRouteChildren {
-  BlogsContentRoute: typeof BlogsContentRoute
+  BlogsBlogIdRoute: typeof BlogsBlogIdRoute
   BlogsIndexRoute: typeof BlogsIndexRoute
 }
 
 const BlogsRouteChildren: BlogsRouteChildren = {
-  BlogsContentRoute: BlogsContentRoute,
+  BlogsBlogIdRoute: BlogsBlogIdRoute,
   BlogsIndexRoute: BlogsIndexRoute,
 }
 
