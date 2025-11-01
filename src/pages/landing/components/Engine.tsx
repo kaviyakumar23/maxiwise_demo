@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
+import { Link } from "@tanstack/react-router";
 
 interface CardData {
   id: number; 
   middleText: string;
   mainText: string;
+  blogId: string;
 }
 
 const cardsData: CardData[] = [
@@ -11,11 +13,13 @@ const cardsData: CardData[] = [
     id: 1,
     middleText: "Select Right with",
     mainText: "CARRVA",
+    blogId: "carrva-framework",
   },
   {
     id: 2,
     middleText: "Manage Portfolio with",
     mainText: "The Alpha Methodology",
+    blogId: "alpha-methodology",
   },
 ];
 
@@ -62,16 +66,18 @@ const Engine = () => {
       {/* Desktop and Tablet View */}
       <div className="hidden md:grid md:grid-cols-2 gap-6 lg:gap-8 mt-12 max-w-7xl w-full px-4">
         {cardsData.map((card) => (
-          <div
+          <Link
             key={card.id}
-            className="bg-navy rounded-3xl p-12 lg:p-16 flex flex-col justify-end h-[500px] lg:h-[600px]">
+            to="/blogs/$blogId"
+            params={{ blogId: card.blogId }}
+            className="bg-navy rounded-3xl p-12 lg:p-16 flex flex-col justify-end h-[500px] lg:h-[600px] hover:opacity-90 transition-opacity cursor-pointer">
             <p className="text-white text-sm md:text-base lg:text-lg font-medium font-outfit leading-4 py-4 mb-2">
               {card.middleText}
             </p>
             <h1 className="text-white text-xl md:text-2xl lg:text-4xl font-normal font-outfit leading-6 tracking-tight">
               {card.mainText}
             </h1>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -91,14 +97,17 @@ const Engine = () => {
                 key={card.id}
                 className="w-full flex-shrink-0 snap-center"
               >
-                <div className="bg-navy rounded-3xl p-10 flex flex-col justify-end h-[400px]">
+                <Link
+                  to="/blogs/$blogId"
+                  params={{ blogId: card.blogId }}
+                  className="bg-navy rounded-3xl p-10 flex flex-col justify-end h-[400px] hover:opacity-90 transition-opacity">
                   <p className="text-white text-xs md:text-sm lg:text-base font-medium font-outfit leading-4 mb-2">
                     {card.middleText}
                   </p>
                   <h1 className="text-white text-xl font-normal font-outfit leading-6 tracking-tight">
                     {card.mainText}
                   </h1>
-                </div>
+                </Link>
               </div>
             ))}
           </div>
