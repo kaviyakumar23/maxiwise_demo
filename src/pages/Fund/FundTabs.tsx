@@ -3,12 +3,12 @@ import FundPicks from './FundPicks';
 import ChooseCard from './ChooseCard';
 import InvestmentReturns from './InvestmentReturns';
 import Ratios from './Ratios';
-import Carrva, { type ConsistencyFactorsResponse } from './Carrva';
+import Carrva from './Carrva';
 import AssetAllocation from './AssetAllocation';
 import FundInformation from './FundInformation';
 import AboutTheFund from './AboutTheFund';
 import FundManagers from './FundManagers';
-import type { BetterFunds, FundDetails, FundData } from '../../types/fundTypes';
+import type { BetterFunds, FundDetails, FundData, ConsistencyFactors } from '../../types/fundTypes';
 
 interface FundScheme {
   id: number;
@@ -34,7 +34,7 @@ interface FundTabsProps {
   onCategorySelect: (categoryId: string) => void;
   completeData?: FundData | null;
   navData?: NavData | null;
-  consistencyFactors?: ConsistencyFactorsResponse;
+  consistencyFactors?: ConsistencyFactors;
 }
 
 type TabType = 'Insights' | 'Returns' | 'Ratios' | 'Details';

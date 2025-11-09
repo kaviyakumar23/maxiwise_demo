@@ -20,21 +20,6 @@ const AboutTheFund: React.FC<AboutTheFundProps> = ({ fundDetails: fundDetailsDat
     }
   };
 
-  const formatAUM = (fundSize: string | undefined) => {
-    if (!fundSize) return 'N/A';
-    try {
-      // Remove any non-numeric characters except decimal point
-      const numericValue = parseFloat(fundSize.replace(/[^\d.]/g, ''));
-      if (isNaN(numericValue)) return fundSize;
-      
-      // Convert to crores and format with 2 decimal places
-      const crores = numericValue / 10000000;
-      return `₹ ${crores.toFixed(2)} Crores`;
-    } catch {
-      return fundSize;
-    }
-  };
-
   const fundDetails = [
     // { label: 'Total AUM', value: formatAUM(fundDetailsData?.fund_size) },
     { label: 'Launch Date', value: formatDate(fundDetailsData?.inception_date) },
