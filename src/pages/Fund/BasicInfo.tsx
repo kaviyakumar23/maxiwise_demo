@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useLoginModal } from "../getStarted/LoginModal";
-import { fundData, type FundDetails } from "./DummyData";
+import type { FundDetails, PointToPoint } from "../../types/fundTypes";
 import CaretUpDown from "../../assets/images/CaretUpDown.svg";
 import NipponLogo from "../../assets/images/Nippon India Mutual Fund.png";
 
@@ -13,11 +13,12 @@ interface NavData {
 interface BasicInfoProps {
   fundDetails?: FundDetails;
   navData?: NavData | null;
+  pointToPoint?: PointToPoint;
 }
 
-const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails, navData }) => {
-  const { fundHeader } = fundData;
+const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails, navData, pointToPoint }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedYearPeriod, setSelectedYearPeriod] = useState<1 | 2 | 3 | 4 | 5>(1);
   const { isSignedIn } = useUser();
   const { openModal } = useLoginModal();
 
@@ -82,17 +83,77 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails, navData }) => {
     return date.toLocaleDateString('en-IN', options);
   };
 
-  // Prepare fund header data from API or use dummy data
+  // Get annual returns value based on selected year period
+  const getAnnualReturnsValue = (year: number): string => {
+    if (!pointToPoint?.data) return "N/A";
+    
+    // Find the Fund series data
+    const fundSeries = pointToPoint.data.series.find(
+      series => series.name.toLowerCase() === "fund"
+    );
+    
+    if (!fundSeries || !fundSeries.data) return "N/A";
+    
+    // Map year period to category index
+    // categories: ["YTD", "12m", "24m", "36m", "48m", "60m"]
+    const categoryIndexMap: { [key: number]: number } = {
+      1: 1,  // 12m
+      2: 2,  // 24m
+      3: 3,  // 36m
+      4: 4,  // 48m
+      5: 5,  // 60m
+    };
+    
+    const index = categoryIndexMap[year];
+    const value = fundSeries.data[index];
+    
+    if (value === null || value === undefined) return "N/A";
+    
+    // Format the value with proper decimals
+    return `${value}%`;
+  };
+
+  // Get annual returns label based on selected year period
+  const getAnnualReturnsLabel = (year: number): string => {
+    const unit = year === 1 ? "abs" : "p.a";
+    return `${year}Y Annual Returns (${unit})`;
+  };
+
+  // Cycle through year periods
+  const cycleYearPeriod = () => {
+    setSelectedYearPeriod((prev) => {
+      if (prev === 5) return 1;
+      return (prev + 1) as 1 | 2 | 3 | 4 | 5;
+    });
+  };
+
+  // Prepare fund header data from API
   const displayData = useMemo(() => {
     if (!fundDetails) {
-      return fundHeader;
+      return {
+        name: "Fund information not available",
+        tags: [],
+        nav: {
+          value: "N/A",
+          date: "NAV data not available",
+        },
+        annualReturns: {
+          period: getAnnualReturnsLabel(selectedYearPeriod),
+          value: "N/A",
+        },
+        aum: {
+          label: "AUM (Fund size)",
+          value: "N/A",
+        },
+      };
     }
 
     // Extract tags from fund details
     const tags = [
       fundDetails.fund_type,
       fundDetails.morningstar_category,
-      fundDetails.purchase_mode
+      fundDetails.purchase_mode,
+      fundDetails.distribution_status,
     ].filter(Boolean);
 
     return {
@@ -103,17 +164,17 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails, navData }) => {
         date: `as on ${formatDate(fundDetails.fund_size_date)}`,
       },
       annualReturns: {
-        period: "Annual Returns",
-        value: "N/A", // Returns data would come from other endpoints
+        period: getAnnualReturnsLabel(selectedYearPeriod),
+        value: getAnnualReturnsValue(selectedYearPeriod),
       },
       aum: {
         label: "AUM (Fund size)",
         value: formatFundSize(fundDetails.fund_size),
       },
     };
-  }, [fundDetails, fundHeader, navData]);
+  }, [fundDetails, navData, selectedYearPeriod, pointToPoint]);
 
-  const currentHeader = fundDetails ? displayData : fundHeader;
+  const currentHeader = displayData;
 
   return (
     <>
@@ -252,16 +313,19 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails, navData }) => {
           </div>
 
           {/* Annual Returns */}
-          <div>
+          <div className="relative">
             <div className="text-lg font-semibold text-[#8B5CF6] font-outfit mb-1">
               {currentHeader.annualReturns.value}
             </div>
             <div className="text-sm font-normal font-outfit text-[#64748B] flex items-center gap-0">
               <span>{currentHeader.annualReturns.period}</span>
-              {/* <svg className="w-5 h-5 text-[#8B5CF6]" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M8 0l3 4H5l3-4zm0 16l-3-4h6l-3 4z"/>
-              </svg> */}
-              <img src={CaretUpDown} alt="Caret Up Down" className="w-5 h-5" />
+              <button
+                onClick={cycleYearPeriod}
+                className="p-0.5 hover:bg-gray-100 rounded transition-colors cursor-pointer"
+                aria-label="Change year period"
+              >
+                <img src={CaretUpDown} alt="Caret Up Down" className="w-5 h-5" />
+              </button>
             </div>
           </div>
         </div>
@@ -372,14 +436,19 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails, navData }) => {
             <div className="text-sm font-normal font-outfit text-gray leading-[20px]">{currentHeader.nav.date}</div>
           </div>
           {/* Annual Returns */}
-          <div>
+          <div className="relative">
             <div className="text-xl font-semibold  text-purple font-outfit leading-[35px] mb-1">{currentHeader.annualReturns.value}</div>
             <div className="text-sm font-normal font-outfit text-gray leading-[20px] flex items-center gap-1">
               {currentHeader.annualReturns.period}
-              <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0.213805 4.41537C0.171168 4.3126 0.159968 4.19949 0.18162 4.09035C0.203272 3.98122 0.256804 3.88095 0.335445 3.80224L3.71045 0.427242C3.76269 0.374943 3.82472 0.333453 3.89301 0.305146C3.9613 0.276838 4.03449 0.262268 4.10841 0.262268C4.18234 0.262268 4.25553 0.276838 4.32382 0.305146C4.3921 0.333453 4.45414 0.374943 4.50638 0.427242L7.88138 3.80224C7.96014 3.88091 8.01378 3.98118 8.03552 4.09035C8.05727 4.19952 8.04612 4.31269 8.00351 4.41553C7.9609 4.51837 7.88874 4.60625 7.79615 4.66805C7.70357 4.72986 7.59473 4.7628 7.48341 4.76271H0.733414C0.622163 4.76269 0.513417 4.72968 0.420927 4.66785C0.328438 4.60602 0.256358 4.51816 0.213805 4.41537ZM7.48341 10.3877H0.733414C0.622098 10.3876 0.513259 10.4206 0.420674 10.4824C0.32809 10.5442 0.255925 10.6321 0.213314 10.7349C0.170703 10.8377 0.159563 10.9509 0.181304 11.0601C0.203045 11.1692 0.256689 11.2695 0.335445 11.3482L3.71045 14.7232C3.76269 14.7755 3.82472 14.817 3.89301 14.8453C3.9613 14.8736 4.03449 14.8882 4.10841 14.8882C4.18234 14.8882 4.25553 14.8736 4.32382 14.8453C4.3921 14.817 4.45414 14.7755 4.50638 14.7232L7.88138 11.3482C7.96014 11.2695 8.01378 11.1692 8.03552 11.0601C8.05727 10.9509 8.04612 10.8377 8.00351 10.7349C7.9609 10.6321 7.88874 10.5442 7.79615 10.4824C7.70357 10.4206 7.59473 10.3876 7.48341 10.3877Z" fill="#AC72FF" />
-              </svg>
-
+              <button
+                onClick={cycleYearPeriod}
+                className="p-0.5 hover:bg-gray-100 rounded transition-colors cursor-pointer inline-flex items-center"
+                aria-label="Change year period"
+              >
+                <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M0.213805 4.41537C0.171168 4.3126 0.159968 4.19949 0.18162 4.09035C0.203272 3.98122 0.256804 3.88095 0.335445 3.80224L3.71045 0.427242C3.76269 0.374943 3.82472 0.333453 3.89301 0.305146C3.9613 0.276838 4.03449 0.262268 4.10841 0.262268C4.18234 0.262268 4.25553 0.276838 4.32382 0.305146C4.3921 0.333453 4.45414 0.374943 4.50638 0.427242L7.88138 3.80224C7.96014 3.88091 8.01378 3.98118 8.03552 4.09035C8.05727 4.19952 8.04612 4.31269 8.00351 4.41553C7.9609 4.51837 7.88874 4.60625 7.79615 4.66805C7.70357 4.72986 7.59473 4.7628 7.48341 4.76271H0.733414C0.622163 4.76269 0.513417 4.72968 0.420927 4.66785C0.328438 4.60602 0.256358 4.51816 0.213805 4.41537ZM7.48341 10.3877H0.733414C0.622098 10.3876 0.513259 10.4206 0.420674 10.4824C0.32809 10.5442 0.255925 10.6321 0.213314 10.7349C0.170703 10.8377 0.159563 10.9509 0.181304 11.0601C0.203045 11.1692 0.256689 11.2695 0.335445 11.3482L3.71045 14.7232C3.76269 14.7755 3.82472 14.817 3.89301 14.8453C3.9613 14.8736 4.03449 14.8882 4.10841 14.8882C4.18234 14.8882 4.25553 14.8736 4.32382 14.8453C4.3921 14.817 4.45414 14.7755 4.50638 14.7232L7.88138 11.3482C7.96014 11.2695 8.01378 11.1692 8.03552 11.0601C8.05727 10.9509 8.04612 10.8377 8.00351 10.7349C7.9609 10.6321 7.88874 10.5442 7.79615 10.4824C7.70357 10.4206 7.59473 10.3876 7.48341 10.3877Z" fill="#AC72FF" />
+                </svg>
+              </button>
             </div>
           </div>
           {/* AUM */}

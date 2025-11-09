@@ -1,16 +1,9 @@
 import React, { useState } from 'react';
 import { Toggle } from '../../components/ui/Toggle';
-import { fundData } from './DummyData';
+import type { AssetAllocation as AssetAllocationType, MarketCap, CreditQuality, FundDetails } from '../../types/fundTypes';
 import Qustion from '../../assets/images/Question.svg';
 
-type AssetType = 'equity' | 'debt' | 'others';
-type CreditAssetType = 'debt' | 'others';
-
-interface CapData {
-  smallCap: number;
-  midCap: number;
-  largeCap: number;
-}
+type ChartView = 'asset' | 'marketCap' | 'creditQuality';
 
 interface Segment {
   name: string;
@@ -21,10 +14,20 @@ interface Segment {
   midAngle: number;
 }
 
-const AssetAllocation: React.FC = () => {
-  const { assetAllocation, creditQuality } = fundData;
-  const [activeAsset, setActiveAsset] = useState<AssetType>('equity');
-  const [activeCreditAsset, setActiveCreditAsset] = useState<CreditAssetType>('debt');
+interface AssetAllocationProps {
+  assetAllocation?: AssetAllocationType;
+  marketCap?: MarketCap;
+  creditQuality?: CreditQuality;
+  fundDetails?: FundDetails;
+}
+
+const AssetAllocation: React.FC<AssetAllocationProps> = ({ 
+  assetAllocation, 
+  marketCap, 
+  creditQuality,
+  fundDetails 
+}) => {
+  const [chartView, setChartView] = useState<ChartView>('asset');
 
   // Chart constants
   const radius = 80;
@@ -32,22 +35,83 @@ const AssetAllocation: React.FC = () => {
   const centerX = 120;
   const centerY = 120;
 
-  // Get current data based on selected asset
-  const currentData = assetAllocation[activeAsset];
+  // Color palettes
+  const assetColors = ['#170630', '#AC72FF', '#D1F349', '#FF6B9D', '#4ECDC4'];
+  const marketCapColors = ['#170630', '#AC72FF', '#D1F349', '#FF6B9D'];
+  const creditQualityColors = ['#170630', '#8657A7', '#2D1B4E', '#A46BC5', '#4A2F6C', '#684389', '#C27FE3', '#E093FF'];
+
+  // Determine if drilldowns are available based on fund type
+  const fundType = fundDetails?.fund_type?.toLowerCase();
+  const canShowMarketCap = (fundType === 'equity' || fundType === 'allocation') && marketCap;
+  const canShowCreditQuality = (fundType === 'allocation' || fundType === 'fixed income' || fundType === 'alternative') && creditQuality;
+
+  // Helper function to normalize data and filter out zeros
+  const normalizeData = (data: Record<string, string | undefined>): Array<{ name: string; value: number }> => {
+    const entries = Object.entries(data)
+      .map(([key, value]) => ({
+        name: key,
+        value: parseFloat(value || '0')
+      }))
+      .filter(item => item.value > 0);
+
+    const total = entries.reduce((sum, item) => sum + item.value, 0);
+    
+    if (total === 0) return [];
+
+    return entries.map(item => ({
+      name: item.name,
+      value: (item.value / total) * 100
+    }));
+  };
+
+  // Prepare data based on current view
+  const getChartData = (): Array<{ name: string; value: number; displayName: string }> => {
+    if (chartView === 'marketCap' && marketCap) {
+      const normalized = normalizeData({
+        'Large': marketCap.Large,
+        'Mid': marketCap.Mid,
+        'Small': marketCap.Small,
+        'Micro': marketCap.Micro
+      });
+      return normalized.map(item => ({
+        ...item,
+        displayName: `${item.name} Cap`
+      }));
+    } else if (chartView === 'creditQuality' && creditQuality?.creditQualityBreakdown) {
+      const breakdown = creditQuality.creditQualityBreakdown;
+      const normalized = normalizeData(breakdown);
+      return normalized.map(item => ({
+        ...item,
+        displayName: item.name.toUpperCase()
+      }));
+    } else if (assetAllocation) {
+      // Default asset allocation view
+      const normalized = normalizeData({
+        'Equity': assetAllocation.Equity,
+        'Bond': assetAllocation.Bond,
+        'Commodity': assetAllocation.Commodity,
+        'Cash': assetAllocation.Cash,
+        'Other': assetAllocation.Other
+      });
+      return normalized.map(item => ({
+        ...item,
+        displayName: item.name
+      }));
+    }
+    return [];
+  };
 
   // Create doughnut chart segments
-  const createDoughnutSegments = (data: CapData): Segment[] => {
-    const total = data.smallCap + data.midCap + data.largeCap;
-    const segments = [
-      { name: 'Large Cap', value: data.largeCap, color: '#170630', percentage: Math.round((data.largeCap / total) * 100) },
-      { name: 'Small Cap', value: data.smallCap, color: '#AC72FF', percentage: Math.round((data.smallCap / total) * 100) },
-      { name: 'Mid Cap', value: data.midCap, color: '#D1F349', percentage: Math.round((data.midCap / total) * 100) },
-    ];
+  const createDoughnutSegments = (data: Array<{ name: string; value: number; displayName: string }>): Segment[] => {
+    if (data.length === 0) return [];
+
+    const colors = chartView === 'creditQuality' ? creditQualityColors : 
+                   chartView === 'marketCap' ? marketCapColors : assetColors;
 
     let currentAngle = -90; // Start from top
 
-    return segments.map((segment) => {
-      const angle = (segment.value / total) * 360;
+    return data.map((item, index) => {
+      const angle = (item.value / 100) * 360;
       const startAngle = currentAngle;
       const endAngle = currentAngle + angle;
       const midAngle = startAngle + angle / 2;
@@ -81,14 +145,18 @@ const AssetAllocation: React.FC = () => {
       currentAngle = endAngle;
 
       return {
-        ...segment,
+        name: item.displayName,
+        value: item.value,
+        color: colors[index % colors.length],
+        percentage: Math.round(item.value),
         pathData,
         midAngle,
       };
     });
   };
 
-  const segments = createDoughnutSegments(currentData);
+  const chartData = getChartData();
+  const segments = createDoughnutSegments(chartData);
 
   // Calculate label position for each segment
   const getLabelPosition = (midAngle: number) => {
@@ -98,6 +166,13 @@ const AssetAllocation: React.FC = () => {
       x: centerX + labelRadius * Math.cos(midRad),
       y: centerY + labelRadius * Math.sin(midRad),
     };
+  };
+
+  // Get title based on current view
+  const getChartTitle = () => {
+    if (chartView === 'marketCap') return 'Market Cap';
+    if (chartView === 'creditQuality') return 'Credit Quality';
+    return 'Asset Allocation';
   };
 
   return (
@@ -113,78 +188,94 @@ const AssetAllocation: React.FC = () => {
           </button>
         </div>
 
-
-        {/* Toggle Buttons */}
+        {/* Chart Card */}
         <div className="transition-all duration-300 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3">
-          <div className="flex justify-center mb-6 md:mb-8">
-            <Toggle
-              options={[
-                { value: 'equity', label: 'Equity' },
-                { value: 'debt', label: 'Debt' },
-                { value: 'others', label: 'Others' },
-              ]}
-              activeValue={activeAsset}
-              onChange={(value) => setActiveAsset(value as AssetType)}
-              variant="light"
-            />
+          {/* Toggle Buttons - Always at Top */}
+          {(canShowMarketCap || canShowCreditQuality) && (
+            <div className="flex justify-center mb-6 md:mb-8">
+              <Toggle
+                options={[
+                  { value: 'asset', label: 'Asset Allocation' },
+                  ...(canShowMarketCap ? [{ value: 'marketCap', label: 'Equity' }] : []),
+                  ...(canShowCreditQuality ? [{ value: 'creditQuality', label: 'Debt' }] : []),
+                ]}
+                activeValue={chartView}
+                onChange={(value) => setChartView(value as ChartView)}
+                variant="light"
+              />
+            </div>
+          )}
+
+          {/* Chart Title */}
+          <div className="text-center mb-4">
+            <h2 className="text-base md:text-lg font-semibold text-navy pt-6">
+              {getChartTitle()}
+            </h2>
           </div>
 
           {/* Doughnut Chart */}
           <div className="flex flex-col items-center justify-center px-4">
-            <svg
-              width="280"
-              height="280"
-              viewBox="0 0 240 240"
-              className="w-full max-w-[280px] md:max-w-[320px] lg:max-w-[360px] h-auto mb-6 md:mb-8"
-            >
-              {segments.map((segment, index) => {
-                const labelPos = getLabelPosition(segment.midAngle);
-                return (
-                  <g key={index}>
-                    <path
-                      d={segment.pathData}
-                      fill={segment.color}
-                    />
-                    {/* Add percentage label on the segment */}
-                    <text
-                      x={labelPos.x}
-                      y={labelPos.y}
-                      fill={segment.color === '#D1F349' ? 'black' : 'white'}
-                      fontSize="10"
-                      fontWeight="600"
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                    >
-                      {segment.percentage}%
-                    </text>
-                  </g>
-                );
-              })}
+            {segments.length > 0 ? (
+              <svg
+                width="340"
+                height="340"
+                viewBox="0 0 240 240"
+                className="w-full max-w-[280px] md:max-w-[320px] lg:max-w-[360px] h-auto mb-6 md:mb-8"
+              >
+                {segments.map((segment, index) => {
+                  const labelPos = getLabelPosition(segment.midAngle);
+                  return (
+                    <g key={index}>
+                      <path
+                        d={segment.pathData}
+                        fill={segment.color}
+                      />
+                      {/* Add percentage label on the segment */}
+                      {segment.percentage >= 5 && (
+                        <text
+                          x={labelPos.x}
+                          y={labelPos.y}
+                          fill={segment.color === '#D1F349' ? 'black' : 'white'}
+                          fontSize="10"
+                          fontWeight="600"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                        >
+                          {segment.percentage}%
+                        </text>
+                      )}
+                    </g>
+                  );
+                })}
 
-              {/* Center Circle with Total Percentage */}
-              <circle cx="120" cy="120" r={innerRadius} fill="white" />
-              <text
-                x="120"
-                y="110"
-                fontSize="20"
-                fontWeight="700"
-                textAnchor="middle"
-                fill="#1F2937"
-              >
-                {currentData.total}
-              </text>
-              <text
-                x="120"
-                y="135"
-                fontSize="12"
-                fontWeight="500"
-                textAnchor="middle"
-                fill="#4B5563"
-                style={{ textTransform: 'capitalize' }}
-              >
-                {activeAsset}
-              </text>
-            </svg>
+                {/* Center Circle */}
+                <circle cx="120" cy="120" r={innerRadius} fill="white" />
+                <text
+                  x="120"
+                  y="115"
+                  fontSize="16"
+                  fontWeight="700"
+                  textAnchor="middle"
+                  fill="#1F2937"
+                >
+                  100%
+                </text>
+                <text
+                  x="120"
+                  y="135"
+                  fontSize="11"
+                  fontWeight="500"
+                  textAnchor="middle"
+                  fill="#4B5563"
+                >
+                  Total
+                </text>
+              </svg>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                No data available
+              </div>
+            )}
 
             {/* Legend */}
             <div className="w-full max-w-md space-y-2 md:space-y-3">
@@ -209,86 +300,26 @@ const AssetAllocation: React.FC = () => {
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Credit Quality Section */}
-        <div className="mt-8 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3 p-4 md:p-6 lg:p-8">
-          {/* Toggle Buttons for Debt and Others */}
-          <div className="flex justify-center mb-6 md:mb-8">
-            <Toggle
-              options={[
-                { value: 'debt', label: 'Debt' },
-                { value: 'others', label: 'Others' },
-              ]}
-              activeValue={activeCreditAsset}
-              onChange={(value) => setActiveCreditAsset(value as CreditAssetType)}
-              variant="light"
-            />
-          </div>
-
-          {/* Credit Quality Header */}
-          <div className="flex items-center justify-between px-4 mb-6">
-            <h3 className="text-base md:text-lg font-semibold text-navy">Credit Quality</h3>
-            <h3 className="text-base md:text-lg font-semibold text-navy">Fund</h3>
-          </div>
-
-          {/* Horizontal Bar Chart */}
-          <div className="px-4 mb-8">
-            <div className="flex gap-1 h-3 items-center">
-              {creditQuality.ratings.slice(0, 2).map((rating, index) => {
-                const percentage = parseFloat(rating.percentage);
-                if (percentage === 0) return null;
-                return (
-                  <div
-                    key={rating.name}
-                    className={`h-full ${
-                      index === 0 
-                        ? 'bg-[#AC72FF]' 
-                        : 'bg-[#C59CFF]'
-                    }`}
-                    style={{ width: `${percentage}%` }}
-                  />
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Credit Ratings List */}
-          <div className="px-4 space-y-4">
-            {creditQuality.ratings.map((rating, index) => (
-              <div
-                key={rating.name}
-                className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0"
+          {/* Reset Button - Always at Bottom */}
+          {/* {(canShowMarketCap || canShowCreditQuality) && (
+            <div className="flex justify-center mt-6 md:mt-8 px-4">
+              <button
+                onClick={() => setChartView('asset')}
+                className={`px-6 py-2 font-medium rounded-lg transition-colors flex items-center gap-2 ${
+                  chartView === 'asset'
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer'
+                }`}
+                disabled={chartView === 'asset'}
               >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-3 h-3 rounded-full ${index === 0
-                        ? 'bg-purple-500'
-                        : index === 1
-                          ? 'bg-purple-400'
-                          : index === 2
-                            ? 'bg-purple-300'
-                            : index === 3
-                              ? 'bg-purple-200'
-                              : index === 4
-                                ? 'bg-purple-200'
-                                : index === 5
-                                  ? 'bg-purple-200'
-                                  : index === 6
-                                    ? 'bg-purple-100'
-                                    : 'bg-gray-400'
-                      }`}
-                  />
-                  <span className="text-sm md:text-base font-medium text-gray-700">
-                    {rating.name}
-                  </span>
-                </div>
-                <span className="text-sm md:text-base font-semibold text-gray-900">
-                  {rating.percentage}
-                </span>
-              </div>
-            ))}
-          </div>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Reset to Asset Allocation
+              </button>
+            </div>
+          )} */}
         </div>
       </div>
     </div>

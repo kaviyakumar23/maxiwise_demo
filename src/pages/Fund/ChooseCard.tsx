@@ -77,14 +77,14 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, se
 
   // Helper function to get category icon colors
   const getIconColors = (fundType: string) => {
-    const type = fundType.toLowerCase();
-    if (type.includes('equity') || type.includes('stock')) {
+    const type = fundType?.toLowerCase();
+    if (type?.includes('equity') || type?.includes('stock')) {
       return { bg: 'bg-blue-500', inner: 'bg-blue-600' };
     }
-    if (type.includes('debt') || type.includes('bond') || type.includes('income') || type.includes('fixed income')) {
+    if (type?.includes('debt') || type?.includes('bond') || type?.includes('income') || type?.includes('fixed income')) {
       return { bg: 'bg-green-500', inner: 'bg-green-600' };
     }
-    if (type.includes('hybrid') || type.includes('balanced') || type.includes('allocation')) {
+    if (type?.includes('hybrid') || type?.includes('balanced') || type?.includes('allocation')) {
       return { bg: 'bg-purple-500', inner: 'bg-purple-600' };
     }
     return { bg: 'bg-orange-500', inner: 'bg-orange-600' };
@@ -138,7 +138,7 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, se
     );
   }
 
-  // Get the selected category data from API or fallback to dummy data
+  // Get the selected category data from API
   let categoryTitle = '';
   let categorySubtitle = '';
   let fundListFromAPI: FundListItem[] = [];
@@ -192,7 +192,7 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, se
         {/* Fund List */}
         {displayedFunds.length > 0 ? (
           <div>
-            {displayedFunds.map((fund, index) => {
+            {displayedFunds?.map((fund, index) => {
               const highestCap = getHighestCap(fund.scheme);
               const planType = fund.scheme.purchase_mode;
               const iconColors = getIconColors(fund.scheme.fund_type);

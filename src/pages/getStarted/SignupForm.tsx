@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useSignUp, useSignIn } from "@clerk/clerk-react";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
+import { trackSignupStarted, trackSignupCompleted } from "../../utils/analytics";
+import { submitToHubSpot, parseNameFromEmail } from "../../utils/hubspot";
 
 interface SignupFormProps {
   onBackToLogin: () => void;
@@ -19,6 +21,9 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, onSwitchMode, mo
     if (!signUpLoaded || !signInLoaded) return;
 
     try {
+      // Track Google OAuth signup start
+      trackSignupStarted('google');
+      
       const signUpOrIn = mode === 'signup' ? signUp : signIn;
       await signUpOrIn?.authenticateWithRedirect({
         strategy: 'oauth_google',
@@ -125,6 +130,9 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, onSwitchMode, mo
 
     try {
       if (mode === 'signup') {
+        // Track signup started
+        trackSignupStarted('email', { email: phoneNumber });
+        
         // Create a new sign up with email
         await signUp.create({
           emailAddress: phoneNumber,
@@ -258,6 +266,20 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, onSwitchMode, mo
           // Set the session as active
           await setActiveSignUp({ session: result.createdSessionId });
           
+          // Track signup completion
+          const userId = result.createdUserId || '';
+          trackSignupCompleted(userId, phoneNumber, 'email');
+          
+          // Submit to HubSpot
+          const nameParts = parseNameFromEmail(phoneNumber);
+          await submitToHubSpot({
+            email: phoneNumber,
+            firstName: nameParts.firstName,
+            lastName: nameParts.lastName,
+            signupDate: new Date().toISOString(),
+            signupPageUrl: window.location.href,
+          });
+          
           // Clear errors and show success
           clearError('otp');
           setCurrentStep('success');
@@ -272,6 +294,9 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, onSwitchMode, mo
         if (result.status === 'complete') {
           // Set the session as active
           await setActiveSignIn({ session: result.createdSessionId });
+          
+          // Track login completion (will identify user in analytics)
+          // Note: User ID is not available immediately on sign in, will be tracked after redirect
           
           // Clear errors and show success
           clearError('otp');
@@ -329,6 +354,9 @@ const SignupForm: React.FC<SignupFormProps> = ({ onBackToLogin, onSwitchMode, mo
       if (result.status === 'complete') {
         // Set the session as active
         await setActiveSignIn({ session: result.createdSessionId });
+        
+        // Track login completion (will identify user in analytics)
+        // Note: User ID is not available immediately on sign in, will be tracked after redirect
         
         // Clear errors and show success
         clearError('password');

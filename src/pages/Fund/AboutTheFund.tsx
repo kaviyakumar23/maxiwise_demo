@@ -36,12 +36,12 @@ const AboutTheFund: React.FC<AboutTheFundProps> = ({ fundDetails: fundDetailsDat
   };
 
   const fundDetails = [
-    { label: 'Total AUM', value: formatAUM(fundDetailsData?.fund_size) },
+    // { label: 'Total AUM', value: formatAUM(fundDetailsData?.fund_size) },
     { label: 'Launch Date', value: formatDate(fundDetailsData?.inception_date) },
   ];
 
   return (
-    <div className=" w-full lg:w-2/3 py-4">
+    <div className=" w-full lg:w-2/3 p-4">
       {/* Title */}
       <div className="mb-6 md:mb-8 lg:mb-10">
       <h1 className="text-sm md:text-base lg:text-lg font-semibold font-outfit text-navy leading-[145%] tracking-[0.15%] py-4">
@@ -57,7 +57,7 @@ const AboutTheFund: React.FC<AboutTheFundProps> = ({ fundDetails: fundDetailsDat
         </div>
 
         {/* Fund Details */}
-        <div className="bg-white rounded-2xl p-4 md:p-6 lg:p-8">
+        <div className="bg-white rounded-2xl p-4 sm:p-4 md:p-6 lg:p-8">
        
           {fundDetails.map((item, index) => (
             <div

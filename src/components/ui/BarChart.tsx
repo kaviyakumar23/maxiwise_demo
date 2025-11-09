@@ -14,6 +14,7 @@ export interface BarData {
   displayValue?: string;
   valueColor?: string;
   segments?: BarSegment[]; // For stacked bars
+  category?: string; // Optional - category label (e.g., "High", "Above Avg")
 }
 
 interface BarChartProps {
@@ -35,23 +36,35 @@ export const BarChart: React.FC<BarChartProps> = ({
   const max = maxValue || Math.max(...data.map(d => d.value));
   
   return (
-    <div className="w-full px-16 py-16">
+    <div className="w-full px-4 py-6 md:px-8 md:py-10 lg:px-16 lg:py-16">
       {/* Chart container with bars */}
       <div className="relative ">
-        <div className="flex items-end justify-between gap-8 px-8 relative" style={{ height: `${height}px` }}>
+        <div className="flex items-end justify-between gap-4 md:gap-6 lg:gap-8 px-4 md:px-6 lg:px-8 relative" style={{ height: `${height}px` }}>
           {data.map((item, index) => {
             // Calculate actual pixel height based on value proportion
             const barHeightPx = (item.value / max) * height;
             
             return (
               <div key={index} className="flex flex-col items-center justify-end flex-1 max-w-[150px] relative">
-                {/* Value above bar */}
+                {/* Category and Value above bar */}
                 {showValues && item.value > 0 && (
-                  <div 
-                    className="mb-4 text-base font-semibold font-outfit relative z-10"
-                    style={{ color: item.valueColor || '#4B5563' }}
-                  >
-                    {item.displayValue || `${item.value}%`}
+                  <div className="mb-2 md:mb-3 lg:mb-4 flex flex-col items-center relative z-10">
+                    {/* Category label */}
+                    {item.category && (
+                      <div 
+                        className="text-xs md:text-sm lg:text-base font-semibold font-outfit mb-1"
+                        style={{ color: item.valueColor || '#4B5563' }}
+                      >
+                        {item.category}
+                      </div>
+                    )}
+                    {/* Percentage value */}
+                    <div 
+                      className="text-sm md:text-base lg:text-lg font-semibold font-outfit"
+                      style={{ color: item.valueColor || '#4B5563' }}
+                    >
+                      {item.displayValue || `${item.value}%`}
+                    </div>
                   </div>
                 )}
                 
@@ -166,10 +179,10 @@ export const BarChart: React.FC<BarChartProps> = ({
       
       {/* Labels below baseline */}
       {showLabels && (
-        <div className="flex justify-between gap-8 px-8 mt-4">
+        <div className="flex justify-between gap-4 md:gap-6 lg:gap-8 px-4 md:px-6 lg:px-8 mt-3 md:mt-4">
           {data.map((item, index) => (
             <div key={index} className="flex-1 max-w-[150px] text-center">
-              <div className="text-sm font-normal font-outfit text-[#4B5563]">
+              <div className="text-xs md:text-sm lg:text-base font-normal font-outfit text-[#4B5563]">
                 {item.label}
               </div>
             </div>

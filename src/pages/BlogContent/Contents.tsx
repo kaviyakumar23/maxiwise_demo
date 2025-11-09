@@ -6,7 +6,7 @@ interface ContentsProps {
 
 const Contents = ({ article }: ContentsProps) => {
   return (
-    <div className="w-full bg-[#E8D8FF] rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 flex flex-col md:flex-row gap-6 md:gap-8 items-center">
+    <div className="w-full p-2 bg-[#E8D8FF] rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-12 flex flex-col md:flex-row gap-6 md:gap-8 items-center">
       {/* Left side - Content */}
       <div className="flex-1 flex flex-col gap-4 md:gap-6 font-outfit w-full">
         {/* Badge and Date */}

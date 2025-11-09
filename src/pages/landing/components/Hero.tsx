@@ -1,5 +1,6 @@
 import GetStarted from "../../../components/common/GetStarted"
 import BackgroundHero from "../../../assets/images/BackgroundHero.png"
+import Search from "../../../components/common/Search";
 
 export const Hero = () => {
 
@@ -24,7 +25,7 @@ export const Hero = () => {
               </p>
             </div>
             <div className='w-full max-w-xl mx-auto'>
-              {/* <Search /> */}
+              <Search />
               {/* <GetStarted>Start Maxiwising</GetStarted> */}
             </div>
           </div>
@@ -54,7 +55,7 @@ export const Hero = () => {
             </div>
             <div>
               {/* <GetStarted>Start Maxiwising</GetStarted> */}
-              {/* <Search /> */}
+              <Search />
             </div>
           </div>
 

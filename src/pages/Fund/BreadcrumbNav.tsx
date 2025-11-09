@@ -1,15 +1,27 @@
 import { Link } from "@tanstack/react-router";
-import { fundData } from "./DummyData";
 
-const BreadcrumbNav = () => {
-  const { breadcrumb } = fundData;
+interface BreadcrumbItem {
+  label: string;
+  path: string;
+}
+
+interface BreadcrumbNavProps {
+  items?: BreadcrumbItem[];
+}
+
+const BreadcrumbNav: React.FC<BreadcrumbNavProps> = ({ items }) => {
+  // Default breadcrumb items if none provided
+  const breadcrumbItems = items || [
+    { label: "Home", path: "/" },
+    { label: "Mutual Funds", path: "/mutual-funds" },
+  ];
 
   return (
     <nav className="hidden lg:block px-6 py-3 bg-[#F1F5F9]">
       <div className="max-w-6xl pl-4">
         <ol className="flex items-center space-x-2 text-sm">
-          {breadcrumb.items.map((item, index) => {
-            const isLast = index === breadcrumb.items.length - 1;
+          {breadcrumbItems.map((item, index) => {
+            const isLast = index === breadcrumbItems.length - 1;
             
             return (
               <li key={index} className="flex items-center">

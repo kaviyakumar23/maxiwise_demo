@@ -4,6 +4,7 @@ import ButtonPrevious from "../../assets/images/ButtonPrevious.svg";
 import ButtonNext from "../../assets/images/ButtonNext.svg";
 import FundCards from "../../components/common/FundCards";
 import type { BetterFunds } from "../../types/fundTypes";
+import { trackInsightCardViewed } from "../../utils/analytics";
 
 interface FundPicksProps {
   fundDetails?: BetterFunds;
@@ -80,7 +81,15 @@ const FundPicks: React.FC<FundPicksProps> = ({ fundDetails, onCategorySelect }) 
         
         {/* Information Button - Visible on mobile and tablet only */}
         <button 
-          onClick={() => setIsInfoModalOpen(true)}
+          onClick={() => {
+            setIsInfoModalOpen(true);
+            // Track insight card viewed
+            trackInsightCardViewed({
+              fundName: fundDetails?.data?.[0]?.fundList?.[0]?.fund_name || 'unknown',
+              location: 'fund_page',
+              device: window.innerWidth < 1024 ? 'mobile' : 'desktop',
+            });
+          }}
           className="w-4 h-4 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-colors lg:hidden"
         >
           <img src={Qustion} alt="Question" />

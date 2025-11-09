@@ -33,13 +33,37 @@ const FundInformation: React.FC<FundInformationProps> = ({ fundDetails, navData 
     }
   };
 
-  const informationItems = [
+  const formatDuration = (value: string | null | undefined) => {
+    if (!value) return 'N/A';
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return 'N/A';
+    return numValue.toFixed(2);
+  };
+
+  const formatOneDecimal = (value: string | null | undefined) => {
+    if (!value) return 'N/A';
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return 'N/A';
+    return `${numValue.toFixed(1)}%`;
+  };
+
+  const formatNumericValue = (value: string | undefined) => {
+    if (!value) return 'N/A';
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return 'N/A';
+    return `${numValue.toFixed(2)}%`;
+  };
+
+  // Common fields for all fund types
+  const commonItems = [
     { label: 'Latest NAV', value: navData?.value || 'N/A' },
-    { label: 'Expense Ratio', value: `${fundDetails?.net_expense_ratio}%` || 'N/A' },
-    { label: 'Stamp Duty', value: 'N/A' },
-    { label: 'Exit load', value: `${fundDetails?.exit_load}%` || 'N/A' },
-    { label: 'AUM (Fund size)', value: formatAUM(fundDetails?.fund_size) },
-    { label: 'Lock-in Period', value: 'N/A' },
+    {label: 'Benchmark', value: fundDetails?.benchmark || 'N/A'},
+    { label: 'Expense Ratio', value: fundDetails?.net_expense_ratio ? `${fundDetails.net_expense_ratio}%` : 'N/A' },
+    // { label: 'Stamp Duty', value: 'N/A' },
+    { label: 'Exit load', value: fundDetails?.exit_load ? `${fundDetails.exit_load}%` : 'N/A' },
+    { label: 'India Risk Level', value: fundDetails?.india_risk_level || 'N/A' },
+    
+    // { label: 'Lock-in Period', value: 'N/A' },
     { 
       label: 'Min. investment', 
       value: fundDetails?.minimum_investment 
@@ -47,6 +71,52 @@ const FundInformation: React.FC<FundInformationProps> = ({ fundDetails, navData 
         : 'N/A'
     },
   ];
+
+  // Fund type specific fields
+  const getTypeSpecificItems = () => {
+    const fundType = fundDetails?.fund_type?.toLowerCase();
+    const items: Array<{ label: string; value: string }> = [];
+
+    if (fundType === "fixed income") {
+      items.push(
+        { label: 'Modified Duration', value: formatDuration(fundDetails?.mod_duration) },
+        { label: 'Net Yield (%)', value: formatOneDecimal(fundDetails?.netYield) },
+        { label: 'Average Rating', value: fundDetails?.average_credit_quality || 'N/A' }
+      );
+    } else if (fundType === "equity") {
+      items.push(
+        { label: 'PE Ratio (%)', value: formatOneDecimal(fundDetails?.pe_ratio_ttm) },
+        { label: 'Turnover Ratio (%)', value: formatOneDecimal(fundDetails?.turnover_ratio) },
+        { label: 'Information Ratio (%)', value: formatOneDecimal(fundDetails?.infoRatio_36m) }
+      );
+    } else if (fundType === "alternative") {
+      items.push(
+        { label: 'Modified Duration', value: formatDuration(fundDetails?.mod_duration) },
+        { label: 'Net Yield (%)', value: formatOneDecimal(fundDetails?.netYield) },
+        { label: 'Average Rating', value: fundDetails?.average_credit_quality || 'N/A' }
+      );
+    } else if (fundType === "allocation") {
+      items.push(
+        { label: 'PE Ratio (%)', value: formatOneDecimal(fundDetails?.pe_ratio_ttm) },
+        { label: 'Turnover Ratio (%)', value: formatOneDecimal(fundDetails?.turnover_ratio) },
+        { label: 'Modified Duration', value: formatDuration(fundDetails?.mod_duration) },
+        { label: 'Net Yield (%)', value: formatOneDecimal(fundDetails?.netYield) },
+        { label: 'Average Rating', value: fundDetails?.average_credit_quality || 'N/A' }
+      );
+    }
+
+    // Add Tracking Error for Index Funds - applicable to all fund types
+    if (
+      fundDetails?.morningstar_category?.includes("Index Funds") || 
+      fundDetails?.morningstar_category?.includes("Index Funds - Fixed Income")
+    ) {
+      items.push({ label: 'Tracking Error (%)', value: formatNumericValue(fundDetails?.trackError_36m) });
+    }
+
+    return items;
+  };
+
+  const informationItems = [...commonItems, ...getTypeSpecificItems()];
 
   return (
     <div className="p-4 md:p-2 lg:p-4 xl:p-0 w-full lg:w-2/3 py-4">

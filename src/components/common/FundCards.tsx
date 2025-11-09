@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
-import { fundData } from "../../pages/Fund/DummyData.tsx";
 import SpiralBg from "../../assets/images/spiral-bg-card.png";
 import Shadow from "../../assets/images/Shadow.png";
 import CaretDown from "../../assets/images/CaretDoubleDown.svg";
 import type { BetterFunds, BetterFundCategory } from "../../types/fundTypes";
+import { trackFundCardViewed } from "../../utils/analytics";
 
 // Custom hook to match Tailwind's xl breakpoint (1280px)
 function useIsXL() {
@@ -227,7 +227,8 @@ const splitTitle = (title: string): { title: string; subtitle?: string } => {
 // Helper function to transform API data to card format
 const transformBetterFundsToCards = (betterFunds?: BetterFunds) => {
   if (!betterFunds?.success || !betterFunds.data) {
-    return fundData.smartFundPicks;
+    // Return empty array if no backend data available
+    return [];
   }
 
   return betterFunds.data.map((category: BetterFundCategory) => {
@@ -255,6 +256,17 @@ const FundCards: React.FC<FundCardsProps> = ({
 }) => {
   const smartFundPicks = transformBetterFundsToCards(fundDetails);
   const isXL = useIsXL();
+  
+  // If no fund picks available, show empty state
+  if (!smartFundPicks || smartFundPicks.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-16 px-4">
+        <p className="text-gray-500 text-center">
+          No fund recommendations available at this time.
+        </p>
+      </div>
+    );
+  }
   
   // Select the appropriate card styles based on the variant
   const cardStyles = useLandingPageStyles ? landingPageCardStyles : fundPageCardStyles;
@@ -448,6 +460,17 @@ const FundCards: React.FC<FundCardsProps> = ({
   }, [enableAutoScroll, scrollSpeed, autoScrollResetDelay, isXL]);
 
   const handleCardClick = (categoryId: string) => {
+    // Find card details for tracking
+    const card = smartFundPicks.find(pick => pick.id === categoryId);
+    
+    if (card) {
+      // Track fund card viewed
+      trackFundCardViewed(card.id, card.title, card.fundsCount, {
+        subtitle: card.subtitle,
+        location: 'fund_cards_carousel',
+      });
+    }
+    
     if (onCategorySelect) {
       onCategorySelect(categoryId);
     }

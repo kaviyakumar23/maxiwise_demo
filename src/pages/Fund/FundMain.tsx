@@ -7,7 +7,7 @@ import FundPicks from "./FundPicks.tsx"
 import ChooseCard from "./ChooseCard.tsx"
 import InvestmentReturns from "./InvestmentReturns.tsx"
 import Ratios from "./Ratios.tsx"
-import Carrva from "./Carrva.tsx"
+import Carrva, { type ConsistencyFactorsResponse } from "./Carrva.tsx"
 import AssetAllocation from "./AssetAllocation.tsx"
 import FundInformation from "./FundInformation.tsx"
 import AboutTheFund from "./AboutTheFund.tsx"
@@ -49,7 +49,7 @@ const FundMain = () => {
   useEffect(() => {
     const fetchFundSchemes = async () => {
       try {
-        const schemesResponse = await fetch('https://d223ljjj0y7hd6.cloudfront.net/api/mf-data/fund-schemes');
+        const schemesResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/mf-data/fund-schemes`);
         const schemesResult: FundSchemesResponse = await schemesResponse.json();
         
         if (schemesResult.success) {
@@ -74,7 +74,7 @@ const FundMain = () => {
         
         if (fund) {
           // Fetch chart data using the fund id
-          const chartResponse = await fetch(`https://d223ljjj0y7hd6.cloudfront.net/api/mf-data/chart-data/${fund.id}`);
+          const chartResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/mf-data/chart-data/${fund.id}`);
           const chartResult: FundApiResponse = await chartResponse.json();
           
           if (chartResult.success) {
@@ -98,7 +98,7 @@ const FundMain = () => {
 
       try {
         const response = await fetch(
-          `https://d223ljjj0y7hd6.cloudfront.net/api/mf-data/nav/${fundDetails.fundDetails.isin}`
+          `${import.meta.env.VITE_API_BASE_URL}/api/mf-data/nav/${fundDetails.fundDetails.isin}`
         );
         const result = await response.json();
 
@@ -137,7 +137,11 @@ const FundMain = () => {
         ) : (
           <>
             {/* Basic Info - Always visible */}
-            <BasicInfo fundDetails={fundDetails?.fundDetails} navData={navData} />
+            <BasicInfo 
+              fundDetails={fundDetails?.fundDetails} 
+              navData={navData} 
+              pointToPoint={fundDetails?.pointToPoint}
+            />
 
             {/* Desktop View - All components stacked (lg and above) */}
             <div className="hidden xl:block px-4 py-2 md:block lg:px-20 lg:py-10">
@@ -152,9 +156,14 @@ const FundMain = () => {
                   rollingReturns={fundDetails?.rollingReturns}
                   pointToPoint={fundDetails?.pointToPoint}
                 />
-                <Ratios ratiosData={fundDetails?.ratios} />
-                <Carrva />
-                <AssetAllocation />
+                <Ratios ratiosData={fundDetails?.ratios} fundType={fundDetails?.fundDetails?.fund_type} />
+                <Carrva fundType={fundDetails?.fundDetails?.fund_type} consistencyFactors={fundDetails?.consistencyFactors} />
+                <AssetAllocation 
+                  assetAllocation={fundDetails?.assetAllocation}  
+                  marketCap={fundDetails?.marketCap}
+                  creditQuality={fundDetails?.creditQuality}
+                  fundDetails={fundDetails?.fundDetails}
+                />
                 <FundInformation fundDetails={fundDetails?.fundDetails} navData={navData} />
                 <AboutTheFund fundDetails={fundDetails?.fundDetails} />
                 <FundManagers fundDetails={fundDetails?.fundDetails} />
@@ -171,6 +180,7 @@ const FundMain = () => {
                 onCategorySelect={setSelectedCategory}
                 completeData={fundDetails}
                 navData={navData}
+                consistencyFactors={fundDetails?.consistencyFactors}
               />
             </div>
           </>

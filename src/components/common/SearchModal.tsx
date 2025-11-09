@@ -80,7 +80,7 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
     const fetchFunds = async () => {
       setLoading(true);
       try {
-        const response = await fetch('https://d223ljjj0y7hd6.cloudfront.net/api/mf-data/fund-schemes');
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/mf-data/fund-schemes`);
         const result = await response.json();
         if (result.success) {
           setAllFunds(result.data);
@@ -138,10 +138,10 @@ const SearchModal: React.FC<SearchModalProps> = ({ isOpen, onClose }) => {
 
   // Helper function to map fund_type to our categories
   const mapFundTypeToCategory = (fundType: string): string => {
-    const type = fundType.toLowerCase();
-    if (type.includes('equity') || type.includes('stock')) return 'equity';
-    if (type.includes('debt') || type.includes('bond') || type.includes('income') || type.includes('fixed income')) return 'debt';
-    if (type.includes('hybrid') || type.includes('balanced') || type.includes('allocation')) return 'hybrid';
+    const type = fundType?.toLowerCase();
+    if (type?.includes('equity') || type?.includes('stock')) return 'equity';
+    if (type?.includes('debt') || type?.includes('bond') || type?.includes('income') || type?.includes('fixed income')) return 'debt';
+    if (type?.includes('hybrid') || type?.includes('balanced') || type?.includes('allocation')) return 'hybrid';
     return 'others';
   };
 

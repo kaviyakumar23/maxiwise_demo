@@ -7,6 +7,7 @@ import type { Ratios } from '../../types/fundTypes';
 
 interface RatiosProps {
   ratiosData?: Ratios;
+  fundType?: 'Equity' | 'Fixed Income' | 'Alternative' | 'Allocation' | 'Commodities';
 }
 
 interface RatioMetrics {
@@ -22,7 +23,29 @@ interface RatioSection {
   metrics: RatioMetrics[];
 }
 
-const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData }) => {
+// Helper function to transform abbreviated labels to full names
+const getFullLabelName = (abbreviatedName: string): string => {
+  const labelMap: { [key: string]: string } = {
+    'StdDev': 'Standard Deviation',
+    'Std Dev': 'Standard Deviation',
+    'Down Dev': 'Downside Deviation',
+    'Total Cap': 'Total Capture',
+    'Up Cap': 'Up Capture',
+    'Down Cap': 'Down Capture',
+  };
+  
+  return labelMap[abbreviatedName] || abbreviatedName;
+};
+
+const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
+  // Only show Ratios for specific fund types
+  const allowedFundTypes = ['Equity', 'Allocation', 'Commodities'];
+  
+  // Return null if fund type is not in the allowed list
+  if (fundType && !allowedFundTypes.includes(fundType)) {
+    return null;
+  }
+
   // Transform API data to component format
   const transformedData = useMemo(() => {
     if (!ratiosData?.success || !ratiosData.data) {
@@ -148,29 +171,29 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData }) => {
           }}
         >
           <div className="flex flex-col gap-1.5">
-            {/* Only show Category for non-Outperformance charts */}
-            {activeTab !== 'Outperformance' && (
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[#CBD5E1] text-sm font-outfit">Category</span>
-                <span className="text-[#CBD5E1] text-sm font-semibold font-outfit">
-                  {activeSection.metrics[hoveredMetric].category.toFixed(2)}
-                </span>
-              </div>
-            )}
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-[#CBD5E1] text-sm font-outfit">Fund</span>
+              <span className="text-[#CBD5E1] text-sm font-semibold font-outfit">
+                {(activeSection.metrics[hoveredMetric].fund * 1000)}%
+              </span>
+            </div>
             <div className="flex items-center justify-between gap-2">
               <span className="text-[#CBD5E1] text-sm font-outfit">
                 {activeTab === 'Outperformance' ? 'Category' : 'Benchmark'}
               </span>
               <span className="text-[#CBD5E1] text-sm font-semibold font-outfit">
-                {activeSection.metrics[hoveredMetric].benchmark.toFixed(2)}
+                {(activeSection.metrics[hoveredMetric].benchmark * 1000)}%
               </span>
             </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[#CBD5E1] text-sm font-outfit">Fund</span>
-              <span className="text-[#CBD5E1] text-sm font-semibold font-outfit">
-                {activeSection.metrics[hoveredMetric].fund.toFixed(2)}
-              </span>
-            </div>
+            {/* Only show Category for non-Outperformance charts */}
+            {activeTab !== 'Outperformance' && (
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[#CBD5E1] text-sm font-outfit">Category</span>
+                <span className="text-[#CBD5E1] text-sm font-semibold font-outfit">
+                  {(activeSection.metrics[hoveredMetric].category * 1000)}%
+                </span>
+              </div>
+            )}
           </div>
           {/* Tooltip arrow */}
           <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px]">
@@ -341,55 +364,53 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData }) => {
                               onMouseEnter={() => setHoveredMetric(metricIndex)}
                               onMouseLeave={() => setHoveredMetric(null)}
                             >
-                              {/* Category Bar - Only show for non-Outperformance charts */}
-                              {activeTab !== 'Outperformance' && (
-                                <div className="flex-1 max-w-[60px] md:max-w-[150px] flex flex-col items-center justify-end">
-                                  <div className="relative w-full">
-                                    {/* Shadow */}
-                                    <div 
-                                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] opacity-20 pointer-events-none"
-                                      style={{
-                                        height: `${Math.min((metric.category / yAxisMax) * 200 * 0.3, 40)}px`,
-                                        zIndex: 0,
-                                      }}
-                                    >
-                                      <img 
-                                        src={ShadowImage} 
-                                        alt="" 
-                                        className="w-full h-full object-contain"
-                                        style={{ filter: 'blur(8px)' }}
-                                      />
-                                    </div>
-                                    
-                                    {/* Bar */}
-                                    <div
-                                      className="w-full rounded-t-[5px] md:rounded-t-[10px] lg:rounded-t-[10px] transition-all duration-500 ease-out relative overflow-hidden"
-                                      style={{
-                                        height: `${(metric.category / yAxisMax) * 200}px`,
-                                        zIndex: 1,
-                                      }}
-                                    >
-                                <div
-                                  className="absolute inset-0"
-                                  style={{
-                                    background: 'linear-gradient(155.25deg, #CBD5E1 2.06%, #6E7782 97.94%)',
-                                  }}
-                                />
-                                <div
-                                  className="absolute inset-0 opacity-50"
-                                  style={{
-                                    backgroundImage: `url(${SpiralImage})`,
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center',
-                                    backgroundRepeat: 'no-repeat',
-                                    mixBlendMode: 'hard-light',
-                                    transform: 'scaleX(-1)',
-                                  }}
-                                />
-                              </div>
+                              {/* Fund Bar */}
+                              <div className="flex-1 max-w-[60px] md:max-w-[150px] flex flex-col items-center justify-end">
+                                <div className="relative w-full">
+                                  {/* Shadow */}
+                                  <div 
+                                    className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] opacity-20 pointer-events-none"
+                                    style={{
+                                      height: `${Math.min((metric.fund / yAxisMax) * 200 * 0.3, 40)}px`,
+                                      zIndex: 0,
+                                    }}
+                                  >
+                                    <img 
+                                      src={ShadowImage} 
+                                      alt="" 
+                                      className="w-full h-full object-contain"
+                                      style={{ filter: 'blur(8px)' }}
+                                    />
+                                  </div>
+                                  
+                                  {/* Bar */}
+                                  <div
+                                    className="w-full rounded-t-[5px] md:rounded-t-[10px] lg:rounded-t-[10px] transition-all duration-500 ease-out relative overflow-hidden"
+                                    style={{
+                                      height: `${(metric.fund / yAxisMax) * 200}px`,
+                                      zIndex: 1,
+                                    }}
+                                  >
+                              <div
+                                className="absolute inset-0"
+                                style={{
+                                  background: 'linear-gradient(180deg, #A78BFA 0%, #7C3AED 100%)',
+                                }}
+                              />
+                              <div
+                                className="absolute inset-0 opacity-50"
+                                style={{
+                                  backgroundImage: `url(${SpiralImage})`,
+                                  backgroundSize: 'cover',
+                                  backgroundPosition: 'center',
+                                  backgroundRepeat: 'no-repeat',
+                                  mixBlendMode: 'hard-light',
+                                  transform: 'scaleX(-1)',
+                                }}
+                              />
                             </div>
                           </div>
-                        )}
+                        </div>
                         
                               {/* Benchmark Bar */}
                               <div className="flex-1 max-w-[60px] md:max-w-[150px] flex flex-col items-center justify-end">
@@ -439,53 +460,55 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData }) => {
                           </div>
                         </div>
                         
-                              {/* Fund Bar */}
-                              <div className="flex-1 max-w-[60px] md:max-w-[150px] flex flex-col items-center justify-end">
-                                <div className="relative w-full">
-                                  {/* Shadow */}
-                                  <div 
-                                    className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] opacity-20 pointer-events-none"
-                                    style={{
-                                      height: `${Math.min((metric.fund / yAxisMax) * 200 * 0.3, 40)}px`,
-                                      zIndex: 0,
-                                    }}
-                                  >
-                                    <img 
-                                      src={ShadowImage} 
-                                      alt="" 
-                                      className="w-full h-full object-contain"
-                                      style={{ filter: 'blur(8px)' }}
-                                    />
-                                  </div>
-                                  
-                                  {/* Bar */}
-                                  <div
-                                    className="w-full rounded-t-[5px] md:rounded-t-[10px] lg:rounded-t-[10px] transition-all duration-500 ease-out relative overflow-hidden"
-                                    style={{
-                                      height: `${(metric.fund / yAxisMax) * 200}px`,
-                                      zIndex: 1,
-                                    }}
-                                  >
-                              <div
-                                className="absolute inset-0"
-                                style={{
-                                  background: 'linear-gradient(180deg, #A78BFA 0%, #7C3AED 100%)',
-                                }}
-                              />
-                              <div
-                                className="absolute inset-0 opacity-50"
-                                style={{
-                                  backgroundImage: `url(${SpiralImage})`,
-                                  backgroundSize: 'cover',
-                                  backgroundPosition: 'center',
-                                  backgroundRepeat: 'no-repeat',
-                                  mixBlendMode: 'hard-light',
-                                  transform: 'scaleX(-1)',
-                                }}
-                              />
+                              {/* Category Bar - Only show for non-Outperformance charts */}
+                              {activeTab !== 'Outperformance' && (
+                                <div className="flex-1 max-w-[60px] md:max-w-[150px] flex flex-col items-center justify-end">
+                                  <div className="relative w-full">
+                                    {/* Shadow */}
+                                    <div 
+                                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] opacity-20 pointer-events-none"
+                                      style={{
+                                        height: `${Math.min((metric.category / yAxisMax) * 200 * 0.3, 40)}px`,
+                                        zIndex: 0,
+                                      }}
+                                    >
+                                      <img 
+                                        src={ShadowImage} 
+                                        alt="" 
+                                        className="w-full h-full object-contain"
+                                        style={{ filter: 'blur(8px)' }}
+                                      />
+                                    </div>
+                                    
+                                    {/* Bar */}
+                                    <div
+                                      className="w-full rounded-t-[5px] md:rounded-t-[10px] lg:rounded-t-[10px] transition-all duration-500 ease-out relative overflow-hidden"
+                                      style={{
+                                        height: `${(metric.category / yAxisMax) * 200}px`,
+                                        zIndex: 1,
+                                      }}
+                                    >
+                                <div
+                                  className="absolute inset-0"
+                                  style={{
+                                    background: 'linear-gradient(155.25deg, #CBD5E1 2.06%, #6E7782 97.94%)',
+                                  }}
+                                />
+                                <div
+                                  className="absolute inset-0 opacity-50"
+                                  style={{
+                                    backgroundImage: `url(${SpiralImage})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat',
+                                    mixBlendMode: 'hard-light',
+                                    transform: 'scaleX(-1)',
+                                  }}
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     );
                   })}
@@ -506,7 +529,7 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData }) => {
                         {activeSection.metrics.map((metric, index) => (
                           <div key={index} className="flex-1 text-center">
                             <div className="text-xs md:text-base font-normal font-outfit text-[#4B5563]">
-                              {metric.name}
+                              {getFullLabelName(metric.name)}
                             </div>
                           </div>
                         ))}
@@ -520,6 +543,16 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData }) => {
 
         {/* Legend */}
         <div className="flex flex-wrap items-stretch justify-center gap-4 md:gap-6 lg:gap-8">
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-gradient-to-b from-[#A78BFA] to-[#7C3AED]"></div>
+            <span className="text-sm md:text-base font-normal font-outfit text-[#9346FD]">Fund</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-gradient-to-b from-[#64748B] to-[#334155]"></div>
+            <span className="text-sm md:text-base font-normal font-outfit text-[#4B5563]">
+              {activeTab === 'Outperformance' ? 'Category' : 'Benchmark'}
+            </span>
+          </div>
           {/* Show Category legend for non-Outperformance charts */}
           {activeTab !== 'Outperformance' && (
             <div className="flex items-center gap-1">
@@ -527,16 +560,6 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData }) => {
               <span className="text-sm md:text-base font-normal font-outfit text-[#4B5563]">Category</span>
             </div>
           )}
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-gradient-to-b from-[#64748B] to-[#334155]"></div>
-            <span className="text-sm md:text-base font-normal font-outfit text-[#4B5563]">
-              {activeTab === 'Outperformance' ? 'Category' : 'Benchmark'}
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-full bg-gradient-to-b from-[#A78BFA] to-[#7C3AED]"></div>
-            <span className="text-sm md:text-base font-normal font-outfit text-[#9346FD]">Fund</span>
-          </div>
         </div>
       </div>
 

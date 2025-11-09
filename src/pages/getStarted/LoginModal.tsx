@@ -3,6 +3,7 @@ import { useAuth, useSignUp } from '@clerk/clerk-react';
 import CreateAccount from "../../assets/images/CreateAccount.png";
 import Button from "../../components/ui/Button";
 import SignupForm from "./SignupForm";
+import { trackSignupStarted } from "../../utils/analytics";
 
 // Context for managing login modal state
 interface LoginModalContextType {
@@ -68,6 +69,9 @@ const LoginModalComponent: React.FC<LoginModalComponentProps> = ({ onClose }) =>
     if (!signUpLoaded) return;
 
     try {
+      // Track Google OAuth signup start
+      trackSignupStarted('google');
+      
       // Use signUp for new users, will automatically redirect to signIn if user exists
       await signUp?.authenticateWithRedirect({
         strategy: 'oauth_google',

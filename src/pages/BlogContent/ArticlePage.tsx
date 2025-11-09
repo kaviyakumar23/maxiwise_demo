@@ -39,7 +39,7 @@ export const ArticlePage = ({ blogId }: ArticlePageProps) => {
     return (
         <>
             <Header fixedStyle="light" />
-            <div className="mx-auto px-0 sm:px-0 pt-24 md:pt-28 lg:pt-32 pb-8 md:pb-12 lg:pb-16">
+            <div className="max-w-[1440px] mx-auto px-4 pt-24 md:pt-28 lg:pt-32 pb-8 md:pb-12 lg:pb-16">
                 <Contents article={article} />
             </div>
             <ArticleContent article={article} />

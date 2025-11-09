@@ -1,5 +1,4 @@
 import React from "react";
-import { fundData } from "./DummyData.tsx";
 import NipponLogo from "../../assets/images/Nippon India Mutual Fund.png";
 
 interface Fund {
@@ -14,6 +13,8 @@ interface Fund {
 
 interface FundListModalProps {
   categoryId: string;
+  categoryTitle?: string;
+  categorySubtitle?: string;
   onClose: () => void;
 }
 
@@ -391,12 +392,16 @@ const categoryFunds: Record<string, Fund[]> = {
   ],
 };
 
-const FundListModal: React.FC<FundListModalProps> = ({ categoryId, onClose }) => {
+const FundListModal: React.FC<FundListModalProps> = ({ categoryId, categoryTitle, categorySubtitle, onClose }) => {
   const funds = categoryFunds[categoryId] || [];
-  const category = fundData.smartFundPicks.find((pick) => pick.id === categoryId);
   
   // Show only first 3 funds in the modal
   const displayedFunds = funds.slice(0, 3);
+  
+  // Display category title
+  const fullTitle = categoryTitle && categorySubtitle 
+    ? `${categoryTitle} ${categorySubtitle}`
+    : categoryTitle || "Fund Category";
 
   return (
     <div
@@ -412,7 +417,7 @@ const FundListModal: React.FC<FundListModalProps> = ({ categoryId, onClose }) =>
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-semibold text-navy font-outfit">
-                {category?.title} {category?.subtitle || ""}
+                {fullTitle}
               </h2>
               <p className="text-sm text-gray-600 mt-1">
                 {funds.length} funds available in this category

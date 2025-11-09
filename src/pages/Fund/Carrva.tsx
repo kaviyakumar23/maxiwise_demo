@@ -1,25 +1,118 @@
 import React, { useState, useEffect } from 'react';
 import { Chip } from '../../components/ui/Chip';
 import { Toggle } from '../../components/ui/Toggle';
-import { fundData } from './DummyData';
 import Qustion from '../../assets/images/Question.svg';
 import { BarChart } from '../../components/ui/BarChart';
 import type { BarData } from '../../components/ui/BarChart';
+import type { ConsistencyFactors, ConsistencyFactorData } from '../../types/fundTypes';
 
-type MetricType = 'Cycles' | 'Alpha' | 'Return' | 'Risk' | 'Volatility' | 'Analysis';
+type MetricType = 'Cycles' | 'Alpha' | 'Return' | 'Risk' | 'Volatility' | 'Yield' | 'Quality';
 type ViewType = 'consistency' | 'trend';
 
-const Carrva: React.FC = () => {
-  const { caarva } = fundData;
+/**
+ * Backend data structure for Consistency Factors
+ * 
+ * Format varies by fund type:
+ * 
+ * 1. Equity/Allocation/Commodity:
+ *    Fields: cycles, alpha, return, risk, volatility
+ *    Format: "Category-Percentage%" (e.g., "High-100%", "Above Avg-91.7%")
+ * 
+ * 2. Debt/Arbitrage/Fixed Income:
+ *    Fields: return, risk, yield, quality
+ *    Format: "Category-Percentage%" (e.g., "High-100%", "Below Avg-62.5%")
+ *            OR just category (e.g., "High", "Low", "Average", "-")
+ * 
+ * Note: 
+ * - First item in data array is Fund data
+ * - Second item in data array is CA (Category Average/Benchmark) data
+ * - Fields with "-" or empty should be ignored
+ * - Component dynamically adjusts displayed metrics based on fundType
+ */
 
-  const [activeMetric, setActiveMetric] = useState<MetricType>(caarva.activeMetric as MetricType);
+export interface CarrvaProps {
+  fundType?: string;
+  consistencyFactors?: ConsistencyFactors; // Optional prop for backend data
+}
+
+/**
+ * CARRVA Component - Displays Cycles, Alpha, Return, Risk, and Volatility Analysis
+ * 
+ * Usage with backend data:
+ * ```tsx
+ * <Carrva fundType={fundType} consistencyFactors={backendConsistencyFactorsData} />
+ * ```
+ */
+const Carrva: React.FC<CarrvaProps> = ({ fundType, consistencyFactors }) => {
+  const isEquityType = ['Equity', 'Allocation', 'Commodity'].includes(fundType!);
+  const isDebtType = ['Debt', 'Arbitrage', 'Fixed Income', 'Alternative'].includes(fundType!);
+
+  // Dynamic metrics based on fund type - memoized to prevent unnecessary recalculations
+  const metrics: MetricType[] = React.useMemo(() => {
+    if (isEquityType) {
+      return ['Cycles', 'Alpha', 'Return', 'Risk', 'Volatility'];
+    } else if (isDebtType) {
+      return ['Return', 'Risk', 'Yield', 'Quality'];
+    } else {
+      return ['Cycles', 'Alpha', 'Return', 'Risk', 'Volatility']; // Default fallback
+    }
+  }, [isEquityType, isDebtType]);
+
+  const [activeMetric, setActiveMetric] = useState<MetricType>('Return');
   const [activeView, setActiveView] = useState<ViewType>('consistency');
+  console.log(activeView)
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
 
-  const metrics = caarva.metrics as MetricType[];
-  const metricsData = caarva.metricsData;
+  // Update active metric when metrics array changes (i.e., when fund type changes)
+  useEffect(() => {
+    // If current metric is not in the available metrics, switch to the first one
+    if (!metrics.includes(activeMetric)) {
+      setActiveMetric(metrics[0]);
+    }
+  }, [metrics, activeMetric]);
 
-  const currentData = metricsData[activeMetric];
+  // Helper function to parse backend data format
+  // Equity/Allocation/Commodity: "Category-Percentage%" (e.g., "High-100%", "Above Avg-91.7%")
+  // Debt/Arbitrage: "Category-Percentage%" or just "Category" (e.g., "High", "Low", "Average")
+  const parseConsistencyValue = (value: string | number): { category: string; percentage: number } => {
+    if (typeof value === 'number') {
+      return { category: '', percentage: value };
+    }
+    
+    if (!value || value === '-') {
+      return { category: '', percentage: 0 };
+    }
+    
+    // Handle format like "High-100%" or "Above Avg-91.7%"
+    const match = value.match(/^(.+?)-(\d+(?:\.\d+)?)%$/);
+    if (match) {
+      return {
+        category: match[1].trim(),
+        percentage: parseFloat(match[2])
+      };
+    }
+    
+    // Handle just category format (for debt funds)
+    // Map categories to approximate percentage values for visualization
+    const categoryMap: Record<string, number> = {
+      'High': 90,
+      'Above Avg': 70,
+      'Average': 50,
+      'Below Avg': 30,
+      'Low': 10,
+    };
+    
+    const normalizedValue = value.trim();
+    if (categoryMap[normalizedValue]) {
+      return {
+        category: normalizedValue,
+        percentage: categoryMap[normalizedValue]
+      };
+    }
+    
+    // Fallback for unexpected formats
+    return { category: value, percentage: 0 };
+  };
 
   // Handle body scroll lock when modal is open
   useEffect(() => {
@@ -34,19 +127,47 @@ const Carrva: React.FC = () => {
     };
   }, [isInfoModalOpen]);
 
+  // Get consistency data from backend
+  const getConsistencyData = () => {
+    console.log(consistencyFactors);
+    if (consistencyFactors && consistencyFactors.success && consistencyFactors.data.data.length >= 2) {
+      const metricKey = activeMetric.toLowerCase() as keyof ConsistencyFactorData;
+      const fundData = consistencyFactors.data.data[0]; // First item is Fund
+      const caData = consistencyFactors.data.data[1]; // Second item is CA (Benchmark)
+      
+      return {
+        fund: fundData[metricKey] || '',
+        benchmark: caData[metricKey] || '',
+      };
+    }
+    
+    // Return empty data if backend data not available
+    return {
+      fund: '',
+      benchmark: '',
+    };
+  };
+
   const ConsistencyChart: React.FC = () => {
-    const { benchmark, fund } = currentData.consistency;
+    console.log('ConsistencyChart');
+    const { benchmark, fund } = getConsistencyData();
+
+    // Parse benchmark and fund values
+    const benchmarkParsed = parseConsistencyValue(benchmark);
+    const fundParsed = parseConsistencyValue(fund);
 
     const chartData: BarData[] = [
       {
         label: 'Benchmark',
-        value: benchmark,
+        value: benchmarkParsed.percentage,
+        category: benchmarkParsed.category,
         color: 'linear-gradient(149.86deg, #94A3B8 0.9%, #000000 99.1%)',
         valueColor: '#4B5563',
       },
       {
         label: 'Fund',
-        value: fund,
+        value: fundParsed.percentage,
+        category: fundParsed.category,
         color: 'linear-gradient(149.86deg, #AC72FF 0.9%, #723FBC 99.1%)',
         valueColor: '#9346FD',
       },
@@ -54,140 +175,19 @@ const Carrva: React.FC = () => {
 
     return (
       <div className="w-full">
-        <BarChart data={chartData} height={280} />
+        <BarChart data={chartData} height={240} />
       </div>
     );
   };
 
   const TrendChart: React.FC = () => {
-    const levels = [
-      { label: 'High', color: 'bg-[#6EE7B7]', range: [80, 100] },
-      { label: 'Above Avg', color: 'bg-[#D1FAE5]', range: [60, 80] },
-      { label: 'Average', color: 'bg-[#FDE68A]', range: [40, 60] },
-      { label: 'Below Avg', color: 'bg-[#FFE4E6]', range: [20, 40] },
-      { label: 'Low', color: 'bg-[#FDA4AF]', range: [0, 20] },
-    ];
-
-    const trendData = currentData.trend;
-
-    // Calculate positions for the line chart
-    const getYPosition = (level: number) => {
-      // level: 0=Low, 1=Below Avg, 2=Average, 3=Above Avg, 4=High
-      // Each band is 20% of the chart height
-      return 100 - (level * 20 + 10); // Center of each band
-    };
-
+    // Trend view is not yet supported by backend
+    // Show a message to users
     return (
-      <div className="w-full h-[350px] md:h-[450px] lg:h-[500px] relative bg-white rounded-2xl md:rounded-3xl">
-        {/* Chart area with colored bands */}
-        <div className="absolute left-4 md:left-6 lg:left-8 right-4 md:right-6 lg:right-8 top-8 md:top-10 bottom-16 md:bottom-20">
-          {/* Colored bands */}
-          <div className="relative w-full h-full overflow-hidden">
-            {levels.map((level, index) => (
-              <div
-                key={level.label}
-                className={`h-[20%] ${level.color} border-b border-white/20 relative flex items-center px-4 md:px-6`}
-              >
-                <span
-                  className="text-xs md:text-sm lg:text-base font-medium z-10"
-                  style={{
-                    color: index === 0 ? '#047857' :
-                      index === 1 ? '#10B981' :
-                        index === 2 ? '#D97706' :
-                          index === 3 ? '#FB7185' : '#E11D48'
-                  }}
-                >
-                  {level.label}
-                </span>
-              </div>
-            ))}
-
-            {/* Grid lines */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none">
-              {/* Vertical lines */}
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <line
-                  key={`v-${i}`}
-                  x1={`${i * 20}%`}
-                  y1="0"
-                  x2={`${i * 20}%`}
-                  y2="100%"
-                  stroke="white"
-                  strokeOpacity="0.8"
-                  strokeWidth="2"
-                />
-              ))}
-              {/* Horizontal lines */}
-              {[0, 1, 2, 3, 4].map((i) => (
-                <line
-                  key={`h-${i}`}
-                  x1="0"
-                  y1={`${i * 20}%`}
-                  x2="100%"
-                  y2={`${i * 20}%`}
-                  stroke="white"
-                  strokeOpacity="0.8"
-                  strokeWidth="2"
-                />
-              ))}
-            </svg>
-
-            {/* Line chart - stretches with container */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-              {/* Line path */}
-              <polyline
-                points={trendData
-                  .map((point, index) => {
-                    // Add left padding (20%) to account for Y-axis labels
-                    const x = 20 + (index / (trendData.length - 1)) * 77;
-                    const y = getYPosition(point.level);
-                    return `${x},${y}`;
-                  })
-                  .join(' ')}
-                fill="none"
-                stroke="#1F2937"
-                strokeWidth="0.5"
-                vectorEffect="non-scaling-stroke"
-              />
-            </svg>
-
-            {/* Data points - preserves aspect ratio for perfect circles */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="xMidYMid meet">
-              {trendData.map((point, index) => {
-                // Add left padding (20%) to account for Y-axis labels
-                const xPercent = 20 + (index / (trendData.length - 1)) * 77;
-                const yPercent = getYPosition(point.level);
-                return (
-                  <circle
-                    key={index}
-                    cx={`${xPercent}%`}
-                    cy={`${yPercent}%`}
-                    r="6"
-                    fill="#1F2937"
-                    stroke="white"
-                    strokeWidth="2"
-                  />
-                );
-              })}
-            </svg>
-          </div>
-        </div>
-
-        {/* X-axis labels */}
-        <div className="absolute left-20 md:left-24 lg:left-28 right-4 md:right-6 lg:right-8 bottom-6 md:bottom-8 lg:bottom-10 text-xs md:text-sm lg:text-base font-medium text-[#4B5563]">
-          {trendData.map((point, index) => {
-            const xPosition = (index / (trendData.length - 1)) * 100;
-            return (
-              <span
-                key={point.period}
-                className="absolute -translate-x-1/2"
-                style={{ left: `${xPosition}%` }}
-              >
-                {point.period}
-              </span>
-            );
-          })}
-        </div>
+      <div className="w-full h-[350px] md:h-[450px] lg:h-[500px] flex items-center justify-center bg-white rounded-2xl md:rounded-3xl">
+        <p className="text-gray-500 text-center px-6">
+          Trend analysis data is currently unavailable. Please check back later.
+        </p>
       </div>
     );
   };
@@ -264,7 +264,7 @@ const Carrva: React.FC = () => {
 
                 {/* Description */}
                 <p className="text-[#4B5563] font-normal text-sm font-outfit mb-6">
-                  CARRVA (Cycles, Alpha, Return, Risk, Volatility, Analysis) helps you evaluate a fund's performance from multiple perspectives. These charts highlight both how consistently a fund delivers returns and the trend of its performance across different time periods, giving you a clearer view of stability and reliability.
+                  CARRVA (Cycles, Alpha, Return, Risk, Volatility) helps you evaluate a fund's performance from multiple perspectives. These charts highlight both how consistently a fund delivers returns and the trend of its performance across different time periods, giving you a clearer view of stability and reliability.
                 </p>
 
                 {/* Close Button */}

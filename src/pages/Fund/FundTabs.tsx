@@ -3,7 +3,7 @@ import FundPicks from './FundPicks';
 import ChooseCard from './ChooseCard';
 import InvestmentReturns from './InvestmentReturns';
 import Ratios from './Ratios';
-import Carrva from './Carrva';
+import Carrva, { type ConsistencyFactorsResponse } from './Carrva';
 import AssetAllocation from './AssetAllocation';
 import FundInformation from './FundInformation';
 import AboutTheFund from './AboutTheFund';
@@ -34,11 +34,12 @@ interface FundTabsProps {
   onCategorySelect: (categoryId: string) => void;
   completeData?: FundData | null;
   navData?: NavData | null;
+  consistencyFactors?: ConsistencyFactorsResponse;
 }
 
 type TabType = 'Insights' | 'Returns' | 'Ratios' | 'Details';
 
-const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFundSchemes, selectedCategory, onCategorySelect, completeData, navData }) => {
+const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFundSchemes, selectedCategory, onCategorySelect, completeData, navData, consistencyFactors }) => {
   const [activeTab, setActiveTab] = useState<TabType>('Insights');
 
   const tabs: TabType[] = ['Insights', 'Returns', 'Ratios', 'Details'];
@@ -62,9 +63,14 @@ const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFu
       case 'Ratios':
         return (
           <>
-            <Ratios />
-            <Carrva />
-            <AssetAllocation />
+            <Ratios ratiosData={completeData?.ratios} fundType={fundDetailsData?.fund_type} />
+            <Carrva fundType={fundDetailsData?.fund_type} consistencyFactors={consistencyFactors} />
+            <AssetAllocation 
+              assetAllocation={completeData?.assetAllocation}
+              marketCap={completeData?.marketCap}
+              creditQuality={completeData?.creditQuality}
+              fundDetails={fundDetailsData}
+            />
           </>
         );
       case 'Details':
