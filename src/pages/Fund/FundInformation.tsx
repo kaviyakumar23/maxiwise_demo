@@ -41,7 +41,7 @@ const FundInformation: React.FC<FundInformationProps> = ({ fundDetails, navData 
 
   // Common fields for all fund types
   const commonItems = [
-    { label: 'Latest NAV', value: navData?.value || 'N/A' },
+    // { label: 'Latest NAV', value: navData?.value || 'N/A' },
     {label: 'Benchmark', value: fundDetails?.benchmark || 'N/A'},
     { label: 'Expense Ratio', value: fundDetails?.net_expense_ratio ? `${fundDetails.net_expense_ratio}%` : 'N/A' },
     // { label: 'Stamp Duty', value: 'N/A' },

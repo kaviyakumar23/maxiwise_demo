@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Toggle } from '../../components/ui/Toggle';
 import type { AssetAllocation as AssetAllocationType, MarketCap, CreditQuality, FundDetails } from '../../types/fundTypes';
 import Qustion from '../../assets/images/Question.svg';
 
@@ -28,6 +27,7 @@ const AssetAllocation: React.FC<AssetAllocationProps> = ({
   fundDetails 
 }) => {
   const [chartView, setChartView] = useState<ChartView>('asset');
+  const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
 
   // Chart constants
   const radius = 80;
@@ -43,9 +43,10 @@ const AssetAllocation: React.FC<AssetAllocationProps> = ({
   // Determine if drilldowns are available based on fund type
   const fundType = fundDetails?.fund_type?.toLowerCase();
   const canShowMarketCap = (fundType === 'equity' || fundType === 'allocation') && marketCap;
-  const canShowCreditQuality = (fundType === 'allocation' || fundType === 'fixed income' || fundType === 'alternative') && creditQuality;
+  // Allow credit quality drilldown for all fund types if data exists
+  const canShowCreditQuality = creditQuality && creditQuality.creditQualityBreakdown;
 
-  // Helper function to normalize data and filter out zeros
+  // Helper function to normalize data and filter out zeros and values < 0.5%
   const normalizeData = (data: Record<string, string | undefined>): Array<{ name: string; value: number }> => {
     const entries = Object.entries(data)
       .map(([key, value]) => ({
@@ -58,10 +59,14 @@ const AssetAllocation: React.FC<AssetAllocationProps> = ({
     
     if (total === 0) return [];
 
-    return entries.map(item => ({
+    // Normalize to percentages and filter out values less than 0.5%
+    const normalized = entries.map(item => ({
       name: item.name,
       value: (item.value / total) * 100
     }));
+
+    // Filter out segments that are less than 0.5% after normalization
+    return normalized.filter(item => item.value >= 0.5);
   };
 
   // Prepare data based on current view
@@ -175,6 +180,35 @@ const AssetAllocation: React.FC<AssetAllocationProps> = ({
     return 'Asset Allocation';
   };
 
+  // Handle segment click - drill down to detailed views
+  const handleSegmentClick = (segmentName: string) => {
+    if (chartView !== 'asset') return;
+    
+    // Handle Equity segment click - drill down to Market Cap view
+    if (segmentName === 'Equity' && canShowMarketCap) {
+      setChartView('marketCap');
+    }
+    // Handle Bond/Cash segment click - drill down to Credit Quality view
+    // Only allow for non-Equity fund types (Allocation, Debt, etc.)
+    else if ((segmentName === 'Bond' || segmentName === 'Cash') && canShowCreditQuality && fundType !== 'equity') {
+      setChartView('creditQuality');
+    }
+  };
+
+  // Check if a segment is clickable
+  const isSegmentClickable = (segmentName: string) => {
+    if (chartView !== 'asset') return false;
+    
+    // Equity segment is clickable if market cap data is available
+    if (segmentName === 'Equity' && canShowMarketCap) return true;
+    
+    // Bond/Cash segments are clickable if credit quality data is available
+    // Only for non-Equity fund types (Allocation, Debt, etc.)
+    if ((segmentName === 'Bond' || segmentName === 'Cash') && canShowCreditQuality && fundType !== 'equity') return true;
+    
+    return false;
+  };
+
   return (
     <div className="py-4">
       <div className="p-4 md:p-2 lg:p-4 xl:p-0">
@@ -190,27 +224,20 @@ const AssetAllocation: React.FC<AssetAllocationProps> = ({
 
         {/* Chart Card */}
         <div className="transition-all duration-300 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3">
-          {/* Toggle Buttons - Always at Top */}
-          {(canShowMarketCap || canShowCreditQuality) && (
-            <div className="flex justify-center mb-6 md:mb-8">
-              <Toggle
-                options={[
-                  { value: 'asset', label: 'Asset Allocation' },
-                  ...(canShowMarketCap ? [{ value: 'marketCap', label: 'Equity' }] : []),
-                  ...(canShowCreditQuality ? [{ value: 'creditQuality', label: 'Debt' }] : []),
-                ]}
-                activeValue={chartView}
-                onChange={(value) => setChartView(value as ChartView)}
-                variant="light"
-              />
-            </div>
-          )}
-
           {/* Chart Title */}
           <div className="text-center mb-4">
             <h2 className="text-base md:text-lg font-semibold text-navy pt-6">
               {getChartTitle()}
             </h2>
+            {chartView === 'asset' && (canShowMarketCap || (canShowCreditQuality && fundType !== 'equity')) && (
+              <p className="text-xs md:text-sm text-gray-500 mt-2">
+                {canShowMarketCap && canShowCreditQuality && fundType !== 'equity'
+                  ? 'Click on Equity to view market cap composition or Bond/Cash to view debt composition'
+                  : canShowMarketCap 
+                  ? 'Click on Equity to view market cap composition'
+                  : 'Click on Bond or Cash to view debt composition'}
+              </p>
+            )}
           </div>
 
           {/* Doughnut Chart */}
@@ -224,11 +251,20 @@ const AssetAllocation: React.FC<AssetAllocationProps> = ({
               >
                 {segments.map((segment, index) => {
                   const labelPos = getLabelPosition(segment.midAngle);
+                  const isClickable = isSegmentClickable(segment.name);
+                  const isHovered = hoveredSegment === segment.name;
+                  
                   return (
                     <g key={index}>
                       <path
                         d={segment.pathData}
                         fill={segment.color}
+                        opacity={isClickable && isHovered ? 0.8 : 1}
+                        className={isClickable ? 'cursor-pointer transition-opacity duration-200' : ''}
+                        onClick={() => handleSegmentClick(segment.name)}
+                        onMouseEnter={() => isClickable && setHoveredSegment(segment.name)}
+                        onMouseLeave={() => setHoveredSegment(null)}
+                        style={{ cursor: isClickable ? 'pointer' : 'default' }}
                       />
                       {/* Add percentage label on the segment */}
                       {segment.percentage >= 5 && (
@@ -240,6 +276,7 @@ const AssetAllocation: React.FC<AssetAllocationProps> = ({
                           fontWeight="600"
                           textAnchor="middle"
                           dominantBaseline="middle"
+                          style={{ pointerEvents: 'none' }}
                         >
                           {segment.percentage}%
                         </text>
@@ -301,25 +338,20 @@ const AssetAllocation: React.FC<AssetAllocationProps> = ({
             </div>
           </div>
 
-          {/* Reset Button - Always at Bottom */}
-          {/* {(canShowMarketCap || canShowCreditQuality) && (
+          {/* Back Button - Show when in detailed views */}
+          {(chartView === 'marketCap' || chartView === 'creditQuality') && (
             <div className="flex justify-center mt-6 md:mt-8 px-4">
               <button
                 onClick={() => setChartView('asset')}
-                className={`px-6 py-2 font-medium rounded-lg transition-colors flex items-center gap-2 ${
-                  chartView === 'asset'
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer'
-                }`}
-                disabled={chartView === 'asset'}
+                className="px-6 py-2 font-medium rounded-lg transition-colors flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Reset to Asset Allocation
+                Back to Asset Allocation
               </button>
             </div>
-          )} */}
+          )}
         </div>
       </div>
     </div>
