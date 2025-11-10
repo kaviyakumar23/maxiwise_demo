@@ -39,7 +39,7 @@ export const BarChart: React.FC<BarChartProps> = ({
     <div className="w-full px-4 py-6 md:px-8 md:py-10 lg:px-16 lg:py-16">
       {/* Chart container with bars */}
       <div className="relative ">
-        <div className="flex items-end justify-between gap-4 md:gap-6 lg:gap-8 px-4 md:px-6 lg:px-8 relative" style={{ height: `${height}px` }}>
+        <div className="flex items-end justify-center gap-4 md:gap-8 lg:gap-16 px-4 md:px-6 lg:px-8 relative" style={{ height: `${height}px` }}>
           {data.map((item, index) => {
             // Calculate actual pixel height based on value proportion
             const barHeightPx = (item.value / max) * height;
@@ -55,16 +55,16 @@ export const BarChart: React.FC<BarChartProps> = ({
                         className="text-xs md:text-sm lg:text-base font-semibold font-outfit mb-1"
                         style={{ color: item.valueColor || '#4B5563' }}
                       >
-                        {item.category}
+                        {item.category} {"-"} {item.displayValue || `${item.value}%`}
                       </div>
                     )}
                     {/* Percentage value */}
-                    <div 
+                    {/* <div 
                       className="text-sm md:text-base lg:text-lg font-semibold font-outfit"
                       style={{ color: item.valueColor || '#4B5563' }}
                     >
                       {item.displayValue || `${item.value}%`}
-                    </div>
+                    </div> */}
                   </div>
                 )}
                 
@@ -179,7 +179,7 @@ export const BarChart: React.FC<BarChartProps> = ({
       
       {/* Labels below baseline */}
       {showLabels && (
-        <div className="flex justify-between gap-4 md:gap-6 lg:gap-8 px-4 md:px-6 lg:px-8 mt-3 md:mt-4">
+        <div className="flex justify-center gap-4 md:gap-10 lg:gap-16 px-4 md:px-6 lg:px-8 mt-3 md:mt-4">
           {data.map((item, index) => (
             <div key={index} className="flex-1 max-w-[150px] text-center">
               <div className="text-xs md:text-sm lg:text-base font-normal font-outfit text-[#4B5563]">

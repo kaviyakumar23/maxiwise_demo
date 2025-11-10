@@ -137,14 +137,14 @@ const Carrva: React.FC<CarrvaProps> = ({ fundType, consistencyFactors }) => {
       
       return {
         fund: fundData[metricKey] || '',
-        benchmark: caData[metricKey] || '',
+        category_average: caData[metricKey] || '',
       };
     }
     
     // Return empty data if backend data not available
     return {
       fund: '',
-      benchmark: '',
+      category_average: '',
     };
   };
 
@@ -265,26 +265,27 @@ const Carrva: React.FC<CarrvaProps> = ({ fundType, consistencyFactors }) => {
 
   const ConsistencyChart: React.FC = () => {
     console.log('ConsistencyChart');
-    const { benchmark, fund } = getConsistencyData();
+    const { fund, category_average } = getConsistencyData();
 
     // Parse benchmark and fund values
-    const benchmarkParsed = parseConsistencyValue(benchmark);
     const fundParsed = parseConsistencyValue(fund);
+    const category_averageParsed = parseConsistencyValue(category_average);
+    
 
     const chartData: BarData[] = [
-      {
-        label: 'Benchmark',
-        value: benchmarkParsed.percentage,
-        category: benchmarkParsed.category,
-        color: 'linear-gradient(149.86deg, #94A3B8 0.9%, #000000 99.1%)',
-        valueColor: '#4B5563',
-      },
       {
         label: 'Fund',
         value: fundParsed.percentage,
         category: fundParsed.category,
         color: 'linear-gradient(149.86deg, #AC72FF 0.9%, #723FBC 99.1%)',
         valueColor: '#9346FD',
+      },
+      {
+        label: 'Category Average',
+        value: category_averageParsed.percentage,
+        category: category_averageParsed.category,
+        color: 'linear-gradient(149.86deg, #94A3B8 0.9%, #000000 99.1%)',
+        valueColor: '#4B5563',
       },
     ];
 
