@@ -148,6 +148,121 @@ const Carrva: React.FC<CarrvaProps> = ({ fundType, consistencyFactors }) => {
     };
   };
 
+  // Table view for Debt/Arbitrage/Fixed Income/Alternative funds
+  const ConsistencyTable: React.FC = () => {
+    console.log('ConsistencyTable');
+    
+    // Get all metrics data for table display
+    const getAllMetricsData = () => {
+      if (consistencyFactors && consistencyFactors.success && consistencyFactors.data.data.length >= 2) {
+        const fundData = consistencyFactors.data.data[0]; // First item is Fund
+        const caData = consistencyFactors.data.data[1]; // Second item is CA
+        
+        return {
+          fund: {
+            return: fundData.return || '-',
+            risk: fundData.risk || '-',
+            yield: fundData.yield || '-',
+            quality: fundData.quality || '-',
+          },
+          ca: {
+            return: caData.return || '-',
+            risk: caData.risk || '-',
+            yield: caData.yield || '-',
+            quality: caData.quality || '-',
+          }
+        };
+      }
+      
+      return {
+        fund: { return: '-', risk: '-', yield: '-', quality: '-' },
+        ca: { return: '-', risk: '-', yield: '-', quality: '-' }
+      };
+    };
+
+    const metricsData = getAllMetricsData();
+
+    // Helper to format the value display
+    const formatValue = (value: string) => {
+      if (!value || value === '-') return '-';
+      return value;
+    };
+
+    return (
+      <div className="w-full px-4 md:px-6 lg:px-8">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse overflow-hidden rounded-lg">
+            <thead>
+              {/* Group Header Row */}
+              <tr>
+                <th rowSpan={2} className="border-b-2 border-purple-200 bg-white p-4 text-left text-xs md:text-sm lg:text-base font-semibold text-navy align-middle">
+                  
+                </th>
+                <th colSpan={2} className="border-b border-l border-purple-200 bg-white p-4 text-center text-xs md:text-sm lg:text-base font-semibold text-purple-900">
+                  (wrt.BM)
+                </th>
+                <th colSpan={2} className="border-b border-l border-purple-200 bg-white p-4 text-center text-xs md:text-sm lg:text-base font-semibold text-purple-900">
+                  (within Category)
+                </th>
+              </tr>
+              {/* Sub Header Row */}
+              <tr>
+                <th className="border-b-2 border-l border-purple-200 bg-purple-50/50 p-4 text-center text-xs md:text-sm lg:text-base font-semibold text-gray-800">
+                  Return
+                </th>
+                <th className="border-b-2 border-l border-purple-200 bg-purple-50/50 p-4 text-center text-xs md:text-sm lg:text-base font-semibold text-gray-800">
+                  Risk
+                </th>
+                <th className="border-b-2 border-l border-purple-200 bg-purple-50/50 p-4 text-center text-xs md:text-sm lg:text-base font-semibold text-gray-800">
+                  Yield
+                </th>
+                <th className="border-b-2 border-l border-purple-200 bg-purple-50/50 p-4 text-center text-xs md:text-sm lg:text-base font-semibold text-gray-800">
+                  Quality
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="hover:bg-purple-50/30 transition-colors">
+                <td className="border-b border-purple-100 bg-purple-50/50 p-4 text-xs md:text-sm lg:text-base font-semibold text-navy">
+                  Fund
+                </td>
+                <td className="border-b border-l border-purple-100 p-4 text-center text-xs md:text-sm lg:text-base text-gray-700">
+                  {formatValue(metricsData.fund.return)}
+                </td>
+                <td className="border-b border-l border-purple-100 p-4 text-center text-xs md:text-sm lg:text-base text-gray-700">
+                  {formatValue(metricsData.fund.risk)}
+                </td>
+                <td className="border-b border-l border-purple-100 p-4 text-center text-xs md:text-sm lg:text-base text-gray-700">
+                  {formatValue(metricsData.fund.yield)}
+                </td>
+                <td className="border-b border-l border-purple-100 p-4 text-center text-xs md:text-sm lg:text-base text-gray-700">
+                  {formatValue(metricsData.fund.quality)}
+                </td>
+              </tr>
+              <tr className="hover:bg-purple-50/30 transition-colors">
+                <td className="border-b border-purple-100 bg-purple-50/50 p-4 text-xs md:text-sm lg:text-base font-semibold text-navy">
+                  CA
+                </td>
+                <td className="border-b border-l border-purple-100 p-4 text-center text-xs md:text-sm lg:text-base text-gray-700">
+                  {formatValue(metricsData.ca.return)}
+                </td>
+                <td className="border-b border-l border-purple-100 p-4 text-center text-xs md:text-sm lg:text-base text-gray-700">
+                  {formatValue(metricsData.ca.risk)}
+                </td>
+                <td className="border-b border-l border-purple-100 p-4 text-center text-xs md:text-sm lg:text-base text-gray-700">
+                  {formatValue(metricsData.ca.yield)}
+                </td>
+                <td className="border-b border-l border-purple-100 p-4 text-center text-xs md:text-sm lg:text-base text-gray-700">
+                  {formatValue(metricsData.ca.quality)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
   const ConsistencyChart: React.FC = () => {
     console.log('ConsistencyChart');
     const { benchmark, fund } = getConsistencyData();
@@ -208,37 +323,48 @@ const Carrva: React.FC<CarrvaProps> = ({ fundType, consistencyFactors }) => {
           </button>
         </div>
 
-        {/* Metrics Chips */}
-        <div className="flex gap-3 md:gap-4 mb-6 md:mb-8 overflow-x-auto scrollbar-hide">
-          {metrics.map((metric) => (
-            <Chip
-              key={metric}
-              label={metric}
-              isActive={activeMetric === metric}
-              onClick={() => setActiveMetric(metric)}
-            />
-          ))}
-        </div>
-
-        {/* View Toggle */}
-        <div className="transition-all duration-300 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3">
-          <div className="flex justify-center mb-8 md:mb-10">
-            <Toggle
-              options={[
-                { value: 'consistency', label: 'Consistency' },
-                { value: 'trend', label: 'Trend' },
-              ]}
-              activeValue={activeView}
-              onChange={(value) => setActiveView(value as ViewType)}
-              variant="light"
-            />
+        {/* Conditional rendering based on fund type */}
+        {isDebtType ? (
+          // Table view for Debt/Arbitrage/Fixed Income/Alternative funds
+          <div className="transition-all duration-300 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3">
+            <ConsistencyTable />
           </div>
+        ) : (
+          // Bar chart view for Equity/Allocation/Commodity funds
+          <>
+            {/* Metrics Chips */}
+            <div className="flex gap-3 md:gap-4 mb-6 md:mb-8 overflow-x-auto scrollbar-hide">
+              {metrics.map((metric) => (
+                <Chip
+                  key={metric}
+                  label={metric}
+                  isActive={activeMetric === metric}
+                  onClick={() => setActiveMetric(metric)}
+                />
+              ))}
+            </div>
 
-          {/* Chart Display */}
-          <div className="rounded-2xl md:rounded-3xl">
-            {activeView === 'consistency' ? <ConsistencyChart /> : <TrendChart />}
-          </div>
-        </div>
+            {/* View Toggle */}
+            <div className="transition-all duration-300 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3">
+              <div className="flex justify-center mb-8 md:mb-10">
+                <Toggle
+                  options={[
+                    { value: 'consistency', label: 'Consistency' },
+                    { value: 'trend', label: 'Trend' },
+                  ]}
+                  activeValue={activeView}
+                  onChange={(value) => setActiveView(value as ViewType)}
+                  variant="light"
+                />
+              </div>
+
+              {/* Chart Display */}
+              <div className="rounded-2xl md:rounded-3xl">
+                {activeView === 'consistency' ? <ConsistencyChart /> : <TrendChart />}
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Information Modal - Bottom Sheet */}
         {isInfoModalOpen && (
