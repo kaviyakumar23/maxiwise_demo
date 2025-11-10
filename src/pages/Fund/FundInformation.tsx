@@ -12,7 +12,7 @@ interface FundInformationProps {
   navData?: NavData | null;
 }
 
-const FundInformation: React.FC<FundInformationProps> = ({ fundDetails, navData }) => {
+const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
   const formatCurrency = (value: number | undefined) => {
     if (!value) return 'N/A';
     return `₹${value.toLocaleString('en-IN')}`;
