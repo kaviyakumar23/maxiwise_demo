@@ -32,6 +32,13 @@ const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
     return `${numValue.toFixed(1)}%`;
   };
 
+  const formatRatioValue = (value: string | null | undefined) => {
+    if (!value) return 'N/A';
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) return 'N/A';
+    return numValue.toFixed(1);
+  };
+
   const formatNumericValue = (value: string | undefined) => {
     if (!value) return 'N/A';
     const numValue = parseFloat(value);
@@ -43,18 +50,18 @@ const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
   const commonItems = [
     // { label: 'Latest NAV', value: navData?.value || 'N/A' },
     {label: 'Benchmark', value: fundDetails?.benchmark || 'N/A'},
-    { label: 'Expense Ratio', value: fundDetails?.net_expense_ratio ? `${fundDetails.net_expense_ratio}%` : 'N/A' },
+    { label: 'Expense Ratio', value: fundDetails?.net_expense_ratio ? `${parseFloat(fundDetails.net_expense_ratio).toFixed(2)}%` : 'N/A' },
     // { label: 'Stamp Duty', value: 'N/A' },
-    { label: 'Exit load', value: fundDetails?.exit_load ? `${fundDetails.exit_load}%` : 'N/A' },
+    { label: 'Exit load', value: fundDetails?.exit_load ? `${fundDetails.exit_load}` : 'N/A' },
     { label: 'India Risk Level', value: fundDetails?.india_risk_level || 'N/A' },
     
     // { label: 'Lock-in Period', value: 'N/A' },
-    { 
-      label: 'Min. investment', 
-      value: fundDetails?.minimum_investment 
-        ? `SIP: ${formatCurrency(fundDetails.minimum_investment)} & Lumpsum: ${formatCurrency(fundDetails.minimum_additional_purchase)}` 
-        : 'N/A'
-    },
+    // { 
+    //   label: 'Min. investment', 
+    //   value: fundDetails?.minimum_investment 
+    //     ? `SIP: ${formatCurrency(fundDetails.minimum_investment)} & Lumpsum: ${formatCurrency(fundDetails.minimum_additional_purchase)}` 
+    //     : 'N/A'
+    // },
   ];
 
   // Fund type specific fields
@@ -70,9 +77,9 @@ const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
       );
     } else if (fundType === "equity") {
       items.push(
-        { label: 'PE Ratio (%)', value: formatOneDecimal(fundDetails?.pe_ratio_ttm) },
+        { label: 'PE Ratio', value: formatRatioValue(fundDetails?.pe_ratio_ttm) },
         { label: 'Turnover Ratio (%)', value: formatOneDecimal(fundDetails?.turnover_ratio) },
-        { label: 'Information Ratio (%)', value: formatOneDecimal(fundDetails?.infoRatio_36m) }
+        { label: 'Information Ratio', value: formatRatioValue(fundDetails?.infoRatio_36m) }
       );
     } else if (fundType === "alternative") {
       items.push(
@@ -82,7 +89,7 @@ const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
       );
     } else if (fundType === "allocation") {
       items.push(
-        { label: 'PE Ratio (%)', value: formatOneDecimal(fundDetails?.pe_ratio_ttm) },
+        { label: 'PE Ratio', value: formatRatioValue(fundDetails?.pe_ratio_ttm) },
         { label: 'Turnover Ratio (%)', value: formatOneDecimal(fundDetails?.turnover_ratio) },
         { label: 'Modified Duration', value: formatDuration(fundDetails?.mod_duration) },
         { label: 'Net Yield (%)', value: formatOneDecimal(fundDetails?.netYield) },

@@ -82,16 +82,39 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
       };
     };
 
+    // Split Risk & Volatility into two separate sections
+    const riskVolatilityData = transformSection(data.riskVolatility, 'Lower the Better');
+    
+    // Risk section: Standard Deviation and Downside Deviation
+    const riskMetrics = riskVolatilityData.metrics.filter(m => 
+      m.name.includes('Std') || m.name.includes('Standard') || 
+      m.name.includes('Down') || m.name.includes('Downside')
+    );
+    
+    // Volatility section: Beta
+    const volatilityMetrics = riskVolatilityData.metrics.filter(m => 
+      m.name.includes('Beta')
+    );
+
     return {
-      tabs: ['Risk & Volatility', 'Trade-Off Ratios', 'Market Cycle', 'Outperformance'],
-      riskVolatility: transformSection(data.riskVolatility, 'Lower the Better'),
+      tabs: ['Risk', 'Volatility', 'Trade-Off Ratios', 'Market Cycle', 'Outperformance'],
+      risk: {
+        title: 'Risk',
+        subtitle: 'Lower the Better',
+        metrics: riskMetrics,
+      },
+      volatility: {
+        title: 'Volatility',
+        subtitle: 'Lower the Better',
+        metrics: volatilityMetrics,
+      },
       tradeOffRatios: transformSection(data.tradeOffRatios, 'Higher the Better'),
       marketCycle: transformSection(data.marketCycle, 'Higher the Better'),
       outperformance: transformSection(data.outperformance, 'Higher the Better'),
     };
   }, [ratiosData]);
 
-  const [activeTab, setActiveTab] = useState<string>('Risk & Volatility');
+  const [activeTab, setActiveTab] = useState<string>('Risk');
   const [hoveredMetric, setHoveredMetric] = useState<number | null>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number } | null>(null);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
@@ -124,13 +147,20 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
     };
   }, [isInfoModalOpen]);
 
+  // Helper function to determine if current tab should show percentage formatting
+  const isPercentageTab = (): boolean => {
+    return activeTab === 'Risk' || activeTab === 'Outperformance';
+  };
+
   // Get the active ratio section based on selected tab
   const getActiveSection = (): RatioSection | null => {
     if (!transformedData) return null;
     
     switch (activeTab) {
-      case 'Risk & Volatility':
-        return transformedData.riskVolatility;
+      case 'Risk':
+        return transformedData.risk;
+      case 'Volatility':
+        return transformedData.volatility;
       case 'Trade-Off Ratios':
         return transformedData.tradeOffRatios;
       case 'Market Cycle':
@@ -138,7 +168,7 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
       case 'Outperformance':
         return transformedData.outperformance;
       default:
-        return transformedData.riskVolatility;
+        return transformedData.risk;
     }
   };
 
@@ -174,7 +204,9 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
             <div className="flex items-center justify-between gap-2">
               <span className="text-[#CBD5E1] text-sm font-outfit">Fund</span>
               <span className="text-[#CBD5E1] text-sm font-semibold font-outfit">
-                {(activeSection.metrics[hoveredMetric].fund * 1000)}%
+                {isPercentageTab() 
+                  ? `${(activeSection.metrics[hoveredMetric].fund * 100).toFixed(2).replace(/\.?0+$/, '')}%`
+                  : activeSection.metrics[hoveredMetric].fund.toFixed(2).replace(/\.?0+$/, '')}
               </span>
             </div>
             <div className="flex items-center justify-between gap-2">
@@ -182,7 +214,9 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
                 {activeTab === 'Outperformance' ? 'Category' : 'Benchmark'}
               </span>
               <span className="text-[#CBD5E1] text-sm font-semibold font-outfit">
-                {(activeSection.metrics[hoveredMetric].benchmark * 1000)}%
+                {isPercentageTab() 
+                  ? `${(activeSection.metrics[hoveredMetric].benchmark * 100).toFixed(2).replace(/\.?0+$/, '')}%`
+                  : activeSection.metrics[hoveredMetric].benchmark.toFixed(2).replace(/\.?0+$/, '')}
               </span>
             </div>
             {/* Only show Category for non-Outperformance charts */}
@@ -190,7 +224,9 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[#CBD5E1] text-sm font-outfit">Category</span>
                 <span className="text-[#CBD5E1] text-sm font-semibold font-outfit">
-                  {(activeSection.metrics[hoveredMetric].category * 1000)}%
+                  {isPercentageTab() 
+                    ? `${(activeSection.metrics[hoveredMetric].category * 100).toFixed(2).replace(/\.?0+$/, '')}%`
+                    : activeSection.metrics[hoveredMetric].category.toFixed(2).replace(/\.?0+$/, '')}
                 </span>
               </div>
             )}
@@ -593,8 +629,18 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
               {/* Content Sections */}
               <div className="space-y-4 mb-6">
                   <div>
-                    <h1 className="text-navy font-semibold text-base font-outfit mb-1">Risk & Volatility</h1>
-                    <p className="text-[#4B5563] font-normal text-sm font-outfit">Shows how stable or unpredictable the fund is (lower is better).</p>
+                    <h1 className="text-navy font-semibold text-base font-outfit mb-1">Risk</h1>
+                    <p className="text-[#4B5563] font-normal text-sm font-outfit">Measures how much the fund's returns deviate from average (lower is better).</p>
+                  </div>
+                
+                {/* Divider */}
+                <div className="border-t border-gray-200"></div>
+                
+                {/* Volatility Section */}
+                
+                  <div>
+                    <h3 className="text-navy font-semibold text-base font-outfit mb-1">Volatility</h3>
+                    <p className="text-[#4B5563] font-normal text-sm font-outfit">Shows how sensitive the fund is to market movements (lower is better).</p>
                   </div>
                 
                 {/* Divider */}

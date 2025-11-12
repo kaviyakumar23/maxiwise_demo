@@ -55,16 +55,16 @@ export const BarChart: React.FC<BarChartProps> = ({
                         className="text-xs md:text-sm lg:text-base font-semibold font-outfit mb-1"
                         style={{ color: item.valueColor || '#4B5563' }}
                       >
-                        {item.category} {"-"} {item.displayValue || `${item.value}%`}
+                        {item.category}
                       </div>
                     )}
                     {/* Percentage value */}
-                    {/* <div 
+                    <div 
                       className="text-sm md:text-base lg:text-lg font-semibold font-outfit"
                       style={{ color: item.valueColor || '#4B5563' }}
                     >
                       {item.displayValue || `${item.value}%`}
-                    </div> */}
+                    </div>
                   </div>
                 )}
                 

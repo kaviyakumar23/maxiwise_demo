@@ -70,7 +70,7 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
     if (periodIndex === -1) return [];
     
     // Build bar data from series
-    const barData: BarData[] = [];
+    const barDataMap: { [key: string]: BarData } = {};
     
     dataSource.data.series.forEach((series) => {
       const value = series.data[periodIndex];
@@ -79,13 +79,15 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
       let color: string;
       let valueColor: string;
       
-      if (series.name.toLowerCase() === 'category') {
+      const seriesNameLower = series.name.toLowerCase();
+      
+      if (seriesNameLower === 'category') {
         color = 'linear-gradient(155.25deg, #CBD5E1 2.06%, #6E7782 97.94%)';
         valueColor = '#4B5563';
-      } else if (series.name.toLowerCase() === 'benchmark') {
+      } else if (seriesNameLower === 'benchmark') {
         color = 'linear-gradient(149.86deg, #94A3B8 0.9%, #000000 99.1%)';
         valueColor = '#4B5563';
-      } else if (series.name.toLowerCase() === 'fund') {
+      } else if (seriesNameLower === 'fund') {
         color = 'linear-gradient(149.86deg, #AC72FF 0.9%, #723FBC 99.1%)';
         valueColor = '#9346FD';
       } else {
@@ -93,15 +95,28 @@ const InvestmentReturns: React.FC<InvestmentReturnsProps> = ({
         valueColor = '#4B5563';
       }
       
-      barData.push({
+      barDataMap[seriesNameLower] = {
         label: series.name,
         value: value ?? 0,
         color,
         valueColor,
-      });
+      };
     });
     
-    return barData;
+    // Return bars in the order: Fund, Benchmark, Category
+    const orderedBarData: BarData[] = [];
+    if (barDataMap['fund']) orderedBarData.push(barDataMap['fund']);
+    if (barDataMap['benchmark']) orderedBarData.push(barDataMap['benchmark']);
+    if (barDataMap['category']) orderedBarData.push(barDataMap['category']);
+    
+    // Add any other series that weren't matched
+    Object.keys(barDataMap).forEach((key) => {
+      if (key !== 'fund' && key !== 'benchmark' && key !== 'category') {
+        orderedBarData.push(barDataMap[key]);
+      }
+    });
+    
+    return orderedBarData;
   };
 
   // const getPerformanceChartData = (): BarData[] => {

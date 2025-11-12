@@ -190,7 +190,7 @@ const AssetAllocation: React.FC<AssetAllocationProps> = ({
     }
     // Handle Bond/Cash segment click - drill down to Credit Quality view
     // Only allow for non-Equity fund types (Allocation, Debt, etc.)
-    else if ((segmentName === 'Bond' || segmentName === 'Cash') && canShowCreditQuality && fundType !== 'equity') {
+    else if ((segmentName === 'Bond') && canShowCreditQuality && fundType !== 'equity') {
       setChartView('creditQuality');
     }
   };
@@ -204,7 +204,7 @@ const AssetAllocation: React.FC<AssetAllocationProps> = ({
     
     // Bond/Cash segments are clickable if credit quality data is available
     // Only for non-Equity fund types (Allocation, Debt, etc.)
-    if ((segmentName === 'Bond' || segmentName === 'Cash') && canShowCreditQuality && fundType !== 'equity') return true;
+    if ((segmentName === 'Bond' ) && canShowCreditQuality && fundType !== 'equity') return true;
     
     return false;
   };
@@ -232,10 +232,10 @@ const AssetAllocation: React.FC<AssetAllocationProps> = ({
             {chartView === 'asset' && (canShowMarketCap || (canShowCreditQuality && fundType !== 'equity')) && (
               <p className="text-xs md:text-sm text-gray-500 mt-2">
                 {canShowMarketCap && canShowCreditQuality && fundType !== 'equity'
-                  ? 'Click on Equity to view market cap composition or Bond/Cash to view debt composition'
+                  ? 'Click on Equity to view market cap composition or Bond to view debt composition'
                   : canShowMarketCap 
                   ? 'Click on Equity to view market cap composition'
-                  : 'Click on Bond or Cash to view debt composition'}
+                  : 'Click on Bond to view debt composition'}
               </p>
             )}
           </div>
