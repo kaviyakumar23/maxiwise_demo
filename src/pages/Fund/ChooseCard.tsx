@@ -17,6 +17,8 @@ interface FundScheme {
   large_cap: string;
   fund_type: string;
   purchase_mode: string;
+  distribution_status: string;
+  morningstar_category: string;
 }
 
 interface ChooseCardProps {
@@ -56,23 +58,6 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, se
       // - Show toast notification
       // - Update watchlist state
     }
-  };
-
-  // Helper function to get highest cap
-  const getHighestCap = (fund: FundScheme): string | null => {
-    const smallCap = parseFloat(fund.small_cap) || 0;
-    const midCap = parseFloat(fund.mid_cap) || 0;
-    const largeCap = parseFloat(fund.large_cap) || 0;
-
-    if (smallCap === 0 && midCap === 0 && largeCap === 0) {
-      return null;
-    }
-
-    const max = Math.max(smallCap, midCap, largeCap);
-    if (max === largeCap) return 'Large Cap';
-    if (max === midCap) return 'Mid Cap';
-    if (max === smallCap) return 'Small Cap';
-    return null;
   };
 
   // Helper function to get category icon colors
@@ -193,9 +178,15 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, se
         {displayedFunds.length > 0 ? (
           <div>
             {displayedFunds?.map((fund, index) => {
-              const highestCap = getHighestCap(fund.scheme);
-              const planType = fund.scheme.purchase_mode;
-              const iconColors = getIconColors(fund.scheme.fund_type);
+              const iconColors = getIconColors(fund.fund_type);
+              
+              // Build array of available fields
+              const infoFields = [
+                fund.fund_type,
+                fund.morningstar_category,
+                fund.purchase_mode,
+                fund.distribution_status
+              ].filter(Boolean);
 
               return (
                 <Link
@@ -233,11 +224,12 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, se
                           {fund.fund_name}
                         </h3>
                         <div className="flex items-center gap-2 text-xs text-gray-600 font-outfit">
-                          {fund.scheme.fund_type && <span>{fund.scheme.fund_type}</span>}
-                          {fund.scheme.fund_type && highestCap && <span className="text-xl" style={{ color: '#E2E8F0' }}>•</span>}
-                          {highestCap && <span>{highestCap}</span>}
-                          {highestCap && planType && <span className="text-xl" style={{ color: '#E2E8F0' }}>•</span>}
-                          {planType && <span>{planType}</span>}
+                          {infoFields.map((field, idx) => (
+                            <React.Fragment key={idx}>
+                              <span>{field}</span>
+                              {idx < infoFields.length - 1 && <span className="text-xl" style={{ color: '#E2E8F0' }}>•</span>}
+                            </React.Fragment>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -307,9 +299,15 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, se
               <div className="flex-1 overflow-y-auto p-6">
                 <div>
                   {enrichedFunds.map((fund, index) => {
-                    const highestCap = getHighestCap(fund.scheme);
-                    const planType = fund.scheme.purchase_mode;
-                    const iconColors = getIconColors(fund.scheme.fund_type);
+                    const iconColors = getIconColors(fund.fund_type);
+                    
+                    // Build array of available fields
+                    const infoFields = [
+                      fund.fund_type,
+                      fund.morningstar_category,
+                      fund.purchase_mode,
+                      fund.distribution_status
+                    ].filter(Boolean);
 
                     return (
                       <Link
@@ -348,11 +346,12 @@ const ChooseCard: React.FC<ChooseCardProps> = ({ fundDetails, allFundSchemes, se
                                 {fund.fund_name}
                               </h3>
                               <div className="flex items-center gap-2 text-xs text-gray-600 font-outfit">
-                                {fund.scheme.fund_type && <span>{fund.scheme.fund_type}</span>}
-                                {fund.scheme.fund_type && highestCap && <span className="text-xl" style={{ color: '#E2E8F0' }}>•</span>}
-                                {highestCap && <span>{highestCap}</span>}
-                                {highestCap && planType && <span className="text-xl" style={{ color: '#E2E8F0' }}>•</span>}
-                                {planType && <span>{planType}</span>}
+                                {infoFields.map((field, idx) => (
+                                  <React.Fragment key={idx}>
+                                    <span>{field}</span>
+                                    {idx < infoFields.length - 1 && <span className="text-xl" style={{ color: '#E2E8F0' }}>•</span>}
+                                  </React.Fragment>
+                                ))}
                               </div>
                             </div>
                           </div>

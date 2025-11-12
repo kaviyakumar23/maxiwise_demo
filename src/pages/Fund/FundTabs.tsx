@@ -8,7 +8,7 @@ import AssetAllocation from './AssetAllocation';
 import FundInformation from './FundInformation';
 import AboutTheFund from './AboutTheFund';
 import FundManagers from './FundManagers';
-import type { BetterFunds, FundDetails, FundData, ConsistencyFactors } from '../../types/fundTypes';
+import type { BetterFunds, FundDetails, FundData, ConsistencyFactors, TrendAnalysis } from '../../types/fundTypes';
 
 interface FundScheme {
   id: number;
@@ -19,6 +19,8 @@ interface FundScheme {
   large_cap: string;
   fund_type: string;
   purchase_mode: string;
+  morningstar_category: string;
+  distribution_status: string;
 }
 
 interface NavData {
@@ -35,11 +37,12 @@ interface FundTabsProps {
   completeData?: FundData | null;
   navData?: NavData | null;
   consistencyFactors?: ConsistencyFactors;
+  trendAnalysis?: TrendAnalysis;
 }
 
 type TabType = 'Insights' | 'Returns' | 'Ratios' | 'Details';
 
-const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFundSchemes, selectedCategory, onCategorySelect, completeData, navData, consistencyFactors }) => {
+const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFundSchemes, selectedCategory, onCategorySelect, completeData, navData, consistencyFactors, trendAnalysis }) => {
   const [activeTab, setActiveTab] = useState<TabType>('Insights');
 
   const tabs: TabType[] = ['Insights', 'Returns', 'Ratios', 'Details'];
@@ -64,7 +67,7 @@ const FundTabs: React.FC<FundTabsProps> = ({ fundDetails, fundDetailsData, allFu
         return (
           <>
             <Ratios ratiosData={completeData?.ratios} fundType={fundDetailsData?.fund_type} />
-            <Carrva fundType={fundDetailsData?.fund_type} consistencyFactors={consistencyFactors} />
+            <Carrva fundType={fundDetailsData?.fund_type} consistencyFactors={consistencyFactors} trendAnalysis={trendAnalysis} />
             <AssetAllocation 
               assetAllocation={completeData?.assetAllocation}
               marketCap={completeData?.marketCap}

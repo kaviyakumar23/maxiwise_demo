@@ -209,6 +209,8 @@ export interface FundListItem {
   small_cap: string;
   mid_cap: string;
   large_cap: string;
+  morningstar_category: string;
+  distribution_status: string;
 }
 
 // Ranking

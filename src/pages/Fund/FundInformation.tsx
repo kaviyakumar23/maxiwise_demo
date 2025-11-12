@@ -13,10 +13,10 @@ interface FundInformationProps {
 }
 
 const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
-  const formatCurrency = (value: number | undefined) => {
-    if (!value) return 'N/A';
-    return `₹${value.toLocaleString('en-IN')}`;
-  };
+  // const formatCurrency = (value: number | undefined) => {
+  //   if (!value) return 'N/A';
+  //   return `₹${value.toLocaleString('en-IN')}`;
+  // };
 
   const formatDuration = (value: string | null | undefined) => {
     if (!value) return 'N/A';

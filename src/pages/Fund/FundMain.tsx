@@ -14,6 +14,7 @@ import AboutTheFund from "./AboutTheFund.tsx"
 import FundManagers from "./FundManagers.tsx"
 import FundTabs from "./FundTabs.tsx"
 import type { FundApiResponse, FundData } from "../../types/fundTypes"
+import LogoA from "../../assets/images/3D_A.png"
 
 interface FundScheme {
   id: number;
@@ -24,6 +25,8 @@ interface FundScheme {
   large_cap: string;
   fund_type: string;
   purchase_mode: string;
+  morningstar_category: string;
+  distribution_status: string;
   [key: string]: any;
 }
 
@@ -42,7 +45,7 @@ const FundMain = () => {
   const [fundDetails, setFundDetails] = useState<FundData | null>(null);
   const [allFundSchemes, setAllFundSchemes] = useState<FundScheme[]>([]);
   const [navData, setNavData] = useState<NavData | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const search = useSearch({ from: '/fund' });
 
   // Fetch fund schemes once on mount
@@ -79,6 +82,29 @@ const FundMain = () => {
           
           if (chartResult.success) {
             setFundDetails(chartResult.data);
+            
+            // Fetch NAV data immediately after fund details are loaded
+            try {
+              const navResponse = await fetch(
+                `${import.meta.env.VITE_API_BASE_URL}/api/mf-data/nav/${chartResult.data.fundDetails.isin}`
+              );
+              const navResult = await navResponse.json();
+
+              if (navResult.success && navResult.data) {
+                const formatDate = (dateStr: string): string => {
+                  const date = new Date(dateStr);
+                  const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+                  return date.toLocaleDateString('en-IN', options);
+                };
+
+                setNavData({
+                  value: `₹ ${parseFloat(navResult.data.net_asset_value).toFixed(2)}`,
+                  date: `as on ${formatDate(navResult.data.date)}`
+                });
+              }
+            } catch (navError) {
+              console.error('Error fetching NAV data:', navError);
+            }
           }
         }
       } catch (error) {
@@ -91,48 +117,25 @@ const FundMain = () => {
     fetchFundData();
   }, [search.isin, allFundSchemes]);
 
-  // Fetch NAV data when fund details are available
-  useEffect(() => {
-    const fetchNavData = async () => {
-      if (!fundDetails?.fundDetails?.isin) return;
-
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/api/mf-data/nav/${fundDetails.fundDetails.isin}`
-        );
-        const result = await response.json();
-
-        if (result.success && result.data) {
-          const formatDate = (dateStr: string): string => {
-            const date = new Date(dateStr);
-            const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric' };
-            return date.toLocaleDateString('en-IN', options);
-          };
-
-          setNavData({
-            value: `₹ ${parseFloat(result.data.net_asset_value).toFixed(2)}`,
-            date: `as on ${formatDate(result.data.date)}`
-          });
-        }
-      } catch (error) {
-        console.error('Error fetching NAV data:', error);
-      }
-    };
-
-    fetchNavData();
-  }, [fundDetails?.fundDetails?.isin]);
-
   return (
     <div>
       <Header fixedStyle="light" />
       <div className="pt-20">
-        <BreadcrumbNav />
+        {!loading && <BreadcrumbNav />}
       </div>
 
       <div className="bg-[#F8FAFC]">
         {loading ? (
-          <div className="text-center py-20">
-            <div className="text-gray-500">Loading fund details...</div>
+          <div className="flex items-center justify-center min-h-[calc(100vh-5rem)]">
+            <div className="text-center">
+              <div className="animate-bounce">
+                <img 
+                  src={LogoA} 
+                  alt="Loading..." 
+                  className="w-20 h-20 md:w-24 md:h-24"
+                />
+              </div>
+            </div>
           </div>
         ) : (
           <>
@@ -157,7 +160,7 @@ const FundMain = () => {
                   pointToPoint={fundDetails?.pointToPoint}
                 />
                 <Ratios ratiosData={fundDetails?.ratios} fundType={fundDetails?.fundDetails?.fund_type} />
-                <Carrva fundType={fundDetails?.fundDetails?.fund_type} consistencyFactors={fundDetails?.consistencyFactors} />
+                <Carrva fundType={fundDetails?.fundDetails?.fund_type} consistencyFactors={fundDetails?.consistencyFactors} trendAnalysis={fundDetails?.trendAnalysis} />
                 <AssetAllocation 
                   assetAllocation={fundDetails?.assetAllocation}  
                   marketCap={fundDetails?.marketCap}
@@ -181,6 +184,7 @@ const FundMain = () => {
                 completeData={fundDetails}
                 navData={navData}
                 consistencyFactors={fundDetails?.consistencyFactors}
+                trendAnalysis={fundDetails?.trendAnalysis}
               />
             </div>
           </>
