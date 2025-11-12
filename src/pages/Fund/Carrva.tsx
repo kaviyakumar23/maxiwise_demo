@@ -4,7 +4,7 @@ import { Toggle } from '../../components/ui/Toggle';
 import Qustion from '../../assets/images/Question.svg';
 import { BarChart } from '../../components/ui/BarChart';
 import type { BarData } from '../../components/ui/BarChart';
-import type { ConsistencyFactors, ConsistencyFactorData } from '../../types/fundTypes';
+import type { ConsistencyFactors, ConsistencyFactorData, TrendAnalysis } from '../../types/fundTypes';
 
 type MetricType = 'Cycles' | 'Alpha' | 'Return' | 'Risk' | 'Volatility' | 'Yield' | 'Quality';
 type ViewType = 'consistency' | 'trend';
@@ -33,6 +33,7 @@ type ViewType = 'consistency' | 'trend';
 export interface CarrvaProps {
   fundType?: string;
   consistencyFactors?: ConsistencyFactors; // Optional prop for backend data
+  trendAnalysis?: TrendAnalysis; // Optional prop for trend analysis data
 }
 
 /**
@@ -40,10 +41,14 @@ export interface CarrvaProps {
  * 
  * Usage with backend data:
  * ```tsx
- * <Carrva fundType={fundType} consistencyFactors={backendConsistencyFactorsData} />
+ * <Carrva 
+ *   fundType={fundType} 
+ *   consistencyFactors={backendConsistencyFactorsData}
+ *   trendAnalysis={backendTrendAnalysisData}
+ * />
  * ```
  */
-const Carrva: React.FC<CarrvaProps> = ({ fundType, consistencyFactors }) => {
+const Carrva: React.FC<CarrvaProps> = ({ fundType, consistencyFactors, trendAnalysis }) => {
   const isEquityType = ['Equity', 'Allocation', 'Commodity'].includes(fundType!);
   const isDebtType = ['Debt', 'Arbitrage', 'Fixed Income', 'Alternative'].includes(fundType!);
 
@@ -297,13 +302,194 @@ const Carrva: React.FC<CarrvaProps> = ({ fundType, consistencyFactors }) => {
   };
 
   const TrendChart: React.FC = () => {
-    // Trend view is not yet supported by backend
-    // Show a message to users
+    const levels = [
+      { color: 'bg-[#6EE7B7]', range: [4, 5] },
+      { color: 'bg-[#D1FAE5]', range: [3, 4] },
+      { color: 'bg-[#FDE68A]', range: [2, 3] },
+      { color: 'bg-[#FFE4E6]', range: [1, 2] },
+      { color: 'bg-[#FDA4AF]', range: [0, 1] },
+    ];
+
+    // Helper to convert period labels (12m -> 1Y, 24m -> 2Y, etc.)
+    const convertPeriodLabel = (period: string): string => {
+      const match = period.match(/^(\d+)m$/);
+      if (match) {
+        const months = parseInt(match[1]);
+        const years = months / 12;
+        return `${years}Y`;
+      }
+      return period; // Fallback to original if format doesn't match
+    };
+
+    // Get trend data from backend
+    const getTrendData = (): Array<{ period: string; value: number }> => {
+      console.log('TrendChart - Getting trend data for metric:', activeMetric);
+      console.log('TrendChart - trendAnalysis prop:', trendAnalysis);
+      
+      if (!trendAnalysis || !trendAnalysis.success || !trendAnalysis.data) {
+        console.log('TrendChart - No trendAnalysis data available');
+        return [];
+      }
+
+      const { rows, columns, allValues } = trendAnalysis.data;
+      console.log('TrendChart - Available columns:', columns);
+      console.log('TrendChart - Rows:', rows);
+      console.log('TrendChart - All values:', allValues);
+      
+      // Find the column index for the active metric
+      const metricIndex = columns.findIndex(
+        col => col.toLowerCase() === activeMetric.toLowerCase()
+      );
+      
+      console.log('TrendChart - Metric index for', activeMetric, ':', metricIndex);
+
+      if (metricIndex === -1) {
+        console.log('TrendChart - Metric not found in columns');
+        return [];
+      }
+      
+      if (!allValues || allValues.length === 0) {
+        console.log('TrendChart - No allValues data');
+        return [];
+      }
+
+      // Build trend data array
+      const result = rows.map((period, rowIndex) => ({
+        period: convertPeriodLabel(period),
+        value: allValues[rowIndex]?.[metricIndex] ?? 0,
+      }));
+      
+      console.log('TrendChart - Built trend data:', result);
+      return result;
+    };
+
+    const trendData = getTrendData();
+    // Reverse the data for display (5Y, 4Y, 3Y, 2Y, 1Y order)
+    const reversedTrendData = [...trendData].reverse();
+
+    // Calculate positions for the line chart (Y-axis: 0-5 scale)
+    const getYPosition = (value: number) => {
+      // value: 0-1=Low, 1-2=Below Avg, 2-3=Average, 3-4=Above Avg, 4-5=High
+      // Convert value (0-5) to percentage position (0-100)
+      // Invert because SVG y-axis goes top to bottom
+      return 100 - (value * 20);
+    };
+
+    // Show message if no data available
+    if (reversedTrendData.length === 0) {
+      return (
+        <div className="w-full h-[350px] md:h-[450px] lg:h-[500px] relative bg-white rounded-2xl md:rounded-3xl flex items-center justify-center">
+          <p className="text-gray-500 text-sm md:text-base">No trend data available for {activeMetric}</p>
+        </div>
+      );
+    }
+
     return (
-      <div className="w-full h-[350px] md:h-[450px] lg:h-[500px] flex items-center justify-center bg-white rounded-2xl md:rounded-3xl">
-        <p className="text-gray-500 text-center px-6">
-          Trend analysis data is currently unavailable. Please check back later.
-        </p>
+      <div className="w-full h-[350px] md:h-[450px] lg:h-[500px] relative bg-white rounded-2xl md:rounded-3xl">
+        {/* Chart area with colored bands */}
+        <div className="absolute left-12 md:left-16 lg:left-20 right-4 md:right-6 lg:right-8 top-8 md:top-10 bottom-16 md:bottom-20">
+          {/* Colored bands */}
+          <div className="relative w-full h-full overflow-hidden">
+            {levels.map((level, index) => (
+              <div
+                key={index}
+                className={`h-[20%] ${level.color} border-b border-white/20`}
+              />
+            ))}
+
+            {/* Grid lines */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none">
+              {/* Vertical lines */}
+              {reversedTrendData.map((_, i) => (
+                <line
+                  key={`v-${i}`}
+                  x1={`${2 + (i / (reversedTrendData.length - 1)) * 96}%`}
+                  y1="0"
+                  x2={`${2 + (i / (reversedTrendData.length - 1)) * 96}%`}
+                  y2="100%"
+                  stroke="white"
+                  strokeOpacity="0.8"
+                  strokeWidth="2"
+                />
+              ))}
+              {/* Horizontal lines */}
+              {[0, 1, 2, 3, 4].map((i) => (
+                <line
+                  key={`h-${i}`}
+                  x1="0"
+                  y1={`${i * 20}%`}
+                  x2="100%"
+                  y2={`${i * 20}%`}
+                  stroke="white"
+                  strokeOpacity="0.8"
+                  strokeWidth="2"
+                />
+              ))}
+            </svg>
+
+            {/* Line chart - stretches with container */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+              {/* Line path */}
+              <polyline
+                points={reversedTrendData
+                  .map((point, index) => {
+                    const x = 2 + (index / (reversedTrendData.length - 1)) * 96;
+                    const y = getYPosition(point.value);
+                    return `${x},${y}`;
+                  })
+                  .join(' ')}
+                fill="none"
+                stroke="#1F2937"
+                strokeWidth="0.5"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+
+            {/* Data points - preserves aspect ratio for perfect circles */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="xMidYMid meet">
+              {reversedTrendData.map((point, index) => {
+                const xPercent = 2 + (index / (reversedTrendData.length - 1)) * 96;
+                const yPercent = getYPosition(point.value);
+                return (
+                  <circle
+                    key={index}
+                    cx={`${xPercent}%`}
+                    cy={`${yPercent}%`}
+                    r="6"
+                    fill="#1F2937"
+                    stroke="white"
+                    strokeWidth="2"
+                  />
+                );
+              })}
+            </svg>
+          </div>
+        </div>
+
+        {/* Y-axis labels */}
+        <div className="absolute left-2 md:left-4 lg:left-6 top-8 md:top-10 bottom-16 md:bottom-20 flex flex-col justify-between text-xs md:text-sm lg:text-base font-medium text-[#4B5563]">
+          {[5, 4, 3, 2, 1, 0].map((value) => (
+            <span key={value} className="flex items-center h-0">
+              {value}
+            </span>
+          ))}
+        </div>
+
+        {/* X-axis labels */}
+        <div className="absolute left-12 md:left-16 lg:left-20 right-4 md:right-6 lg:right-8 bottom-6 md:bottom-8 lg:bottom-10 text-xs md:text-sm lg:text-base font-medium text-[#4B5563]">
+          {reversedTrendData.map((point, index) => {
+            const xPosition = (index / (reversedTrendData.length - 1)) * 100;
+            return (
+              <span
+                key={point.period}
+                className="absolute -translate-x-1/2"
+                style={{ left: `${xPosition}%` }}
+              >
+                {point.period}
+              </span>
+            );
+          })}
+        </div>
       </div>
     );
   };
@@ -326,10 +512,40 @@ const Carrva: React.FC<CarrvaProps> = ({ fundType, consistencyFactors }) => {
 
         {/* Conditional rendering based on fund type */}
         {isDebtType ? (
-          // Table view for Debt/Arbitrage/Fixed Income/Alternative funds
-          <div className="transition-all duration-300 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3">
-            <ConsistencyTable />
-          </div>
+          // Enhanced view for Debt/Arbitrage/Fixed Income/Alternative funds with toggle
+          <>
+            {/* Metrics Chips */}
+            <div className="flex gap-3 md:gap-4 mb-6 md:mb-8 overflow-x-auto scrollbar-hide">
+              {metrics.map((metric) => (
+                <Chip
+                  key={metric}
+                  label={metric}
+                  isActive={activeMetric === metric}
+                  onClick={() => setActiveMetric(metric)}
+                />
+              ))}
+            </div>
+
+            {/* View Toggle */}
+            <div className="transition-all duration-300 bg-white py-4 md:py-6 rounded-2xl w-full lg:w-2/3">
+              <div className="flex justify-center mb-8 md:mb-10">
+                <Toggle
+                  options={[
+                    { value: 'consistency', label: 'Consistency' },
+                    { value: 'trend', label: 'Trend' },
+                  ]}
+                  activeValue={activeView}
+                  onChange={(value) => setActiveView(value as ViewType)}
+                  variant="light"
+                />
+              </div>
+
+              {/* Chart/Table Display */}
+              <div className="rounded-2xl md:rounded-3xl">
+                {activeView === 'consistency' ? <ConsistencyTable /> : <TrendChart />}
+              </div>
+            </div>
+          </>
         ) : (
           // Bar chart view for Equity/Allocation/Commodity funds
           <>
