@@ -157,7 +157,7 @@ const BasicInfo: React.FC<BasicInfoProps> = ({ fundDetails, navData, pointToPoin
     ].filter(Boolean);
 
     return {
-      name: fundDetails.fund_name,
+      name: fundDetails.fund_legal_name,
       tags: tags,
       nav: navData || {
         value: "N/A",

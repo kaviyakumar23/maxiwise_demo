@@ -23,6 +23,7 @@ interface BarChartProps {
   height?: number;
   showLabels?: boolean;
   showValues?: boolean;
+  customYLabels?: string[]; // Optional custom Y-axis labels (e.g., ['Low', 'Below Avg', 'Average', 'Above Avg', 'High'])
 }
 
 export const BarChart: React.FC<BarChartProps> = ({
@@ -31,6 +32,7 @@ export const BarChart: React.FC<BarChartProps> = ({
   height = 100,
   showLabels = true,
   showValues = true,
+  customYLabels,
 }) => {
   console.log(data);
   const max = maxValue || Math.max(...data.map(d => d.value));
@@ -40,6 +42,22 @@ export const BarChart: React.FC<BarChartProps> = ({
       {/* Chart container with bars */}
       <div className="relative ">
         <div className="flex items-end justify-center gap-4 md:gap-8 lg:gap-16 px-4 md:px-6 lg:px-8 relative" style={{ height: `${height}px` }}>
+          {/* Y-axis labels (if customYLabels provided) */}
+          {customYLabels && customYLabels.length > 0 && (
+            <div className="absolute left-0 top-0 bottom-0 flex flex-col-reverse justify-between pr-2 md:pr-3 lg:pr-4" style={{ minWidth: '80px' }}>
+              {customYLabels.map((label, index) => (
+                <div 
+                  key={index} 
+                  className="text-xs md:text-sm lg:text-base font-medium text-gray-600 text-right"
+                  style={{ 
+                    transform: 'translateY(50%)',
+                  }}
+                >
+                  {label}
+                </div>
+              ))}
+            </div>
+          )}
           {data.map((item, index) => {
             // Calculate actual pixel height based on value proportion
             const barHeightPx = (item.value / max) * height;

@@ -6,15 +6,24 @@ interface AboutTheFundProps {
 }
 
 const AboutTheFund: React.FC<AboutTheFundProps> = ({ fundDetails: fundDetailsData }) => {
+  const getOrdinalSuffix = (day: number): string => {
+    if (day > 3 && day < 21) return 'th';
+    switch (day % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  };
+
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return 'N/A';
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-IN', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      });
+      const day = date.getDate();
+      const month = date.toLocaleDateString('en-IN', { month: 'long' });
+      const year = date.getFullYear();
+      return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
     } catch {
       return dateString;
     }

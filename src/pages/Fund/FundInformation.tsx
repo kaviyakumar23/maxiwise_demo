@@ -22,7 +22,7 @@ const FundInformation: React.FC<FundInformationProps> = ({ fundDetails }) => {
     if (!value) return 'N/A';
     const numValue = parseFloat(value);
     if (isNaN(numValue)) return 'N/A';
-    return numValue.toFixed(2);
+    return `${numValue.toFixed(2)} years`;
   };
 
   const formatOneDecimal = (value: string | null | undefined) => {

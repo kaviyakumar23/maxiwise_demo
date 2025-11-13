@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Chip } from '../../components/ui/Chip';
 import ShadowImage from '../../assets/images/Shadow.png';
 import SpiralImage from '../../assets/images/GraphSpiral.png';
@@ -115,24 +115,7 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
   }, [ratiosData]);
 
   const [activeTab, setActiveTab] = useState<string>('Risk');
-  const [hoveredMetric, setHoveredMetric] = useState<number | null>(null);
-  const [tooltipPosition, setTooltipPosition] = useState<{ top: number; left: number } | null>(null);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
-  const metricRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-  // Calculate tooltip position when metric is hovered
-  useEffect(() => {
-    if (hoveredMetric !== null && metricRefs.current[hoveredMetric]) {
-      const element = metricRefs.current[hoveredMetric];
-      const rect = element!.getBoundingClientRect();
-      setTooltipPosition({
-        top: rect.top - 10, // Position above the element with some spacing
-        left: rect.left + rect.width / 2, // Center horizontally
-      });
-    } else {
-      setTooltipPosition(null);
-    }
-  }, [hoveredMetric]);
 
   // Handle body scroll lock when modal is open
   useEffect(() => {
@@ -149,7 +132,7 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
 
   // Helper function to determine if current tab should show percentage formatting
   const isPercentageTab = (): boolean => {
-    return activeTab === 'Risk' || activeTab === 'Outperformance';
+    return activeTab === 'Risk' || activeTab === 'Outperformance' || activeTab === 'Market Cycle';
   };
 
   // Get the active ratio section based on selected tab
@@ -190,57 +173,8 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
 
   return (
     <div className='py-4'>
-      {/* Fixed Tooltip */}
-      {hoveredMetric !== null && tooltipPosition && (
-        <div 
-          className="fixed bg-navy rounded-lg shadow-lg p-3 z-[9999] whitespace-nowrap pointer-events-none"
-          style={{
-            top: `${tooltipPosition.top}px`,
-            left: `${tooltipPosition.left}px`,
-            transform: 'translate(-50%, -100%)',
-          }}
-        >
-          <div className="flex flex-col gap-1.5">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[#CBD5E1] text-sm font-outfit">Fund</span>
-              <span className="text-[#CBD5E1] text-sm font-semibold font-outfit">
-                {isPercentageTab() 
-                  ? `${(activeSection.metrics[hoveredMetric].fund * 100).toFixed(2).replace(/\.?0+$/, '')}%`
-                  : activeSection.metrics[hoveredMetric].fund.toFixed(2).replace(/\.?0+$/, '')}
-              </span>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-[#CBD5E1] text-sm font-outfit">
-                {activeTab === 'Outperformance' ? 'Category' : 'Benchmark'}
-              </span>
-              <span className="text-[#CBD5E1] text-sm font-semibold font-outfit">
-                {isPercentageTab() 
-                  ? `${(activeSection.metrics[hoveredMetric].benchmark * 100).toFixed(2).replace(/\.?0+$/, '')}%`
-                  : activeSection.metrics[hoveredMetric].benchmark.toFixed(2).replace(/\.?0+$/, '')}
-              </span>
-            </div>
-            {/* Only show Category for non-Outperformance charts */}
-            {activeTab !== 'Outperformance' && (
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[#CBD5E1] text-sm font-outfit">Category</span>
-                <span className="text-[#CBD5E1] text-sm font-semibold font-outfit">
-                  {isPercentageTab() 
-                    ? `${(activeSection.metrics[hoveredMetric].category * 100).toFixed(2).replace(/\.?0+$/, '')}%`
-                    : activeSection.metrics[hoveredMetric].category.toFixed(2).replace(/\.?0+$/, '')}
-                </span>
-              </div>
-            )}
-          </div>
-          {/* Tooltip arrow */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px]">
-            <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-navy"></div>
-          </div>
-        </div>
-      )}
-      
-      
-        {/* Section Title with Help Icon */}
-        <div className="p-4 md:p-2 lg:p-4 xl:p-0">
+      {/* Section Title with Help Icon */}
+      <div className="p-4 md:p-2 lg:p-4 xl:p-0">
       <div className="flex items-center justify-between">
         <h2 className="text-sm md:text-base lg:text-lg font-semibold font-outfit text-navy leading-[145%] tracking-[0.15%] py-4">
           Ratios
@@ -395,13 +329,24 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
                           return (
                             <div 
                               key={metricIndex}
-                              ref={(el) => { metricRefs.current[metricIndex] = el; }}
                               className="flex-1 flex items-end justify-center gap-1.5 md:gap-3 relative"
-                              onMouseEnter={() => setHoveredMetric(metricIndex)}
-                              onMouseLeave={() => setHoveredMetric(null)}
                             >
                               {/* Fund Bar */}
                               <div className="flex-1 max-w-[60px] md:max-w-[150px] flex flex-col items-center justify-end">
+                                {/* Value above bar */}
+                                {metric.fund > 0 && (
+                                  <div className="mb-1 md:mb-2 flex flex-col items-center relative z-10">
+                                    <div 
+                                      className="text-xs md:text-sm font-semibold font-outfit"
+                                      style={{ color: '#9346FD' }}
+                                    >
+                                      {isPercentageTab() 
+                                        ? `${(metric.fund * 100).toFixed(2).replace(/\.?0+$/, '')}%`
+                                        : metric.fund.toFixed(2).replace(/\.?0+$/, '')}
+                                    </div>
+                                  </div>
+                                )}
+                                
                                 <div className="relative w-full">
                                   {/* Shadow */}
                                   <div 
@@ -450,6 +395,20 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
                         
                               {/* Benchmark Bar */}
                               <div className="flex-1 max-w-[60px] md:max-w-[150px] flex flex-col items-center justify-end">
+                                {/* Value above bar */}
+                                {metric.benchmark > 0 && (
+                                  <div className="mb-1 md:mb-2 flex flex-col items-center relative z-10">
+                                    <div 
+                                      className="text-xs md:text-sm font-semibold font-outfit"
+                                      style={{ color: '#4B5563' }}
+                                    >
+                                      {isPercentageTab() 
+                                        ? `${(metric.benchmark * 100).toFixed(2).replace(/\.?0+$/, '')}%`
+                                        : metric.benchmark.toFixed(2).replace(/\.?0+$/, '')}
+                                    </div>
+                                  </div>
+                                )}
+                                
                                 <div className="relative w-full">
                                   {/* Shadow */}
                                   <div 
@@ -499,6 +458,20 @@ const RatiosComponent: React.FC<RatiosProps> = ({ ratiosData, fundType }) => {
                               {/* Category Bar - Only show for non-Outperformance charts */}
                               {activeTab !== 'Outperformance' && (
                                 <div className="flex-1 max-w-[60px] md:max-w-[150px] flex flex-col items-center justify-end">
+                                  {/* Value above bar */}
+                                  {metric.category > 0 && (
+                                    <div className="mb-1 md:mb-2 flex flex-col items-center relative z-10">
+                                      <div 
+                                        className="text-xs md:text-sm font-semibold font-outfit"
+                                        style={{ color: '#4B5563' }}
+                                      >
+                                        {isPercentageTab() 
+                                          ? `${(metric.category * 100).toFixed(2).replace(/\.?0+$/, '')}%`
+                                          : metric.category.toFixed(2).replace(/\.?0+$/, '')}
+                                      </div>
+                                    </div>
+                                  )}
+                                  
                                   <div className="relative w-full">
                                     {/* Shadow */}
                                     <div 
