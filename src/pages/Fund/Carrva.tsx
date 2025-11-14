@@ -63,7 +63,7 @@ const Carrva: React.FC<CarrvaProps> = ({ fundType, consistencyFactors, trendAnal
     }
   }, [isEquityType, isDebtType]);
 
-  const [activeMetric, setActiveMetric] = useState<MetricType>('Return');
+  const [activeMetric, setActiveMetric] = useState<MetricType>('Cycles');
   const [activeView, setActiveView] = useState<ViewType>('consistency');
   console.log(activeView)
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
